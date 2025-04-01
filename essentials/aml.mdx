@@ -1,0 +1,250 @@
+---
+title: AML Screening
+description: AML Screening API Documentation
+icon: 'map'
+---
+import Auth from '/snippets/auth.mdx';
+
+# AML Screening API - Detailed Documentation
+The AML Screening API provides functionality for screening individuals and entities against sanctions, politically exposed persons (PEP), and criminal watchlists. It also supports ongoing monitoring of registered profiles.
+
+### API Playground:
+<Tabs>
+  <Tab title="/aml/checkIndividual">
+    You can try the check individual endpoint [here](/api-reference/endpoint/aml_checkIndividual).
+  </Tab>
+    <Tab title="/aml/ongoingMonitoring/registerIndividual">
+    You can try the register individual endpoint [here](/api-reference/endpoint/aml_ongoingMonitoring_registerIndividual).
+  </Tab>
+  <Tab title="/aml/ongoingMonitoring/registerEntity">
+    You can try the register entity endpoint [here](/api-reference/endpoint/aml_ongoingMonitoring_registerEntity).
+  </Tab>
+  <Tab title="/aml/ongoingMonitoring/removeSearchProfile">
+    You can try the remove search profile endpoint [here](/api-reference/endpoint/aml_ongoingMonitoring_removeSearchProfile).
+  </Tab>
+</Tabs>
+
+### Endpoints Overview
+1. **Check Individual**: Screen an individual against AML databases.
+2. **Ongoing Monitoring**:
+   - Register Individual: Add an individual to the ongoing monitoring system.
+   - Register Entity: Add an entity to the ongoing monitoring system.
+   - Remove Search Profile: Remove a profile from the ongoing monitoring system.
+
+---
+<Auth/>
+---
+
+## 1. Check Individual
+### Endpoint
+**POST** `/aml/checkIndividual`
+
+### Description
+Checks an individual in the AML system to see if there are any matches for the provided details.
+
+### Required Headers
+| Header         | Value |
+|---------------|----------------------------|
+| Content-Type  | `application/json` |
+| Authorization | `Bearer yourAccessToken` |
+
+### Request Body Parameters
+<Accordion title="Request Body Parameters">
+| Field | Type   | Required | Description |
+|-------|--------|----------|-------------|
+| name  | string | Yes      | Search string checked against name fields. |
+| dob   | string | No       | Date of birth in the format `yyyy/mm/dd`. |
+</Accordion>
+
+### Response Structure
+<Accordion title="Response Structure">
+| Field           | Type        | Description |
+|-----------------|-------------|-------------|
+| timestamp       | string      | The timestamp of the response (ISO 8601 date time). |
+| totalHits       | number      | The total number of hits for the searched parameters. |
+| foundRecords    | object array| Array with attributes of type `Individual`. |
+| sourceType      | string      | Possible values: `SANCTION`, `PEP`, `CRIMINAL`. |
+| pepType         | string      | Possible values: `POLITICIAN`, `JUDGE`, `BOARD_MEMBER_OF_CENTRAL_BANK`, etc. |
+| sourceId        | string      | The source ID of the list. |
+| entityType      | string      | Enumeration: `INDIVIDUAL`, `UNKNOWN`. |
+| gender          | string      | Enumeration: `FEMALE`, `MALE`, `UNKNOWN`. |
+| name            | string      | Name of the individual. |
+| lastNames       | string array| A list of last names of this individual. |
+| aliasNames      | string array| A list of alias names of this individual. |
+| givenNames      | string array| A list of given names of this individual. |
+| nameRemarks     | string array| A list of name remarks for this individual. |
+| spouse          | string array| A list of spouse names for this individual. |
+| parents         | string array| A list of parent names for this individual. |
+| children        | string array| A list of children names for this individual. |
+| siblings        | string array| A list of sibling names for this individual. |
+| dateOfBirth     | string array| A list of dates of birth for this individual. |
+| dateOfBirthRemarks | string array | A list of date of birth remarks for this individual. |
+| placeOfBirth    | string array| A list of places of birth for this individual. |
+| placeOfBirthRemarks | string array | A list of place of birth remarks for this individual. |
+| address         | string array| A list of addresses for this individual. |
+| addressRemarks  | string array| A list of address remarks for this individual. |
+| citizenship     | string array| A list of citizenships for this individual in ISO 3166-1 alpha-2 format. |
+| citizenshipRemarks | string array | A list of citizenship remarks for this individual. |
+| sanctionDetails | string array| A list of sanction details for this individual. |
+| description     | string array| A list of descriptions for this individual. |
+| occupations     | string array| A list of occupations for this individual. |
+| positions       | string array| A list of positions for this individual. |
+| politicalParties| string array| A list of political parties for this individual. |
+| links           | string array| A list of links for this individual (e.g., websites, email addresses). |
+| titles          | string array| A list of titles for this individual (e.g., Dr., Prof., Hon.). |
+| functions       | string array| A list of functions for this individual. |
+| otherInformation| string array| A list of other information for this individual. |
+</Accordion>
+### Response Codes
+| Code | Description |
+|------|-------------|
+| `200` | A JSON array of matching individuals. |
+| `400` | Bad request due to missing or invalid parameters. |
+| `401` | API key is missing or invalid. |
+| `500` | An internal server error occurred. |
+
+### Example Request
+```json
+{
+"name": "Boris Johnson",
+"dob": "1964/06/19"
+}
+```
+
+### Example Response
+```json
+{
+  "timestamp": "2024/09/24T19:16:00Z",
+  "totalHits": 1,
+  "foundRecords": [
+    {
+      "id": "c438b18a93cd3c13",
+      "entityType": "INDIVIDUAL",
+      "name": "Boris Johnson",
+      "lastNames": ["Johnson", "Pfeffel"],
+      "aliasNames": ["Alexander Boris de Pfeffel Johnson", "Boris", "BoJo"],
+      "givenNames": ["Alexander", "Boris"],
+      "dateOfBirth": ["1964/06/19"],
+      "placeOfBirth": ["New York City"],
+      "citizenship": ["GB", "US"],
+      "occupations": ["journalist", "politician"],
+      "positions": [
+        "2001/06/07 - 2005/04/11 Member of the 53rd Parliament of the United Kingdom",
+        "Since 2019/07/24 Prime Minister of the United Kingdom"
+      ],
+      "politicalParties": ["Conservative Party"],
+      "links": [
+        "https://www.gov.uk/government/people/boris-johnson",
+        "Facebook: borisjohnson"
+      ],
+      "sourceId": "dilisense_pep",
+      "sourceType": "PEP",
+      "pepType": "POLITICIAN",
+      "gender": "MALE",
+      "spouse": ["Allegra Mostyn-Owen", "Carrie Johnson", "Marina Wheeler"],
+      "siblings": ["Jo Johnson", "Leo Johnson", "Rachel Johnson"],
+      "parents": ["Charlotte Johnson Wahl", "Stanley Johnson"],
+      "description": ["Prime Minister of the United Kingdom from 2019 to 2022"]
+    }
+  ]
+}
+```
+
+## 2. Ongoing Monitoring
+### 2.1 Register Individual
+
+### Endpoint
+**POST** `/aml/ongoingMonitoring/registerIndividual`
+
+### Description
+Registers an individual for ongoing monitoring in the AML system.
+
+### Required Headers
+| Header         | Value |
+|---------------|----------------------------|
+| Content-Type  | `application/json` |
+| Authorization | `Bearer yourAccessToken` |
+
+### Request Body Parameters
+<Accordion title="Request Body Parameters">
+| Field         | Required | Description |
+|---------------|----------|-------------|
+| `profileId`   | Yes      | Unique identifier for the individual profile in the system. |
+| `names`       | Yes      | Full name of the individual (e.g., "Elon Musk"). |
+| `gender`      | No       | Gender of the individual (optional, e.g., "male"). |
+| `searchAll`   | No       | This field cannot be combined with the `names` parameter. |
+| `dob`         | No       | Date of birth of the individual (optional). |
+| `fuzzySearch` | No       | Enables fuzzy search for the name (optional). |
+</Accordion>
+
+### Example Request
+```json
+{
+  "profileId": "8dac-b5393ce5ef3a", // Required: Unique profile identifier
+  "names": "Elon Musk",             // Required: Full name of the individual
+  "gender": "male",                 // Optional: Gender of the individual
+  "dob": "1971/06/28",              // Optional: Date of birth
+  "fuzzySearch": ""                 // Optional: Enables fuzzy search for the name
+}
+```
+
+### 2.2 Register Entity
+
+### Endpoint
+**POST** `/aml/ongoingMonitoring/registerEntity`
+
+### Description
+Registers an entity for ongoing monitoring in the AML system.
+
+### Required Headers
+| Header         | Value |
+|---------------|----------------------------|
+| Content-Type  | `application/json` |
+| Authorization | `Bearer yourAccessToken` |
+
+### Request Body Parameters
+<Accordion title="Request Body Parameters">
+| Field         | Required | Description |
+|---------------|----------|-------------|
+| `profileId`   | Yes      | Unique identifier for the entity profile in the system. |
+| `names`       | Yes      | Full name of the entity (e.g., "Tesla"). |
+| `searchAll`   | No       | This field cannot be combined with the `names` parameter. |
+| `fuzzySearch` | No       | Enables fuzzy search for the name (optional). |
+</Accordion>
+### Example Request
+```json
+{
+    "profileId": "8dac-b5393ce5ef3a", // Required: Unique profile identifier 
+    "names": "Tesla", // Required: Full name of the entity
+    "searchAll" : "", //Cannot be combined with 'names' parameter
+    "fuzzySearch": "" //optional
+}
+```
+
+### 2.3 Remove Search Profile
+
+### Endpoint
+**POST** `/aml/ongoingMonitoring/removeSearchProfile`
+
+### Description
+Removes a search profile from the AML ongoing monitoring system.
+
+### Required Headers
+| Header         | Value |
+|---------------|----------------------------|
+| Content-Type  | `application/json` |
+| Authorization | `Bearer yourAccessToken` |
+
+### Request Body Parameters 
+<Accordion title="Request Body Parameters">
+| Field         | Required | Description |
+|---------------|----------|-------------|
+| `profileId`   | Yes      | Unique identifier for the entity profile in the system. |
+</Accordion>
+
+### Example Request
+```json
+{
+    "profileId": "8dac-b5393ce5ef3a"          // Required: Unique profile identifier to remove
+}
+```

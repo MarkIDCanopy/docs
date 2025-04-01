@@ -1,0 +1,11 @@
+:root {
+    --background-dark: 2 8 23;
+  }
+
+#navbar {
+    /* background: "#fffff2"; */
+  }
+  
+  footer > div > div > div > .text-sm{
+    display: none;
+  }

@@ -1,0 +1,886 @@
+---
+title: KYB Advanced Search
+description: KYB Advanced Search API Documentation
+icon: 'map'
+---
+import Auth from '/snippets/auth.mdx';
+
+# KYB API - Detailed Documentation
+The KYB API provides endpoints for company search, verification, and AML (Anti-Money Laundering) checks. It allows users to retrieve detailed company profiles, verify business information, and perform AML checks on companies and individuals.
+
+### API Playground:
+<Tabs>
+  <Tab title="/KYB/countries">
+    You can try the countries endpoint [here](/api-reference/endpoint/kyb_countries).
+  </Tab>
+  <Tab title="/KYB/search">
+    You can try the search endpoint [here](/api-reference/endpoint/kyb_search).
+  </Tab>
+  <Tab title="/KYB/companyProfile">
+    You can try the company profile endpoint [here](/api-reference/endpoint/kyb_companyProfile).
+  </Tab>
+  <Tab title="/KYB/companies/read">
+    You can try the companies read endpoint [here](/api-reference/endpoint/kyb_companies_read).
+  </Tab>
+  <Tab title="/KYB/companyAML">
+    You can try the company AML endpoint [here](/api-reference/endpoint/kyb_companyAML).
+  </Tab>    
+  <Tab title="/KYB/personal">
+    You can try the personal endpoint [here](/api-reference/endpoint/kyb_personal).
+  </Tab>
+</Tabs>
+
+### Key Considerations
+- **Error Handling**: The error field in responses indicates whether the request was processed successfully. A value of false means no errors occurred, while true indicates an error.
+- **Pagination**: For endpoints that return large datasets, pagination is supported through the page and limit parameters to manage the size and number of returned results efficiently.
+- **AML Services**:  AML checks are crucial for identifying potential risks associated with money laundering activities. Separate endpoints are provided for companies and individuals.
+
+
+### Endpoints Overview
+1. **Listing Available Countries**: Retrieve a list of countries and states covered by the KYB service.
+2. **Company Search**: Search for companies by name or registration number.
+3. **Retrieving Companies’ Profiles**: Fetch detailed profiles of companies.
+4. **Enhanced Company Profile**: Retrieve comprehensive information about a specific company.
+5. **AML For Company**: Initiate AML checks for a company.
+6. **AML For Person**: Initiate AML checks for individuals or company officers.
+
+---
+<Auth/>
+---
+
+## 1. Listing Available Countries
+### Endpoint
+**GET** `/KYB/countries`
+
+### Description
+Provides a comprehensive list of countries covered by the KYB service, including available states for each country.
+
+### Required Headers
+| Header         | Value |
+|---------------|----------------------------|
+| Content-Type  | `application/json` |
+| Accept        | `application/json` |
+| Authorization | `Bearer yourAccessToken` |
+
+
+### Response Structure
+<Accordion title="Response Structure">
+| Field | Type | Description |
+|-------|------|-------------|
+| `error` | boolean | Indicates whether an error occurred. `false` means no errors. |
+| `message` | string | A message describing the result of the request. |
+| `version` | null | Reserved for future use. |
+| `data` | object | Contains the main response data. |
+| `data.countries` | array | List of countries and their details. |
+| `data.countries.countryName` | string | Name of the country. |
+| `data.countries.states` | array | List of states or regions within the country (if applicable). |
+| `data.countries.countryCode` | string | ISO 2-letter country code. |
+</Accordion>
+
+### Example Response
+```json
+{ 
+    "error": false, 
+    "message": "countries fetched successfully", 
+    "version": null, 
+    "data": { 
+        "countries": [ 
+                { 
+                "countryName": "unitedKingdom", 
+                "states": [], 
+                "countryCode": "gb" 
+                },
+                {
+                "countryName": "unitedStates", 
+                "states": [ "alabama", "alaska", "arizona", "arkansas", "california" ], "countryCode": "us" 
+                }] 
+            } 
+}
+```
+
+## 2. Company Search
+### Endpoint
+**POST** `/KYB/search`
+
+### Description
+Enables users to search for companies using a company name or registration number as search parameters. The search can be conducted in one or more countries, and results are fetched from official registries.
+
+### Required Headers
+| Header         | Value |
+|---------------|----------------------------|
+| Content-Type  | `application/json` |
+| Accept        | `application/json` |
+| Authorization | `Bearer yourAccessToken` |
+
+### Request Body Parameters
+<Accordion title="Request Body Parameters">
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `search` | string | Yes | The search query for the company name. |
+| `registrationNumber` | string | No | The registration number of the company (optional). |
+| `countryNames` | array | Yes | List of country names to search within (e.g., `["united_kingdom"]`). |
+| `searchType` | string | Yes | The type of search to perform (e.g., `start_with`). |
+| `webhookUrl` | string | No | URL for receiving webhook notifications (optional). |
+</Accordion>
+
+### Response Structure
+<Accordion title="Response Structure">
+| Field | Type | Description |
+|-------|------|-------------|
+| `requestId` | string | Unique identifier for the request. |
+| `companyId` | string | Unique identifier for the company. |
+| `serviceId` | string | Unique identifier for the service. |
+</Accordion>
+
+### Example Request
+```json
+{
+    "search": "Testing company", 
+    "registration_number": "",
+    "countryNames": ["unitedKingdom"], 
+    "searchType": "startWith", 
+    "webhookUrl": "https://yoursite.com/webhook",
+}
+```
+
+### Example Response
+```json
+{
+    "requestId": "requestId", 
+    "companyId": "companyId", 
+    "serviceId": "serviceId" 
+}
+```
+
+## 3. Retrieving Companies’ Profiles
+### Endpoint
+**GET** `/KYB/companyProfile`
+
+### Description
+Retrieves a list of companies from the official registries that match the provided search criteria. Results are paginated for efficient handling.
+
+### Required Headers
+| Header         | Value |
+|---------------|----------------------------|
+| Content-Type  | `application/json` |
+| Accept        | `application/json` |
+| Authorization | `Bearer yourAccessToken` |
+
+### Response Structure
+<Accordion title="Response Structure">
+| Field | Type | Description |
+|-------|------|-------------|
+| `error` | boolean | Indicates whether an error occurred. `false` means no errors. |
+| `message` | string | A message describing the result of the request. |
+| `version` | null | Reserved for future use. |
+| `data` | object | Contains the main response data. |
+| `data.resolvedPercentage` | number | Percentage of the request that has been resolved. |
+| `data.resolvedCount` | number | Number of resolved items. |
+| `data.fetchedCountriesWithStates` | array | List of countries and their states. |
+| `data.fetchedCountriesWithStates.countryName` | string | Name of the country. |
+| `data.fetchedCountriesWithStates.states` | array | List of states or regions within the country. |
+| `data.fetchedCountries` | array | List of countries fetched. |
+| `data.secondarySource` | boolean | Indicates if the data comes from a secondary source. |
+| `data.requestStatus` | string | Status of the request (e.g., `resolved`). |
+| `data.kybRequestData` | array | List of company data fetched. |
+| `data.kybRequestData.id` | string | Unique identifier for the request. |
+| `data.kybRequestData.requestId` | string | Unique identifier for the request. |
+| `data.kybRequestData.searchText` | string | The search text used for the request. |
+| `data.kybRequestData.countryName` | string | Name of the country associated with the company. |
+| `data.kybRequestData.countryFlag` | string | URL or reference to the country flag. |
+| `data.kybRequestData.extensiveData` | array | List of extensive data categories available for the company. |
+| `data.kybRequestData.name` | string | Name of the company. |
+| `data.kybRequestData.registrationNumber` | string | Registration number of the company. |
+| `data.kybRequestData.registrationDate` | string | Date of company registration. |
+| `data.kybRequestData.type` | string | Type of the company. |
+| `data.kybRequestData.primarySource` | boolean | Indicates if the data comes from a primary source. |
+| `data.kybRequestData.secondarySource` | boolean | Indicates if the data comes from a secondary source. |
+| `data.kybRequestData.status` | string | Status of the company. |
+| `data.kybRequestData.metaDetail` | object | Additional metadata about the company. |
+| `data.kybRequestData.riskLevel` | string | Risk level associated with the company. |
+| `data.kybRequestData.verificationStatus` | string | Verification status of the company. |
+| `data.kybRequestData.companyFetchedDataStatus` | string | Status of the fetched company data. |
+| `data.pagination` | object | Pagination details for the response. |
+| `data.pagination.total` | number | Total number of items. |
+| `data.pagination.perPage` | number | Number of items per page. |
+| `data.pagination.currentPage` | number | Current page number. |
+| `data.pagination.lastPage` | number | Last page number. |
+| `data.pagination.from` | number | Starting index of the current page. |
+| `data.pagination.to` | number | Ending index of the current page. |
+</Accordion>
+
+### Example Response
+<Accordion title="Example Response">
+```json
+{ 
+    "error": false, 
+    "message": "request data fetched successfully", 
+    "version": null, 
+    "data": { 
+            "resolvedPercentage": 100, 
+            "resolvedCount": 1, 
+            "fetched_countries_with_states": [ { "countryName": "unitedKingdom", "states": [] } ], 
+            "fetchedCountries": ["unitedKingdom"], 
+            "secondarySource": false, 
+            "requestStatus": "resolved", 
+            "kybRequestData": [ 
+                    { "id": "", 
+                    "requestId": "", 
+                    "searchText": "", 
+                    "countryName": "", 
+                    "countryFlag": "", 
+                    "extensiveData": [ 
+                        "Company Officers", 
+                        "Financial Performance", 
+                        "Fillings History", 
+                        "Change History", 
+                        "Branches", 
+                        "Events And Announcement", 
+                        "Additional Information" 
+                    ], 
+                    "name": "TESTING COMPANY", 
+                    "registrationNumber": "", 
+                    "registrationDate": "", 
+                    "type": "", 
+                    "primarySource": true, 
+                    "secondarySource": false, 
+                    "status": "", 
+                    "metaDetail": {}, 
+                    "riskLevel": "", 
+                    "verificationStatus": "", 
+                    "companyFetchedDataStatus": "" 
+                    } ], 
+            "pagination": { 
+                    "total": 1, 
+                    "perPage": 50, 
+                    "currentPage": 1, 
+                    "lastPage": 1, 
+                    "from": 1, 
+                    "to": 1 
+                } 
+            }
+}
+```
+</Accordion>
+## 4. Enhanced Company Profile
+### Endpoint
+**GET** `/KYB/companies/read`
+
+### Description
+Retrieves detailed information about a specific company, including registration details, using a unique company ID and request ID.
+
+### Required Headers
+| Header         | Value |
+|---------------|----------------------------|
+| Content-Type  | `application/json` |
+| Accept        | `application/json` |
+| Authorization | `Bearer yourAccessToken` |
+
+### Request Body Parameters
+<Accordion title="Request Body Parameters">
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `companyId` | string | Yes | Unique identifier for the company. |
+| `requestId` | string | Yes | Unique identifier for the request. |
+</Accordion>
+
+    ### Response Structure
+<Accordion title="Response Structure">
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | string | Unique identifier for the company. |
+| `name` | string | Name of the company. |
+| `registrationNumber` | string | Registration number of the company. |
+| `registrationDate` | string | Date of company registration. |
+| `companyRegistrationPeriod` | string | Period of company registration. |
+| `status` | string | Status of the company. |
+| `type` | string | Type of the company. |
+| `countryName` | string | Name of the country where the company is registered. |
+| `description` | string | Description of the company. |
+| `countryFlag` | string | URL or reference to the country flag. |
+| `jurisdictionCode` | string | Jurisdiction code of the company. |
+| `incorporationDate` | string | Date of company incorporation. |
+| `companyIncorporationPeriod` | string | Period of company incorporation. |
+| `industries` | string | Industries associated with the company. |
+| `taxNumber` | string | Tax identification number of the company. |
+| `dissolutionDate` | string | Date of company dissolution. |
+| `yearsSinceDissolution` | string | Years since the company was dissolved. |
+| `inactiveDate` | string | Date when the company became inactive. |
+| `jurisdiction` | string | Jurisdiction of the company. |
+| `primarySource` | boolean | Indicates if the data comes from a primary source. |
+| `secondarySource` | boolean | Indicates if the data comes from a secondary source. |
+| `companyFetchedDataStatus` | string | Status of the fetched company data. |
+| `metaDetail` | object | Additional metadata about the company. |
+| `companyAmlRequestId` | string | Unique identifier for the AML request. |
+| `companyAmlRequestStatus` | string | Status of the AML request. |
+| `companyAmlStatus` | string | AML status of the company. |
+| `accountsDetail` | object | Details about the company's accounts. |
+| `accountsDetail.lastAccount` | string | Last account details. |
+| `accountsDetail.nextAccount` | string | Next account details. |
+| `accountsDetail.dueByDate` | string | Due date for the next account. |
+| `accountsDetail.metaDetail` | object | Additional metadata about the accounts. |
+| `confirmationStatementDetail` | object | Details about the confirmation statement. |
+| `confirmationStatementDetail.lastAccount` | string | Last confirmation statement details. |
+| `confirmationStatementDetail.nextAccount` | string | Next confirmation statement details. |
+| `confirmationStatementDetail.dueByDate` | string | Due date for the next confirmation statement. |
+| `confirmationStatementDetail.metaDetail` | object | Additional metadata about the confirmation statement. |
+| `contactsDetail` | array | List of contact details for the company. |
+| `contactsDetail.type` | string | Type of contact (e.g., email, phone). |
+| `contactsDetail.value` | string | Contact value (e.g., email address, phone number). |
+| `contactsDetail.metaDetail` | object | Additional metadata about the contact. |
+| `documents` | array | List of documents associated with the company. |
+| `documents.uid` | string | Unique identifier for the document. |
+| `documents.name` | string | Name of the document. |
+| `documents.date` | string | Date of the document. |
+| `documents.description` | string | Description of the document. |
+| `documents.documentCode` | string | Code of the document. |
+| `documents.documentType` | string | Type of the document. |
+| `documents.fileUrl` | string | URL to access the document. |
+| `documents.documentStatus` | string | Status of the document. |
+| `documents.source` | string | Source of the document. |
+| `documents.documentRequested` | boolean | Indicates if the document was requested. |
+| `documents.price` | string | Price of the document. |
+| `documents.deliverTime` | string | Time to deliver the document. |
+| `documents.documentNotFound` | string | Indicates if the document was not found. |
+| `documents.category` | string | Category of the document. |
+| `documents.previousDocumentDetail` | object | Details about the previous document. |
+| `documents.previousDocumentDetail._id` | string | Unique identifier for the previous document. |
+| `documents.previousDocumentDetail.uid` | string | Unique identifier for the previous document. |
+| `documents.previousDocumentDetail.documentId` | string | Identifier for the previous document. |
+| `documents.previousDocumentDetail.submittedAt` | string | Date when the previous document was submitted. |
+| `documents.previousDocumentDetail.price` | string | Price of the previous document. |
+| `documents.previousDocumentDetail.fileUrl` | string | URL to access the previous document. |
+| `previousNamesDetail` | array | List of previous names of the company. |
+| `previousNamesDetail.companyName` | string | Previous name of the company. |
+| `previousNamesDetail.updateDate` | string | Date when the name was updated. |
+| `previousNamesDetail.metaDetail` | object | Additional metadata about the previous name. |
+| `filingsDetail` | array | List of filings associated with the company. |
+| `filingsDetail.title` | string | Title of the filing. |
+| `filingsDetail.date` | string | Date of the filing. |
+| `filingsDetail.description` | string | Description of the filing. |
+| `filingsDetail.filingCode` | string | Code of the filing. |
+| `filingsDetail.filingType` | string | Type of the filing. |
+| `filingsDetail.fileUrl` | string | URL to access the filing. |
+| `filingsDetail.metaDetail` | object | Additional metadata about the filing. |
+| `addressesDetail` | array | List of addresses associated with the company. |
+| `addressesDetail.address` | string | Address of the company. |
+| `addressesDetail.type` | string | Type of address (e.g., headquarters, branch). |
+| `addressesDetail.description` | string | Description of the address. |
+| `addressesDetail.metaDetail` | object | Additional metadata about the address. |
+| `announcementsDetail` | array | List of announcements associated with the company. |
+| `announcementsDetail.date` | string | Date of the announcement. |
+| `announcementsDetail.title` | string | Title of the announcement. |
+| `announcementsDetail.description` | string | Description of the announcement. |
+| `announcementsDetail.metaDetail` | object | Additional metadata about the announcement. |
+| `peopleDetail` | array | List of people associated with the company. |
+| `peopleDetail.name` | string | Name of the person. |
+| `peopleDetail.status` | string | Status of the person. |
+| `peopleDetail.address` | string | Address of the person. |
+| `peopleDetail.designation` | string | Designation of the person. |
+| `peopleDetail.appointmentDate` | string | Date of appointment. |
+| `peopleDetail.appointmentPeriod` | string | Period of appointment. |
+| `peopleDetail.postalAddress` | string | Postal address of the person. |
+| `peopleDetail.terminationDate` | string | Date of termination. |
+| `peopleDetail.terminationPeriod` | string | Period of termination. |
+| `peopleDetail.nationality` | string | Nationality of the person. |
+| `peopleDetail.email` | string | Email address of the person. |
+| `peopleDetail.phoneNumber` | string | Phone number of the person. |
+| `peopleDetail.faxNumber` | string | Fax number of the person. |
+| `peopleDetail.amlStatus` | string | AML status of the person. |
+| `peopleDetail.amlRequestStatus` | string | Status of the AML request for the person. |
+| `peopleDetail.amlRequestId` | string | Unique identifier for the AML request. |
+| `peopleDetail.metaDetail` | object | Additional metadata about the person. |
+| `peopleDetail.employmentStatus` | string | Employment status of the person. |
+| `peopleDetail.similarPeople` | array | List of similar people. |
+| `peopleDetail.similarPeople.name` | string | Name of the similar person. |
+| `peopleDetail.similarPeople.address` | string | Address of the similar person. |
+| `peopleDetail.similarPeople.designation` | string | Designation of the similar person. |
+| `peopleDetail.similarPeople.nationality` | string | Nationality of the similar person. |
+| `peopleDetail.similarPeople.appointmentDate` | string | Date of appointment for the similar person. |
+| `peopleDetail.similarPeople.terminationDate` | string | Date of termination for the similar person. |
+| `peopleDetail.similarPeople.metaDetail` | object | Additional metadata about the similar person. |
+| `beneficialOwnersDetail` | array | List of beneficial owners associated with the company. |
+| `beneficialOwnersDetail.name` | string | Name of the beneficial owner. |
+| `beneficialOwnersDetail.designation` | string | Designation of the beneficial owner. |
+| `beneficialOwnersDetail.status` | string | Status of the beneficial owner. |
+| `beneficialOwnersDetail.address` | string | Address of the beneficial owner. |
+| `beneficialOwnersDetail.postalAddress` | string | Postal address of the beneficial owner. |
+| `beneficialOwnersDetail.appointmentDate` | string | Date of appointment. |
+| `beneficialOwnersDetail.appointmentPeriod` | string | Period of appointment. |
+| `beneficialOwnersDetail.terminationDate` | string | Date of termination. |
+| `beneficialOwnersDetail.terminationPeriod` | string | Period of termination. |
+| `beneficialOwnersDetail.ceasedOn` | string | Date when the beneficial owner ceased. |
+| `beneficialOwnersDetail.nationality` | string | Nationality of the beneficial owner. |
+| `beneficialOwnersDetail.email` | string | Email address of the beneficial owner. |
+| `beneficialOwnersDetail.phoneNumber` | string | Phone number of the beneficial owner. |
+| `beneficialOwnersDetail.faxNumber` | string | Fax number of the beneficial owner. |
+| `beneficialOwnersDetail.legalAuthority` | string | Legal authority of the beneficial owner. |
+| `beneficialOwnersDetail.legalForm` | string | Legal form of the beneficial owner. |
+| `beneficialOwnersDetail.amlStatus` | string | AML status of the beneficial owner. |
+| `beneficialOwnersDetail.amlRequestStatus` | string | Status of the AML request for the beneficial owner. |
+| `beneficialOwnersDetail.amlRequestId` | string | Unique identifier for the AML request. |
+| `beneficialOwnersDetail.metaDetail` | object | Additional metadata about the beneficial owner. |
+| `beneficialOwnersDetail.sharesDetail` | object | Details about the shares held by the beneficial owner. |
+| `beneficialOwnersDetail.sharesDetail.votingMinShares` | string | Minimum voting shares held. |
+| `beneficialOwnersDetail.sharesDetail.votingMaxShares` | string | Maximum voting shares held. |
+| `beneficialOwnersDetail.sharesDetail.ownershipMinShares` | string | Minimum ownership shares held. |
+| `beneficialOwnersDetail.sharesDetail.ownershipMaxShares` | string | Maximum ownership shares held. |
+| `beneficialOwnersDetail.employmentStatus` | string | Employment status of the beneficial owner. |
+| `ownershipSharesDetail` | array | List of ownership shares details. |
+| `ownershipSharesDetail.name` | string | Name of the shareholder. |
+| `ownershipSharesDetail.ownershipMinShares` | string | Minimum ownership shares held. |
+| `ownershipSharesDetail.ownershipMaxShares` | string | Maximum ownership shares held. |
+| `votingSharesDetail` | array | List of voting shares details. |
+| `votingSharesDetail.name` | string | Name of the shareholder. |
+| `votingSharesDetail.votingMinShares` | string | Minimum voting shares held. |
+| `votingSharesDetail.votingMaxShares` | string | Maximum voting shares held. |
+| `capitalStockInformation` | array | List of capital stock information. |
+| `capitalStockInformation.capitalClass` | string | Class of capital stock. |
+| `capitalStockInformation.capitalNumber` | string | Number of capital stock. |
+| `capitalStockInformation.capitalPerValue` | string | Per value of capital stock. |
+| `capitalStockInformation.metaDetail` | object | Additional metadata about the capital stock. |
+| `industriesDetail` | array | List of industries associated with the company. |
+| `industriesDetail.code` | string | Code of the industry. |
+| `industriesDetail.name` | string | Name of the industry. |
+| `industriesDetail.description` | string | Description of the industry. |
+| `industriesDetail.metaDetail` | object | Additional metadata about the industry. |
+| `companyExtraDetail` | object | Additional details about the company. |
+| `companyExtraDetail.logo` | string | URL or reference to the company logo. |
+| `branches` | array | List of branches associated with the company. |
+| `branches.entityType` | string | Type of the branch entity. |
+| `branches.name` | string | Name of the branch. |
+| `branches.companyNumber` | string | Company number of the branch. |
+| `branches.jurisdictionCode` | string | Jurisdiction code of the branch. |
+| `branches.startDate` | string | Start date of the branch. |
+| `branches.homeCompanyName` | string | Name of the home company. |
+| `branches.homeCompanyJurisdictionCode` | string | Jurisdiction code of the home company. |
+| `branches.homeCompanyNumber` | string | Company number of the home company. |
+| `branches.countryName` | string | Name of the country where the branch is located. |
+| `branches.stateName` | string | Name of the state where the branch is located. |
+| `branches.type` | string | Type of the branch. |
+| `branches.status` | string | Status of the branch. |
+| `branches.dissolutionDate` | string | Date of branch dissolution. |
+| `branches.registrationDate` | string | Date of branch registration. |
+| `branches.industries` | string | Industries associated with the branch. |
+| `branches.address` | string | Address of the branch. |
+| `branches.metaDetail` | object | Additional metadata about the branch. |
+| `branches.countryFlag` | string | URL or reference to the country flag. |
+| `parentCompanies` | array | List of parent companies associated with the company. |
+| `parentCompanies.entityType` | string | Type of the parent company entity. |
+| `parentCompanies.name` | string | Name of the parent company. |
+| `parentCompanies.companyNumber` | string | Company number of the parent company. |
+| `parentCompanies.jurisdictionCode` | string | Jurisdiction code of the parent company. |
+| `parentCompanies.countryName` | string | Name of the country where the parent company is located. |
+| `parentCompanies.stateName` | string | Name of the state where the parent company is located. |
+| `parentCompanies.type` | string | Type of the parent company. |
+| `parentCompanies.countryFlag` | string | URL or reference to the country flag. |
+| `parentCompanies.metaDetail` | object | Additional metadata about the parent company. |
+| `ownershipStructure` | object | Ownership structure of the company. |
+| `ownershipStructure.id` | string | Unique identifier for the ownership structure. |
+| `ownershipStructure.name` | string | Name of the ownership structure. |
+| `ownershipStructure.children` | array | List of children in the ownership structure. |
+| `ownershipStructure.children.name` | string | Name of the child entity. |
+| `ownershipStructure.children.percentage` | string | Percentage of ownership. |
+| `ownershipStructure.children.active` | boolean | Indicates if the child entity is active. |
+| `ownershipStructure.children.children` | array | List of nested children in the ownership structure. |
+| `identifiers` | array | List of identifiers associated with the company. |
+| `identifiers.identifierType` | string | Type of the identifier. |
+| `identifiers.identifierCode` | string | Code of the identifier. |
+| `identifiers.identifierNumber` | string | Number of the identifier. |
+| `identifiers.metaDetail` | object | Additional metadata about the identifier. |
+| `financialDetail` | object | Financial details of the company. |
+| `financialDetail.totalCapital` | string | Total capital of the company. |
+| `financialDetail.fiscalYear` | string | Fiscal year of the company. |
+| `financialDetail.fiscalYearEnd` | string | End date of the fiscal year. |
+| `financialDetail.fiscalYearStart` | string | Start date of the fiscal year. |
+| `financialDetail.fixedAssets` | string | Fixed assets of the company. |
+| `financialDetail.totalNetAssets` | string | Total net assets of the company. |
+| `financialDetail.turnover` | string | Turnover of the company. |
+| `financialDetail.currency` | string | Currency used for financial details. |
+| `financialDetail.financialYears` | string | Financial years of the company. |
+| `financialDetail.annualReturnDueDate` | string | Due date for the annual return. |
+| `financialDetail.financialStatementDueDate` | string | Due date for the financial statement. |
+| `financialDetail.liability` | string | Liability of the company. |
+| `financialDetail.totalNumberOfShares` | string | Total number of shares. |
+| `financialDetail.haveExtensiveShareholding` | string | Indicates if the company has extensive shareholding. |
+| `financialDetail.ordinaryShareholderSignatures` | string | Signatures of ordinary shareholders. |
+| `financialDetail.hasMoreThanOneClassOfShare` | string | Indicates if the company has more than one class of shares. |
+| `financialDetail.perShareValue` | string | Per
+</Accordion>
+
+### Example Request
+```json
+{
+  "companyId": "companyId",
+  "requestId": "requestId"
+}
+```
+
+### Example Response
+<Accordion title="Example Response">    
+```json
+{ 
+    "id": "", 
+    "name": "", 
+    "registrationNumber": "", 
+    "registrationDate": "", 
+    "companyRegistrationPeriod": "", 
+    "status": "", 
+    "type": "", 
+    "countryName": "", 
+    "description": "", 
+    "countryFlag": "", 
+    "jurisdictionCode": "", 
+    "incorporationDate": "", 
+    "companyIncorporationPeriod": "", 
+    "industries": "", 
+    "taxNumber": "", 
+    "dissolutionDate": "", 
+    "yearsDinceDissolution": "", 
+    "inactiveDate": "", 
+    "jurisdiction": "", 
+    "primarySource": true, 
+    "secondarySource": false, 
+    "companyFetchedDataStatus": "resolved", 
+    "metaDetail": {}, 
+    "companyAmlRequestId": "", 
+    "companyAmlRequestStatus": "", 
+    "companyAmlStatus": "", 
+    "accountsDetail": { 
+        "lastAccount": "",     
+        "nextAccount": "", 
+        "dueByDate": "", 
+        "metaDetail": {} 
+        }, 
+    "confirmationStatementDetail": { 
+        "lastAccount": "", 
+        "nextAccount": "", 
+        "dueByDate": "", 
+        "metaDetail": {} 
+        }, 
+    "contactsDetail": [ { 
+        "type": "", 
+        "value": "", 
+        "metaDetail": {} 
+        } ], 
+    "documents": [ { 
+        "uid": "", 
+        "name": "", 
+        "date": "", 
+        "description": "", 
+        "documentCode": "", 
+        "documentType": "", 
+        "fileUrl": "", 
+        "documentStatus": "", 
+        "source": "", 
+        "documentRequested": false, 
+        "price": "", 
+        "deliverTime": "", 
+        "documentNotFound": "", 
+        "category": "", 
+        "previousDocumentDetail": { 
+            "id": "", 
+            "uid": "", 
+            "documentId": "", 
+            "submittedAt": "", 
+            "price": "", 
+            "fileUrl": "" } 
+            } ], 
+    "previousNamesDetail": [ { 
+        "companyName": "", 
+        "updateDate": "", 
+        "metaDetail": {} } ], 
+    "filingsDetail": [ { 
+        "title": "", 
+        "date": "", 
+        "description": "", 
+        "filingCode": "", 
+        "filingType": "", 
+        "fileUrl": "", 
+        "metaDetail": {} 
+        } ], 
+    "addressesDetail": [ { 
+        "address": "", 
+        "type": "", 
+        "description": "", 
+        "metaDetail": {} 
+        } ], 
+    "announcementsDetail": [ { 
+        "date": "", 
+        "title": "", 
+        "description": "", 
+        "metaDetail": {} 
+        } ], 
+    "peopleDetail": [ { 
+        "name": "", 
+        "status": "", 
+        "address": "", 
+        "designation": "", 
+        "appointmentDate": "", 
+        "appointmentPeriod": "", 
+        "postalAddress": "", 
+        "terminationDate": "", 
+        "terminationPeriod": "", 
+        "nationality": "", 
+        "email": "", 
+        "phoneNumber": "", 
+        "faxNumber": "", 
+        "amlStatus": "", 
+        "amlRequestStatus": "", 
+        "amlRequestId": "", "metaDetail": {}, "employmentStatus": "", 
+        "similarPeople": [ { 
+            "name": "", 
+            "address": "", 
+            "designation": "", 
+            "nationality": "", 
+            "appointmentDate": "", 
+            "terminationDate": "", 
+            "metaDetail": { 
+                "occupation": "", 
+                "currentStatus": "", 
+                "dateOfBirth": "", 
+                "inactive": "", 
+                "company": { 
+                    "name": "", 
+                    "jurisdictionCode": "", 
+                    "companyNumber": "" 
+                    }
+                } 
+            } ] 
+        } ], 
+    "beneficialOwnersDetail": [ { 
+        "name": "", 
+        "designation": "", 
+        "status": "", 
+        "address": "", 
+        "postalAddress": "", 
+        "appointmentDate": "", 
+        "appointmentPeriod": "", 
+        "terminationDate": "", 
+        "terminationPeriod": "", 
+        "ceasedOn": "", 
+        "nationality": "", 
+        "email": "", 
+        "phoneNumber": "", 
+        "faxNumber": "", 
+        "legalAuthority": "", 
+        "legalForm": "", 
+        "amlStatus": "", 
+        "amlRequestStatus": "", 
+        "amlRequestId": "", 
+        "metaDetail": {},
+        "sharesDetail": { 
+            "votingMinShares": "", 
+            "votingMaxShares": "", 
+            "ownershipMinShares": "", 
+            "ownershipMaxShares": "" 
+            }, 
+        "employmentStatus": "" 
+        } ], 
+    "ownershipSharesDetail": [ { 
+        "name": "", 
+        "ownershipMinShares": "", 
+        "ownershipMaxShares": "" 
+        } ], 
+    "votingSharesDetail": [ { 
+        "name": "", 
+        "votingMinShares": "", 
+        "votingMaxShares": ""
+        } ], 
+    "capitalStockInformation": [ { 
+        "capitalClass": "", 
+        "capitalNumber": "", 
+        "capitalPerValue": "", 
+        "metaDetail": {} 
+        } ], 
+    "industriesDetail": [ { 
+        "code": "", 
+        "name": "", 
+        "description": "", 
+        "metaDetail": {} 
+        } ], 
+    "companyExtraDetail": { "logo": "" },
+    "branches": [ { 
+        "entityType": "", 
+        "name": "", 
+        "companyNumber": "", 
+        "jurisdictionCode": "", 
+        "startDate": "", 
+        "homeCompanyName": "", "homeCompanyJurisdictionCode": "", "homeCompanyNumber": "", 
+        "countryName": "", 
+        "stateName": "", 
+        "type": "", 
+        "status": "", 
+        "dissolutionDate": "", 
+        "registrationDate": "", 
+        "industries": "", 
+        "address": "", 
+        "metaDetail": {}, 
+        "countryFlag": "" 
+        } ], 
+    "parentCompanies": [ { 
+        "entityType": "", 
+        "name": "", 
+        "companyNumber": "", 
+        "jurisdictionCode": "", 
+        "countryName": "", 
+        "stateName": "", 
+        "type": "", 
+        "countryFlag": "", 
+        "metaDetail": {}
+            } ], 
+    "ownershipStructure": { 
+        "id": "", 
+        "name": "", 
+        "children": [ { 
+            "name": "", 
+            "percentage": "", 
+            "active": true, 
+            "children": [ { 
+                "name": "", 
+                "percentage": "", 
+                "active": false, 
+                "children": [] 
+                } ] 
+            } ] 
+        }, 
+    "identifiers": [ { 
+        "identifierType": "", 
+        "identifierCode": "", 
+        "identifierNumber": "", 
+        "meta_detail": {} 
+        } ], 
+    "financialDetail": { 
+        "totalCapital": "", 
+        "fiscalYear": "", 
+        "fiscalYearEnd": "", 
+        "fiscalYearStart": "", 
+        "fixedAssets": "", 
+        "totalNetAssets": "", 
+        "turnover": "", 
+        "currency": "", 
+        "financialYears": "", 
+        "annualReturnDueDate": "",  
+        "financialStatementDueDate": "", 
+        "liability": "", 
+        "totalNumberOfShares": "", 
+        "haveExtensiveShareholding": "", 
+        "ordinaryShareholderSignatures": "", 
+        "hasMoreThanOneClassOfShare": "", 
+        "perSshareValue": "", 
+        "typeOfShares": {}, 
+        "metaDetail": {}, 
+        "keyFigureReadings": [ { 
+            "data": { 
+                "current": "", 
+                "graphUp": false, 
+                "lastYear": "", 
+                "lastYearValue": "", 
+                "status": "" 
+                }, 
+            "type": "" 
+            } ], 
+        "insights": [ { 
+            "type": "", 
+            "dataType": "", 
+            "figures": [ { 
+                "keyFigure": "", 
+                "data": [ { 
+                    "year": "", 
+                    "value": "", 
+                    "metaDetail": {} 
+                    } ] 
+                } ] 
+            } ] 
+        }, 
+    "additionalDetail": [ { 
+        "type": "", 
+        "data": [ { "": "", "": "" } ] 
+        } ] 
+}
+```
+</Accordion>
+
+## 5. AML For Company
+### Endpoint
+**POST** `/KYB/companyAML`
+
+### Description
+Initiates an AML (Anti-Money Laundering) check for a company using a unique company ID and request ID.
+
+### Request Body Parameters
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `companyId` | string | Yes | Unique identifier for the company. |
+| `requestId` | string | Yes | Unique identifier for the request. |
+
+### Response Structure  
+| Field                | Type    | Description                                      |
+|----------------------|---------|--------------------------------------------------|
+| error               | boolean | Indicates whether there was an error (`false` means no error). |
+| message             | string  | Status message describing the operation result. |
+| version             | string  | API version (can be `null` if not specified). |
+| data                | object  | Contains additional response data. |
+| data.amlRequestId | string  | Unique identifier for the AML request (can be empty). |
+
+### Example Request
+```json
+{ 
+    "companyId": "companyId", 
+    "requestId": "requestId" 
+}
+```
+### Example Response
+```json
+{
+    "error": false, 
+    "message": "Kyb Company Aml Started", 
+    "version": null, 
+    "data": { 
+        "amlRequestId": "" 
+        }
+}
+```
+
+## 6. AML For Person
+### Endpoint
+**POST** `/KYB/personal`
+
+### Description
+Initiates an AML check for an individual or company officers using the company ID, request ID, and optionally the person name.
+
+### Request Body Parameters
+<Accordion title="Request Body Parameters">
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `companyId` | string | Yes | Unique identifier for the company. |
+| `requestId` | string | Yes | Unique identifier for the request. |
+</Accordion>
+
+### Response Structure  
+<Accordion title="Response Structure">
+| Field    | Type    | Description                                      |
+|----------|---------|--------------------------------------------------|
+| error    | boolean | Indicates whether there was an error (`false` means no error). |
+| message  | string  | Status message describing the operation result. |
+| version  | string  | API version (can be `null` if not specified). |
+| data     | object  | Contains additional response data (empty in this case). |
+</Accordion>    
+
+### Example Request
+```json
+{ 
+    "companyId": "companyId", 
+    "requestId": "requestId" 
+}
+```
+### Example Response
+```json
+{
+    "error": false, 
+    "message": "Performing Aml on Officers", 
+    "version": null, 
+    "data": {} 
+}
+```
+

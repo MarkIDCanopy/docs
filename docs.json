@@ -1,0 +1,135 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "IdCanopy API Documentation",
+  "colors": {
+    "primary": "#894899",
+    "light": "#f8fafc",
+    "dark": "#020817"
+  },
+  "contextual": {
+  "options": ["copy", "view", "chatgpt"]
+  },
+  "favicon": "/WebLogoNobg.webp",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Guides",
+        "groups": [
+          {
+            "group": "Getting Started",
+            "pages": [
+              "introduction",
+              "authentication"
+            ]
+          },
+          {
+            "group": "Essentials",
+            "pages": [
+              "essentials/addressVerification",
+              "essentials/aml",
+              "essentials/documentVerification",
+              "essentials/identityVerification",
+              "essentials/kyb",
+              "essentials/paymentServices",
+              "essentials/phoneStatus"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "Endpoints",
+            "pages": [
+              {
+                "group": "Address Verification",
+                "pages": [
+                  "api-reference/endpoint/addressVerification_address_verify"
+                ]
+              },
+              {
+                "group": "AML",
+                "pages": [
+                  "api-reference/endpoint/aml_checkIndividual",
+                  "api-reference/endpoint/aml_ongoingMonitoring_registerEntity",
+                  "api-reference/endpoint/aml_ongoingMonitoring_registerIndividual",
+                  "api-reference/endpoint/aml_ongoingMonitoring_removeSearchProfile"
+                ]
+              },
+              {
+                "group": "Document Verification",
+                "pages": [
+                  "api-reference/endpoint/documentVerification_openJourney",
+                  "api-reference/endpoint/documentVerification_addImage",
+                  "api-reference/endpoint/documentVerification_verify",
+                  "api-reference/endpoint/documentVerification_verify_age",
+                  "api-reference/endpoint/documentVerification_verify_single"
+                ]
+              },
+              {
+                "group": "Identity Verification",
+                "pages": [
+                  "api-reference/endpoint/identityVerificaiton_identity_verify"
+                ]
+              },
+              {
+                "group": "KYB",
+                "pages": [
+                  "api-reference/endpoint/kyb_countries",
+                  "api-reference/endpoint/kyb_search",
+                  "api-reference/endpoint/kyb_companyProfile",
+                  "api-reference/endpoint/kyb_companies_read",
+                  "api-reference/endpoint/kyb_companyAML",
+                  "api-reference/endpoint/kyb_personal"
+                ]
+              },
+              {
+                "group": "Payment Services",
+                "pages": [
+                  "api-reference/endpoint/paymentServices_initiate",
+                  "api-reference/endpoint/paymentServices_status",
+                  "api-reference/endpoint/paymentServices_challengeDeposit"
+                ]
+              },
+              {
+                "group": "Phone Status",
+                "pages": [
+                  "api-reference/endpoint/phoneStatus_phoneid"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "logo": {
+    "light": "/logo/logo.svg",
+    "dark": "/logo/logo.svg"
+  },
+  "navbar": {
+    "links": [
+      {
+        "label": "Support",
+        "href": "mailto:mark@idcanopy.com"
+      }
+    ]
+  },
+  "footer": {
+    "links": [
+    {
+      "items": [
+        {
+          "label": "©2024 IDCanopy",
+          "href": "https://www.idcanopy.com/"
+        }
+      ]
+    }
+  ],
+    "socials": {
+      "linkedin": "https://www.linkedin.com/company/idcanopy/posts/?feedView=all"
+    }
+  }
+}

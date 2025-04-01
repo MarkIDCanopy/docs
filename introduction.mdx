@@ -1,0 +1,78 @@
+---
+title: Introduction
+description: "This guide provides a comprehensive overview of integrating with IdCanopy"
+---
+
+# Introduction
+
+This guide provides a comprehensive overview of integrating both, UI based and API based customer journeys with IdCanopy, a platform for secure and efficient verification services. You'll learn how to leverage IdCanopy's capabilities to verify user identities, addresses, and other vital information through streamlined journeys. IdCanopy offers a range of services via a single, stable, and evergreen API and SDK.
+
+In addition to front-end loaded customer journeys, you can access most services through API-only access as well. Many of our services can be run without any user interaction necessary if you provide verification data through the handshake. We have created a simplified API-only documentation for such applications that do not require a secure backend-frontend handover and UI initialization. In the following, all products and journeys include a UI component. Follow this documentation for the simplified API-only procedures.
+
+## API Server
+
+```
+https://api-umbrella.io/api/services
+```
+
+## Service Portfolio Overview
+
+The Umbrella KYC service portfolio offers solutions for Know Your Customer (KYC) orchestration and identity verification processes. It consists of four main programs:
+
+- **Umbrella Canopy**: Facilitates KYC orchestration with various verification journeys.
+- **Umbrella Persona**: Manages eID platforms, eSigning, authorization, and signoff processes.
+- **Umbrella Corporate**: Streamlines Know Your Business (KYB) and account origination processes.
+- **Umbrella Toolbox**: Provides additional tools and functionalities for identity verification. These services are often recommended as add-ons but can represent individual steps in a journey.
+
+## Basics
+
+### Error Handling
+
+The IdCanopy API responds with clear error codes and messages in case of any issues during the journey. You can integrate these error responses into your application logic for appropriate user handling.
+
+### Scalability and Performance
+
+IdCanopy's infrastructure is designed to handle high volumes of verification requests while maintaining performance and reliability.
+
+### Security Considerations
+
+- Secure communication protocols (JWT, OAuth2) ensure data confidentiality and integrity.
+- Data encryption protects sensitive user information both at rest and in transit.
+- Regular security audits and penetration testing guarantee a secure platform.
+
+## Authentication
+
+IdCanopy supports secure communication through industry-standard authentication protocols:
+
+- **JWT (JSON Web Token)**: A self-contained token containing encoded information for user verification.
+- **OAuth2**: An authorization framework enabling secure delegation of user authentication.
+- **Basic Authentication**
+
+## Customer Journeys
+
+Customer journeys represent multi-step verification processes a user undergoes. Each journey can encompass various steps like photo identification (KYC), address verification, and sanction checks.
+
+### Benefits
+
+- **Streamlined user experience**: users interact with a single experience for the entire verification process.
+- **Customization**: Tailor behavior for individual journeys through handshake parameters.
+- **Flexibility**: Pass-through data allows for custom information exchange.
+- **Reduced Costs**: Efficient automation saves time and resources compared to manual verification.
+- **Increased Compliance**: Adherence to KYC and AML regulations ensures regulatory compliance.
+
+## Getting Started
+
+1. **Contact IdCanopy Sales**: Reach out to the IdCanopy sales team to discuss your specific needs and requirements.
+2. **API Documentation**: Refer to the comprehensive IdCanopy API documentation for detailed information on available endpoints, parameters, and data structures.
+3. **SDKs and Libraries**: Utilize IdCanopy's pre-built SDKs and libraries for various programming languages to simplify integration into your development environment.
+4. **Provide us with a webhook and secret where we can push results to**
+
+## Integration in a Nutshell
+
+The general sequence is as follows:
+
+1. **Handshake Request**: Send a POST handshake request to our API endpoint.
+2. **Handshake Response**: Receive a JSON object containing access_token, expiry, ui_handle and token_type.
+3. **Initialize Frontend**: Present the ui_handle URL to the end-user either via an iframe or by redirecting to it.
+4. **Listen to Events and Webhook**: Monitor frontend events and receive webhook notifications.
+5. **Retrieve Results**: Collect the verification results through the webhook or API.

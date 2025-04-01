@@ -1,0 +1,325 @@
+---
+title: Payment Initiation Service
+description: Payment Service API Documentation
+icon: 'map'
+---
+import Auth from '/snippets/auth.mdx';
+
+# Payment Service API - Detailed Documentation
+The Payment Service API enables seamless and secure payment processing through open banking. It provides a redirect URL for hosted payment processing, ensuring compliance with banking regulations and providing a streamlined user experience.
+
+### API Playground:
+<Tabs>
+  <Tab title="/payments/initiate">
+    You can try the initiate payment endpoint [here](/api-reference/endpoint/paymentServices_initiate).
+  </Tab>
+  <Tab title="/payments/status">
+   You can try the retrieve transaction status endpoint [here](/api-reference/endpoint/paymentServices_status).
+  </Tab>
+  <Tab title="/payments/challenge-deposit">
+    You can try the challenge deposit endpoint [here](/api-reference/endpoint/paymentServices_challengeDeposit).
+  </Tab>
+</Tabs>
+
+### Key Features
+- **Redirection Handling**: The returned redirect URL should not be embedded in an iframe or an embedded WebView. Instead, a proper browser redirect should be used.
+- **Customization**: The payment page can be customized in terms of UI/UX, so redirection is not an issue.
+- **Webhooks**: Webhooks can be called for by our service if required for more complex operations. You will be able to specify your webhook URL to us at the point when we onboard and set you up for the service. We can customize the flows and reduce the number of calls made to the API by enabling webhooks. Please speak to our specialists when signing up for the service so we can design the flow you require.
+
+  To properly receive incoming webhooks, your server should provide an endpoint supporting:
+  - **TLS encryption version 1.2**
+  - **POST requests** that are either raw in `text/plain` if encrypted or `application/json` if no encryption is activated.
+
+  You can use a service like [webhook.site](https://webhook.site/) to test receiving webhooks from your developer dashboard. For local testing, you can use a CLI tool such as `ngrok` to forward the requests to your local development server.
+
+  When you receive an event, your endpoint should return an **HTTP 2xx status code** indicating that the event has been successfully received. Webhooks are automatically retried for up to **24 hours** if no HTTP 200 status code is returned. The call will also be considered failed if your endpoint doesn't respond within **10 seconds**.
+
+  When a webhook call fails, we'll retry the call **6 more times**. By default, we wait:
+  - **10 seconds** between the first and second attempt,
+  - **100 seconds** between the third and the fourth,
+  - **1000 seconds** between the fourth and the fifth,
+  - **10000 seconds** for the last attempt.
+
+- **Upcoming Features**: Future improvements include a rendered payment button, seamless/modal implementations, and native SDKs.
+- **Regular Open Banking Payments and Challenge Deposits**: The API supports both regular open banking payments and **Challenge Deposits**, which include additional verification mechanisms such as **name matching**. These are handled through a dedicated endpoint described separately.
+
+### Typical Payment Workflow
+<Steps>
+  <Step title="End-user completes purchase">
+    The end-user completes a purchase and selects the **pay-by-bank** option.
+  </Step>
+  <Step title="Handling UI Interactions">
+    The **merchant** (our customer) handles all UI interactions up to this point.
+  </Step>
+  <Step title="Initiating Payment">
+    The merchant sends a **payment initiation request** (`/payments/initiate`).
+  </Step>
+  <Step title="Redirecting to Hosted Payment Page">
+    A `redirectUrl` for the **Hosted Payment Page** is returned.
+  </Step>
+  <Step title="User completes payment">
+    The user is redirected to the hosted page and completes the payment.
+  </Step>
+  <Step title="Handling Redirect">
+    Upon completion:
+    - The user is **redirected back** to the merchant using the `returnUrl` specified in the request.
+    - If no URL is provided, a message such as "You can now close this window." is displayed.
+  </Step>
+  <Step title="Checking Payment Status">
+    The merchant sends a **retrieve transaction status request** (`/payments/status`) to check the payment status.
+  </Step>
+  <Step title="Pending Status">
+    If the status is still pending, all status queries will return a **PENDING** status.
+  </Step>
+  <Step title="Displaying Results">
+    Based on the final status, the merchant can display the results to the user.
+  </Step>
+</Steps>
+---
+
+### Endpoints Overview
+
+1. **Initiate Payment**: Redirects users to the provider's hosted payment page and initiates a transaction.
+2. **Retrieve Transaction Status**: Retrieves the current status of a payment transaction.
+3. **Challenge Deposit**: Initiates a challenge deposit by sending a small amount to the user's bank account.
+
+---
+<Auth/>
+---
+
+# Regular A2A Payment
+
+## 1. Initiate Payment
+### Endpoint
+**POST** `/payments/initiate`
+
+### Description
+Initiates a payment by redirecting the user to a hosted payment page.
+
+### Required Headers
+| Header         | Value |
+|---------------|----------------------------|
+| Content-Type  | `application/json` |
+| Authorization | `Bearer yourAccessToken` |
+
+### Request Body Parameters
+<Accordion title="Request Body Parameters">
+| Field                  | Type    | Required | Description                                          | Format / Allowed Values      |
+|------------------------|---------|----------|------------------------------------------------------|------------------------------|
+| referenceId           | string  | Yes      | Unique identifier for the transaction generated by your system. | Alphanumeric |
+| transactionDescription | string  | Yes      | Description of the transaction.                     | Free text |
+| returnUrl             | string  | Yes      | URL to redirect after payment completion - back to the calling app or website. | URL |
+| IBAN                  | string  | Yes      | Recipient's IBAN for direct payment.                | IBAN format |
+| storedBIC             | string  | No       | Pre-stored BIC code.                                | BIC format |
+| language              | string  | No       | Language code                                       | ISO 639-1 (e.g., "DE") |
+| currency              | string  | Yes      | Currency code                                       | ISO 4217 (e.g., "EUR") |
+| amount                | string  | Yes      | Payment amount formatted as a decimal string.      | Decimal (e.g., "12.50") |
+| country               | string  | No       | Country code                                        | ISO 3166-1 alpha-2 (e.g., "DE") |
+</Accordion>
+
+### Response Structure
+<Accordion title="Response Structure">
+| Field      | Type     | Description |
+|-----------|----------|-------------|
+| requestId | string   | Unique identifier for the request. Will be used to query the transfer status in the Retrieve Transaction Status api call below. |
+| redirectUrl | string   | URL to redirect the user to the hosted payment page. |
+</Accordion>
+
+### Example Request
+```json
+{
+    "amount": "100.50",
+    "currency": "EUR",
+    "referenceId": "uniqueRefId123",
+    "transactionDescription": "Payment for Order #12345",
+    "returnUrl": "https://example.com/callback",
+    "IBAN":"DE89370400440532013000",
+    "storedBIC":"BOFIIE2D",
+    "language": "DE"
+}
+```
+
+### Example Response
+```json
+{
+    "requestId": "req123456789",
+    "redirectUrl": "https://example.com/app/req_123456789"
+}
+```
+
+---
+
+## 2. Retrieve Transaction Status
+### Endpoint
+**POST** `/payments/status`
+
+### Description
+Retrieves the status of a transaction.
+
+### Request Body Parameters
+<Accordion title="Request Body Parameters">
+| Field       | Required | Type   | Description |
+|------------|----------|--------|-------------|
+| referenceId | Yes      | string | Unique identifier for the transaction generated from the Initiate Payment API call. |
+</Accordion>
+
+### Response Structure
+<Accordion title="Response Structure">  
+| Field                  | Type     | Description |
+|------------------------|----------|-------------|
+| status                 | string   | Transaction status (`PENDING`, `COMPLETED`, `FAILED`). |
+| statusReasonInformation | string | Additional details about the status. |
+</Accordion>
+
+### Example Request
+```json
+{
+    "referenceId": "uniqueRefId123"
+}
+```
+
+### Example Response
+```json
+{
+    "status": "PENDING",
+    "statusReasonInformation": "User redirected to bank."
+}
+```
+### Status Response Fields
+<Accordion title="Status Response Fields">
+| Status                         | Description |
+|--------------------------------|-------------|
+| PROCESSING                     | The transaction is in process; the final status has not yet been received from the bank. |
+| SUCCESS                         | Successful payment initiation has been received from the bank. Settlement might not be complete. |
+| INITIATED                       | The transaction was initiated but the result is unknown. This status will not be updated further. |
+| PENDING                         | Authorization process at the bank is complete; transfer is pending redemption. Relevant for 2-step payment flows. |
+| PENDING_EXTERNAL_AUTHORIZATION  | The user is sent to the bank to complete the authorization process. If not completed, it transitions to FAILURE_EXPIRED. |
+| FAILURE_GENERIC                 | Indicates a technical failure with no further details from the bank. |
+| FAILURE_PERMISSION_DENIED       | The user has been denied authorization at the bank. Relevant for 2-step payment flows. |
+| FAILURE_CANCELED                | Payment initiation was canceled before execution. |
+| FAILURE_EXPIRED                 | Authorization process was not completed within the allowed timeframe and the payment expired. |
+| FAILURE_INSUFFICIENT_FUNDS      | Payment initiation request was rejected due to insufficient funds. |
+| FAILURE_DECLINED                | Payment initiation was rejected by the bank. |
+| SETTLEMENT_IN_PROGRESS          | Waiting for payment to reach the payee bank. |
+| SETTLEMENT_COMPLETED            | Payment has reached the payee bank and reconciliation is complete. |
+| SETTLEMENT_INCOMPLETE          | Reconciliation failed; corresponding transaction not found in the settlement account. |
+</Accordion>
+---
+
+### Supported Languages
+To specify the language for the hosted page, use the `language` field in the payment initiation request. Supported languages include:
+
+- EN
+- DE
+- SL
+- PT
+- IT
+- FR
+- CZ
+- PL
+- ES
+- HU
+- NL
+- RO
+
+**Example:**
+```json
+"language": "FR"
+```
+
+### Common Errors
+
+| Error Code | Description |
+|------------|-----------------------------------------------|
+| 400        | Invalid Request: Missing required fields. |
+| 401        | Unauthorized: Authentication failed. |
+| 403        | Permission to access this endpoint is denied. |
+| 404        | Not Found: Reference ID not recognized. |
+| 429        | Too many requests. |
+| 500        | Internal Server Error: Unexpected server issue. |
+| 501        | The operation was not implemented. |
+| 503        | Service is unavailable. |
+| 504        | Gateway has timed out. |
+
+
+# Challenge Deposit (Penny Drop)
+
+## Introduction
+The Challenge Deposit (also known as Penny Drop) is an additional compliance step used for identity verification in regulated markets.
+
+---
+
+## 1. Initiate Challenge Deposit
+### Endpoint
+**POST** `/payments/challenge-deposit`
+
+### Description
+Initiates a challenge deposit by sending a small amount to the user's bank account. It verifies whether the provided name and IBAN match and can optionally return PII details.
+
+### Required Headers
+| Header         | Value |
+|---------------|----------------------------|
+| Content-Type  | `application/json` |
+| Authorization | `Bearer yourAccessToken` |
+
+### Request Body Parameters
+<Accordion title="Request Body Parameters">
+| Field          | Type    | Required | Description                                      | Format / Allowed Values |
+|---------------|---------|----------|--------------------------------------------------|-------------------------|
+| amount        | string  | Yes      | Small amount sent for verification.              | Decimal (e.g., `"0.10"`) |
+| currency      | string  | Yes      | Currency code.                                   | ISO 4217 (e.g., `"EUR"`) |
+| referenceId   | string  | Yes      | Unique identifier for the transaction.           | Alphanumeric |
+| firstName     | string  | Yes      | First name for identity verification.            | Free text |
+| lastName      | string  | Yes      | Last name for identity verification.             | Free text |
+| piiToggle     | integer | Yes      | Determines if PII details should be returned.    | `0` (no PII) / `1` (PII) |
+| nameMatchLogic | string  | Yes      | Name matching logic type.                        | `"exact"` or `"fuzzy"` |
+</Accordion>
+
+
+### Response Structure
+<Accordion title="Response Structure">
+| Field                     | Type    | Description |
+|---------------------------|---------|-------------|
+| transactionId             | string  | Unique identifier for the transaction. |
+| referenceId               | string  | The reference ID sent in the request. |
+| status                    | string  | Status of the challenge deposit (`"OK"`, `"FAIL"`). |
+| globalResult              | object  | Contains verification score and assessment result. |
+| globalResult.overall      | string  | Overall assessment (`"review"`, `"pass"`, `"fail"`). |
+| globalResult.totalScore   | integer | Score (0-100) indicating verification quality. |
+| nameMatchScore            | integer | Score (0-100) indicating how well names matched. |
+| iban                      | string  | Verified IBAN if `piiToggle = 1`, otherwise omitted. |
+| returnedFirstName         | string  | First name returned from verification if available. |
+| returnedLastName          | string  | Last name returned from verification if available. |
+</Accordion>
+
+### Example Request
+
+```json
+{
+    "amount": "0.10",
+    "currency": "EUR",
+    "referenceId": "uniqueRefId123",
+    "firstName": "John",
+    "lastName": "Doe",
+    "piiToggle": 1,
+    "nameMatchLogic": "fuzzy"
+}
+```
+
+### Example Response
+
+```json
+{
+    "transactionId": "e5c81c78-272b-4307-9197-3ace19109fd3",
+    "referenceId": "uniqueRefId123",
+    "status": "OK",
+    "globalResult": {
+        "overall": "review",
+        "totalScore": 100
+    },
+    "nameMatchScore": 85,
+    "iban": "DE44500105175407324931",
+    "returnedFirstName": "John",
+    "returnedLastName": "Doe"
+}
+```

@@ -1,0 +1,201 @@
+---
+title: "Address Verification"
+description: "Address Verification API Documentation"
+icon: 'map'
+---
+import Auth from '/snippets/auth.mdx';
+
+# Address Verification API - Detailed Documentation
+The Address Verification API is designed to support the management of address data by providing comprehensive address verification, validation, and cleansing functionalities.
+
+### API Playground:
+<Tabs>
+  <Tab title="/address/verify">
+    You can try the address verify endpoint [here](/api-reference/endpoint/addressVerification_address_verify).
+  </Tab>
+</Tabs>
+
+### Endpoints Overview
+1. **Get Country Template**: Retrieve required fields for address verification based on the country. (Upcoming Service)
+2. **Validate Address**: Check if a given address exists and normalize it if necessary. (Upcoming Service)
+3. **Verify Address**: Validate whether an individual can be matched to an address, including a match score, verification details, and handling corrections.
+4. **Cleanse Address**: Normalize and format an address to meet standard conventions. (Upcoming Service)
+
+---
+<Auth/>
+---
+
+## 1. Verify Address
+
+### Endpoint
+
+**POST** `/address/verify`
+
+### Description
+Verifies if an individual can be matched to a given address, including validation, a match quality score, and potential corrections.
+
+### Required Headers
+| Header        | Value                    |
+| ------------- | ------------------------ |
+| Content-Type  | `application/json`       |
+| Authorization | `Bearer yourAccessToken` |
+
+### Request Body Parameters
+<Accordion title="Request Body Parameters">
+| Field              | Type   | Required | Description                                                 |
+| ------------------ | ------ | -------- | ----------------------------------------------------------- |
+| country            | string | Yes      | ISO 3166-1 Alpha-2/Alpha-3 country code (e.g., DE, AT, ES). |
+| address.street     | string | Yes      | Street name.                                                |
+| address.number     | string | Yes      | House or building number.                                   |
+| address.zip        | string | Yes      | Zip or post code.                                           |
+| address.city       | string | Yes      | Town or city name.                                          |
+| address.province   | string | No       | District, province, or state.                               |
+| identity.firstname | string | Yes      | First name of the person.                                   |
+| identity.lastname  | string | Yes      | Last name of the person.                                    |
+| identity.dob       | string | Yes      | Date of birth in the format `YYYY/MM/DD`.                   |
+</Accordion>
+### Response Structure
+<Accordion title="Response Structure">
+| Field             | Type    | Description                                                                                                                                                                                                  |
+| ----------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| inputAddress      | string  | Raw address provided.                                                                                                                                                                                        |
+| correctedAddress  | string  | Corrected version of the address.                                                                                                                                                                            |
+| finalAddress      | string  | Final confirmed address.                                                                                                                                                                                     |
+| addressStatus     | string  | Status after verification (`corrected`, `unchanged`).                                                                                                                                                        |
+| addressComponents | object  | Detailed components of the final address.                                                                                                                                                                    |
+| matchQuality      | string  | Match level (`EXACT`, `HOUSEHOLD_MATCH`, etc.).                                                                                                                                                              |
+| score             | integer | Confidence score (0-100).                                                                                                                                                                                    |
+| globalResult      | object  | Overall operation status (`OK`, `NOK`, `REVIEW`, `ERROR`).                                                                                                                                                   |
+| identity          | object  | Details of the identity as found in the search.                                                                                                                                                              |
+| extendedMessage   | string  | Detailed feedback. Enum: addressCorrected, postCodeMatch, localityMatch, cityMatch, districtMatch, previousAddress, incorrectAddress, identityNotFound, deceased, addressFakeSuspicion, noMatch, skippedDOB. |
+</Accordion>
+
+### Match Quality Table
+| Match Quality     | Description                                                                      |
+| ----------------- | -------------------------------------------------------------------------------- |
+| EXACT             | All input matches perfectly.                                                     |
+| HOUSEHOLD_MATCH   | Household-level match found.                                                     |
+| PARTIAL_MATCH     | Not all inputs matched perfectly but a number of inputs match. Review suggested. |
+| HOUSENUMBER_MATCH | House/building number matches, others may not.                                   |
+| STREET_MATCH      | Street-level match.                                                              |
+| CITY_MATCH        | Zip, district, or city-level match.                                              |
+| IDENTITY_MISMATCH | Matched at zip, district or city level; useful for regional approximations.      |
+| NO_MATCH          | No person or address match found.                                                |
+
+### Global Result Table
+| Global Result | Description                                           |
+| ------------- | ----------------------------------------------------- |
+| OK            | Verification successful. All details match correctly. |
+| NOK           | Verification failed. Mismatched or invalid data.      |
+| REVIEW        | Verification requires manual review.                  |
+| ERROR         | Verification failed due to a system or input error.   |
+
+### Extended Message Table
+| Message              | Description                                                                                                        |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| addressCorrected     | Address matched after applying corrections to the format.                                                          |
+| postCodeMatch        | Identity matched at the postcode level only.                                                                       |
+| localityMatch        | Identity matched at locality level only.                                                                           |
+| cityMatch            | Identity matched at city level only.                                                                               |
+| districtMatch        | Match found only at district level.                                                                                |
+| NoCity               | High probability person match on a real address, but incorrect City provided, rest of the address was correct.     |
+| NoStreet             | High probability person match on a real address, but incorrect Street provided, rest of the address was correct.   |
+| NoPostCode           | High probability person match on a real address, but incorrect Postcode provided, rest of the address was correct. |
+| previousAddress      | Address linked to person’s previous residence.                                                                     |
+| incorrectAddress     | Identity matched, but address does not belong to them.                                                             |
+| addressFound         | Address is formally correct but no personal link found.                                                            |
+| identityNotFound     | Identity cannot be found at the given address.                                                                     |
+| deceased             | Person is likely deceased, matched against death table.                                                            |
+| addressFakeSuspicion | Address flagged as potentially fake.                                                                               |
+| noMatch              | Neither person nor address matched.                                                                                |
+| skippedDOB           | DOB check skipped due to missing source data.                                                                      |
+| dobPartial           | DOB details only partially matched, could be incorrect date, month, or year.                                       |
+| dobFailedFull        | DOB details - day, month, and year, did not match database.                                                        |
+| lastNameOnly         | Only lastname/surname was matched.                                                                                 |
+| firstNameOnly        | Only first name was matched.                                                                                       |
+
+### Example Request
+```json
+{
+"country": "PL",
+"address": {
+  "street": "Doktora Jana Piltza",
+  "number": "41",
+  "zip": "30-392",
+  "city": "Kraków",
+  "province": ""
+},
+"identity": {
+  "firstname": "Pawel",
+  "lastname": "Ramski",
+  "dob": "2001/10/25"
+}
+}
+```
+
+### Example Response
+```json
+{
+  "inputAddress": "Doktora Jana Piltza 41 30-392 Kraków",
+  "correctedAddress": "Piltza 41, 30-392 Kraków, Polska",
+  "finalAddress": "Doktora Jana Piltza 41 30-392 Kraków",
+  "addressStatus": "corrected",
+  "matchQuality": "CITY_MATCH",
+  "score": 50,
+  "globalResult": {
+    "overall": "REVIEW",
+    "totalScore": 50
+  },
+  "identity": {
+    "fullName": "Pawel Ramski",
+    "dob": "2001/10/25"
+  },
+  "extendedMessage": "cityMatch"
+}
+```
+
+## Verification Test Cases
+
+### Input Table
+| Test Case | Description          | Street                | Number | ZIP   | City          | Country | Full Name       | DOB        |
+| --------- | -------------------- | --------------------- | ------ | ----- | ------------- | ------- | --------------- | ---------- |
+| 1         | Full match           | Kampgasse             | 9      | 3492  | Etsdorf       | AT      | Joe Cardholder  | 1970/12/01 |
+| 2         | Corrected full match | Billrothstr.          | 39/16  | 1190  | Wien          | AT      | Wilma Wohndtort | 1998/03/05 |
+| 3         | Street number match  | Billrothstraße        | 39     | 1190  | Wien          | AT      | Wilma Wohndtort | 1998/03/05 |
+| 4         | Street level match   | Billrothstraße        | 3/16   | 1190  | Wien          | AT      | Wilma Wohndtort | 1998/03/05 |
+| 5         | Postcode match       | Döblinger Hauptstraße | 4/1    | 1190  | Wien          | AT      | Wilma Wohndtort | 1998/03/05 |
+| 6         | No match             | Edlinger Hauptstraße  | 12/7   | 12345 | Berlin        | DE      | Hans Dampf      | 1998/03/05 |
+| 7         | Identity not found   | Seegasse              | 1      | 1000  | Lachen/Zürich | CH      | Hubert Spion    | 1901/01/01 |
+| 8         | ZIP corrected        | Kampgasse             | 9      | 3496  | Etsdorf       | AT      | Joe Cardholder  | 1970/12/01 |
+| 9         | Household match      | Kampgasse             | 9      | 3492  | Etsdorf       | AT      | Jane Cardholder | 1970/12/01 |
+
+### Output Table
+| Test Case | Final Address                               | Address Status | Match Quality     | Score | Overall Result |
+| --------- | ------------------------------------------- | -------------- | ----------------- | ----- | -------------- |
+| 1         | Kampgasse 9, 3492, Etsdorf, AT              | unchanged      | EXACT             | 100   | OK             |
+| 2         | Billrothstraße 39/16, 1190 Wien, AT         | corrected      | EXACT             | 95    | OK             |
+| 3         | Billrothstraße 39, 1190 Wien, AT            | unchanged      | HOUSENUMBER_MATCH | 80    | OK             |
+| 4         | Billrothstraße 3/16, 1190 Wien, AT          | unchanged      | CITY_MATCH        | 50    | REVIEW         |
+| 5         | Döblinger Hauptstraße 4/1, 1190 Wien, AT    | unchanged      | CITY_MATCH        | 50    | REVIEW         |
+| 6         | Edlinger Hauptstraße 12/7, 12345 Berlin, DE | unchanged      | NO_MATCH          | 25    | NOK            |
+| 7         | Seegasse 1, 1000, Lachen/Zürich, CH         | unchanged      | NO_MATCH          | 0     | NOK            |
+| 8         | Kampgasse 9, 3492, Etsdorf, AT              | corrected      | EXACT             | 95    | OK             |
+| 9         | Kampgasse 9, 3492, Etsdorf, AT              | unchanged      | HOUSEHOLD_MATCH   | 80    | OK             |
+
+## 2. Get Country Template _(Upcoming Service)_
+
+### Description
+
+Retrieve the required fields for address verification for a given country. Use this endpoint to ensure all mandatory fields are provided when performing address verification.
+
+## 3. Validate Address _(Upcoming Service)_
+
+### Description
+
+Validates if a given address exists. If corrections are necessary, the response includes both the original and corrected versions of the address.
+
+## 4. Cleanse Address _(Upcoming Service)_
+
+### Description
+
+Normalizes and formats an address to adhere to standard address conventions.

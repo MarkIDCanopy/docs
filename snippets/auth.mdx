@@ -1,0 +1,14 @@
+## Authentication
+
+To access the Address Verification API, authentication is required. A **Bearer Token** must be included in every request.
+
+- Tokens are **valid for 60 minutes** and must be refreshed after expiration.
+- Refer to the [Authentication](../authentication) for detailed steps on obtaining a token.
+- Include the token in the `Authorization` header as follows:
+
+Authorization: Bearer YOUR_ACCESS_TOKEN
+
+## API Base URL
+```
+https://api-umbrella.io/api/services
+```

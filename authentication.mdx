@@ -1,0 +1,56 @@
+---
+title: "Authentication"
+description: "How to authenticate and authorize your instance"
+---
+
+# Authentication and Authorization for B2B API Platform
+
+This document outlines the steps required to authenticate and authorize your instance to generate a token for use on our B2B API platform. It includes details on the authentication endpoint, required headers, and the format of responses you can expect.
+
+## Overview
+
+To interact with our B2B API platform, your application must first authenticate and obtain an access token. This token will be required for every subsequent API request to ensure secure communication between your system and our platform. This guide will walk you through the process of obtaining the token.
+
+### Key Steps to Authenticate:
+1. **Send a POST request** to the authentication endpoint.
+2. **Include the necessary headers,** such as your API key and customer ID.
+3. **Receive an access token,** which will be used to authenticate your API requests.
+
+## End-point: Authentication
+
+**Method:** `POST`
+
+**Production Endpoint:** `https://api-umbrella.io/api/services/auth`
+
+**Sandbox Endpoint:** `https://sandbox-umbrella-api.azurewebsites.net/api/services/auth`
+
+To initiate the authentication process, send a POST request to the `/auth` endpoint.
+
+## Required Headers
+
+To successfully authenticate, you need to include the following headers in your request:
+
+| Header | Value |
+|--------|--------|
+| Content-Type | application/x-www-form-urlencoded |
+| Api-Key | **your API key** (e.g., 40ab0d69-fc3e-5fea-bfa8-b94e93462ad9) |
+| Customer-Id | **your customer number** (e.g., 16a6c3e7-7a76-4714-9b34-97135ab4bdcd) |
+
+These headers authenticate your request to the API platform and allow you to obtain the access token.
+
+## Response: Success (200)
+
+If your request is successful, you will receive a JSON response containing your access token. Here's an example response:
+
+```json
+{
+    "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjdXN0b21lck5hbWUiOiJJZENhbm9weSBGbGV4Q28iLCJjdXN0b21lcklkIjoiMTZhNmMzZTctN2E3Ni00NzE0LTliMzQtOTcxMzVhYjRiZGNkIiwiYXBpS2V5IjoiNDBhYjBkNjktZmMzZS01ZmVhLWJmYTgtYjk0ZTkzNDYyYWQ5IiwianRpIjoiOTM3ODMxOGEtYTQwNS00NmZhLTg5MDgtYzcwMDBjNzdhZTc2IiwiaWF0IjoxNzI1ODgzNjU1LCJleHAiOjE3MjU4ODcyNTV9.iVP8A7z9JGy5YmslDmvTJTpPP_gMOjnBuAF1h5w9xUw",
+    "expires_in": 3600,
+    "token_type": "Bearer"
+}
+```
+
+### Token Information:
+- **access_token**: This is your bearer token, which will be included in all subsequent API requests to authenticate them.
+- **expires_in**: Indicates the validity period of the token (in seconds). After expiration, you will need to request a new token.
+- **token_type**: This will always be "Bearer". 

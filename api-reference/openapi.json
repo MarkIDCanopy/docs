@@ -1,0 +1,3070 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "IdCanopy API Documentation",
+    "description": "API documentation for IdCanopy",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://api-umbrella.io/api/services",
+      "description": "Production Server"
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/payments/initiate": {
+      "post": {
+        "summary": "Initiate Payment",
+        "description": "Initiates a payment by redirecting the user to a hosted payment page.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InitiatePaymentRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Payment successfully initiated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InitiatePaymentResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request payload.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error400"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error401"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/payments/status": {
+      "post": {
+        "summary": "Retrieve Transaction Status",
+        "description": "Retrieves the status of a transaction using the reference ID.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RetrieveStatusRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved transaction status.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RetrieveStatusResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request payload.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error400"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error401"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/payments/challenge-deposit": {
+      "post": {
+        "summary": "Initiate Challenge Deposit",
+        "description": "Initiates a challenge deposit to verify user identity by sending a small amount to the bank account.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChallengeDepositRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully initiated challenge deposit.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChallengeDepositResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request payload.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error400"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error401"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/phoneid": {
+      "post": {
+        "summary": "Phone Status Check",
+        "description": "Get insights about a phone number such as whether it is active or disconnected, whether its associated device is reachable or unreachable, and its associated device's roaming status.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PhoneStatusRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved phone status.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PhoneStatusResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request payload.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error400"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error401"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error403"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error500"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/identity/verify": {
+      "post": {
+        "summary": "Verify Identity",
+        "description": "Verify identity information by matching it against external and internal databases.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IdentityVerificationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved the verification results.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IdentityVerificationResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request provided.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error400"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authorization information is missing or invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error401"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/address/verify": {
+      "post": {
+        "summary": "Verify Address",
+        "description": "Verifies if an individual can be matched to a given address, including validation, a match quality score, and potential corrections.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddressVerificationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully verified address.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AddressVerificationResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request provided.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error400"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authorization information is missing or invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error401"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/aml/checkIndividual": {
+      "post": {
+        "summary": "Check Individual",
+        "description": "Checks an individual in the AML system to see if there are any matches for the provided details.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AMLIndividualCheckRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "A JSON array of matching individuals.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AMLIndividualCheckResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request due to missing or invalid parameters.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error400"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "API key is missing or invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error401"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error403" 
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "An internal server error occurred.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error500"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/aml/ongoingMonitoring/registerIndividual": {
+      "post": {
+        "summary": "Register Individual for Monitoring",
+        "description": "Registers an individual for ongoing monitoring in the AML system.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AMLRegisterIndividualRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully registered individual for monitoring."
+          },
+          "400": {
+            "description": "Invalid request provided."
+          },
+          "401": {
+            "description": "Authorization information is missing or invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error401"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/aml/ongoingMonitoring/registerEntity": {
+      "post": {
+        "summary": "Register Entity for Monitoring",
+        "description": "Registers an entity for ongoing monitoring in the AML system.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AMLRegisterEntityRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully registered entity for monitoring."
+          },
+          "400": {
+            "description": "Invalid request provided."
+          }
+        }
+      }
+    },
+    "/aml/ongoingMonitoring/removeSearchProfile": {
+      "post": {
+        "summary": "Remove Search Profile",
+        "description": "Removes a search profile from the AML ongoing monitoring system.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AMLRemoveProfileRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully removed search profile."
+          },
+          "400": {
+            "description": "Invalid request provided."
+          }
+        }
+      }
+    },
+    "/openJourney": {
+      "post": {
+        "summary": "Open Journey",
+        "description": "Starts a new verification journey where the customer can submit documents in steps.",
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "passThroughData": {
+                    "type": "object",
+                    "description": "Optional metadata to be carried through the journey."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully opened verification journey.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "journeyId": {
+                      "type": "string",
+                      "description": "Unique identifier for the verification journey.",
+                      "example": "uniqueJourneyIdentifier"
+                    },
+                    "passThroughData": {
+                      "type": "object",
+                      "description": "Optional metadata to be carried through the journey."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request due to missing or invalid parameters.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error400"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "API key is missing or invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error401"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/addImage": {
+      "post": {
+        "summary": "Add Image",
+        "description": "Adds an image (front, back, or selfie) to the ongoing journey. Images can be submitted as base64-encoded strings or as file uploads.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["journeyId", "imageName", "imageSide", "imageData"],
+                "properties": {
+                  "journeyId": {
+                    "type": "string",
+                    "description": "Unique identifier for the verification journey.",
+                    "example": "uniqueJourneyIdentifier"
+                  },
+                  "imageName": {
+                    "type": "string",
+                    "description": "Name of the uploaded image file.",
+                    "example": "uploadedFileName"
+                  },
+                  "imageSide": {
+                    "type": "string",
+                    "description": "Specifies which side of the document (front, back, selfie).",
+                    "enum": ["front", "back", "selfie"],
+                    "example": "front"
+                  },
+                  "storeOnly": {
+                    "type": "boolean",
+                    "description": "If true, stores the image without classification.",
+                    "example": true
+                  },
+                  "imageData": {
+                    "type": "string",
+                    "description": "Base64-encoded image or multipart file.",
+                    "example": "base64EncodedImagestring"
+                  },
+                  "passThroughData": {
+                    "type": "object",
+                    "description": "Custom metadata (e.g., user ID).",
+                    "example": { "userId": "12345" }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully added image to journey."
+          },
+          "400": {
+            "description": "Invalid request payload.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error400"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error401"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Journey not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error404"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/verify": {
+      "post": {
+        "summary": "Verify Documents",
+        "description": "Initiates the verification of all images submitted in this journey. Returns a detailed verification result.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["journeyId"],
+                "properties": {
+                  "journeyId": {
+                    "type": "string",
+                    "description": "Unique identifier for the verification journey.",
+                    "example": "uniqueJourneyIdentifier"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully verified documents.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "journeyId": {
+                      "type": "string",
+                      "description": "Unique identifier for the verification journey."
+                    },
+                    "status": {
+                      "type": "string",
+                      "description": "Status of the verification process.",
+                      "example": "verificationComplete"
+                    },
+                    "identitySubject": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "description": "Type of identity subject.",
+                          "example": "person"
+                        },
+                        "fullName": {
+                          "type": "string",
+                          "description": "Full name as extracted from the document.",
+                          "example": "Max Mustermann"
+                        },
+                        "nameStructure": {
+                          "type": "object",
+                          "properties": {
+                            "firstName": {
+                              "type": "string",
+                              "description": "First name of the individual.",
+                              "example": "Max"
+                            },
+                            "lastName": {
+                              "type": "string",
+                              "description": "Last name of the individual.",
+                              "example": "Mustermann"
+                            },
+                            "nativeFullName": {
+                              "type": "string",
+                              "description": "Native full name of the individual.",
+                              "example": "Max Mustermann"
+                            }
+                          }
+                        },
+                        "gender": {
+                          "type": "string",
+                          "description": "Gender (M, F, or X).",
+                          "enum": ["M", "F", "X"],
+                          "example": "M"
+                        },
+                        "nationality": {
+                          "type": "string",
+                          "description": "Nationality code (ISO 3166).",
+                          "example": "DE"
+                        },
+                        "dob": {
+                          "type": "string",
+                          "description": "Date of birth (YYYY/MM/DD).",
+                          "example": "1990/01/01"
+                        },
+                        "addressSingleLine": {
+                          "type": "string",
+                          "description": "Extracted address in single-line format.",
+                          "example": "123 Main St, City, Country"
+                        },
+                        "email": {
+                          "type": "string",
+                          "description": "Extracted email (if available).",
+                          "example": "max.mustermann@example.com"
+                        },
+                        "mobileNumber": {
+                          "type": "string",
+                          "description": "Extracted mobile number (if available).",
+                          "example": "+1234567890"
+                        }
+                      }
+                    },
+                    "authoritativeData": {
+                      "type": "object",
+                      "properties": {
+                        "identityDocument": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "description": "Type of document.",
+                              "example": "passport"
+                            },
+                            "idNumber": {
+                              "type": "string",
+                              "description": "Document ID number.",
+                              "example": "123456789"
+                            },
+                            "issuingCountry": {
+                              "type": "string",
+                              "description": "Country that issued the document.",
+                              "example": "DE"
+                            },
+                            "expeditor": {
+                              "type": "string",
+                              "description": "Issuing authority.",
+                              "example": "BH Neunkirchen"
+                            },
+                            "expirationDate": {
+                              "type": "string",
+                              "description": "Expiry date of the document (YYYY/MM/DD).",
+                              "example": "2030/01/01"
+                            },
+                            "verificationChannel": {
+                              "type": "string",
+                              "description": "How verification was performed.",
+                              "example": "optical"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "proofOfWork": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "description": "Type of proof.",
+                          "example": "image"
+                        },
+                        "titleOfProof": {
+                          "type": "string",
+                          "description": "Title describing the proof.",
+                          "example": "IDFront"
+                        },
+                        "timestampOfProof": {
+                          "type": "string",
+                          "description": "Timestamp when the proof was collected.",
+                          "example": "2024/08/01T10:00:00Z"
+                        }
+                      }
+                    },
+                    "auditTrail": {
+                      "type": "object",
+                      "properties": {
+                        "workId": {
+                          "type": "string",
+                          "description": "Unique ID of the verification attempt.",
+                          "example": "abc123"
+                        },
+                        "workStatus": {
+                          "type": "string",
+                          "description": "Status of the work.",
+                          "enum": ["PASS", "FAIL"],
+                          "example": "PASS"
+                        },
+                        "workStartTst": {
+                          "type": "string",
+                          "description": "Timestamp when the verification started.",
+                          "example": "2024/08/01T10:00:00Z"
+                        },
+                        "workEndTst": {
+                          "type": "string",
+                          "description": "Timestamp when the verification ended.",
+                          "example": "2024/08/01T10:01:00Z"
+                        },
+                        "workResult": {
+                          "type": "string",
+                          "description": "Summary of the verification result.",
+                          "example": "Verification successful"
+                        }
+                      }
+                    },
+                    "fraudAlerts": {
+                      "type": "object",
+                      "properties": {
+                        "fraudAlertDetail": {
+                          "type": "array",
+                          "description": "List of detected fraud alerts (if any).",
+                          "items": {
+                            "type": "object"
+                          }
+                        },
+                        "aggregateFraudAlertScore": {
+                          "type": "number",
+                          "description": "Overall fraud risk score (0 = no risk).",
+                          "example": 0
+                        }
+                      }
+                    },
+                    "croppedImages": {
+                      "type": "object",
+                      "properties": {
+                        "front": {
+                          "type": "string",
+                          "description": "Base64-encoded image of the front side."
+                        },
+                        "portrait": {
+                          "type": "string",
+                          "description": "Base64-encoded portrait image from the document."
+                        },
+                        "signature": {
+                          "type": "string",
+                          "description": "Base64-encoded signature image."
+                        },
+                        "back": {
+                          "type": "string",
+                          "description": "Base64-encoded image of the back side."
+                        },
+                        "selfie": {
+                          "type": "string",
+                          "description": "Base64-encoded selfie image (if applicable)."
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request payload.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error400"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error401"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Journey not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error404"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/verify/age": {
+      "post": {
+        "summary": "Verify Age and Disability",
+        "description": "Performs an optional age/disability verification after documents are submitted. Checks if the user meets certain age or disability thresholds.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["journeyId"],
+                "properties": {
+                  "journeyId": {
+                    "type": "string",
+                    "description": "Unique identifier for the verification journey.",
+                    "example": "uniqueJourneyIdentifier"
+                  },
+                  "ageFrom": {
+                    "type": "number",
+                    "description": "Minimum age for eligibility (can't combine with ageTo).",
+                    "example": 21
+                  },
+                  "ageTo": {
+                    "type": "number",
+                    "description": "Maximum age for eligibility (can't combine with ageFrom).",
+                    "example": 65
+                  },
+                  "minDisabilityPercentage": {
+                    "type": "number",
+                    "description": "Minimum disability percentage required for eligibility.",
+                    "example": 50
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully verified age and disability.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "journeyId": {
+                      "type": "string",
+                      "description": "Unique identifier for the verification journey."
+                    },
+                    "status": {
+                      "type": "string",
+                      "description": "Status of the verification process.",
+                      "example": "ageAndDisabilityVerificationComplete"
+                    },
+                    "ageResult": {
+                      "type": "string",
+                      "description": "Indicates if the individual meets the age requirement.",
+                      "enum": ["yes", "no"],
+                      "example": "yes"
+                    },
+                    "disabilityResult": {
+                      "type": "string",
+                      "description": "Indicates if the individual meets the disability criteria.",
+                      "enum": ["eligible", "not eligible"],
+                      "example": "eligible"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request payload.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error400"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error401"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Journey not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error404"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/verify/single": {
+      "post": {
+        "summary": "Single-Step Verification",
+        "description": "Bypasses the journey build-up and processes all images in one request. No feedback is provided if pages are missing—all must be submitted at once.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["images"],
+                "properties": {
+                  "images": {
+                    "type": "array",
+                    "description": "List of image objects for verification.",
+                    "items": {
+                      "type": "object",
+                      "required": ["imageName", "imageSide", "imageData"],
+                      "properties": {
+                        "imageName": {
+                          "type": "string",
+                          "description": "Name of the uploaded image.",
+                          "example": "frontImage.jpg"
+                        },
+                        "imageSide": {
+                          "type": "string",
+                          "description": "Specifies document side.",
+                          "enum": ["front", "back", "selfie"],
+                          "example": "front"
+                        },
+                        "imageData": {
+                          "type": "string",
+                          "description": "Base64-encoded image data (or file upload via multipart).",
+                          "example": "base64EncodedFrontImage"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully verified documents.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VerifyResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request payload.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error400"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error401"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity - Missing required images.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error422"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/KYB/countries": {
+      "get": {
+        "summary": "List Available Countries",
+        "description": "Provides a comprehensive list of countries covered by the KYB service, including available states for each country.",
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved list of countries.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KYBCountriesResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error401"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/KYB/search": {
+      "post": {
+        "summary": "Search Companies",
+        "description": "Enables users to search for companies using a company name or registration number as search parameters.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/KYBSearchRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully initiated company search.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KYBSearchResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request payload.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error400"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error401"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/KYB/companyProfile": {
+      "get": {
+        "summary": "Get Company Profiles",
+        "description": "Retrieves a list of companies from the official registries that match the provided search criteria.",
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved company profiles.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KYBCompanyProfileResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error401"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/KYB/companies/read": {
+      "get": {
+        "summary": "Get Enhanced Company Profile",
+        "description": "Retrieves detailed information about a specific company, including registration details.",
+        "parameters": [
+          {
+            "name": "companyId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Unique identifier for the company."
+          },
+          {
+            "name": "requestId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Unique identifier for the request."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved company details.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KYBEnhancedCompanyProfileResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error401"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/KYB/companyAML": {
+      "post": {
+        "summary": "Initiate Company AML Check",
+        "description": "Initiates an AML (Anti-Money Laundering) check for a company.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/KYBCompanyAMLRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully initiated company AML check.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KYBCompanyAMLResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request payload.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error400"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error401"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/KYB/personal": {
+      "post": {
+        "summary": "Initiate Personal AML Check",
+        "description": "Initiates an AML check for an individual or company officers.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/KYBPersonalAMLRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully initiated personal AML check.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KYBPersonalAMLResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request payload.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error400"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error401"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error400": {
+        "required": [
+          "message"
+        ],
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Invalid request payload"
+          }
+        }
+      },
+      "Error401": {
+        "required": [
+          "message"
+        ],
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Unauthorized request"
+          }
+        }
+      },
+      "Error403": {
+        "required": [
+          "message"
+        ],
+        "type": "object",
+        "properties": { 
+          "message": {
+            "type": "string",
+            "example": "Forbidden"
+          }
+        }
+      },
+      "Error500": {
+        "required": [
+          "message"
+        ],
+        "type": "object",
+        "properties": { 
+          "message": {
+            "type": "string",
+            "example": "Internal Server Error"
+          }
+        }
+      },
+      "Error404": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Journey not found"
+          }
+        }
+      },
+      "Error422": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Missing required images"
+          }
+        }
+      },
+      "VerifyResponse": {
+        "type": "object",
+        "properties": {
+          "journeyId": {
+            "type": "string",
+            "description": "Unique identifier for the verification journey."
+          },
+          "status": {
+            "type": "string",
+            "description": "Status of the verification process.",
+            "example": "verificationComplete"
+          },
+          "identitySubject": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "description": "Type of identity subject.",
+                "example": "person"
+              },
+              "fullName": {
+                "type": "string",
+                "description": "Full name as extracted from the document.",
+                "example": "Max Mustermann"
+              },
+              "nameStructure": {
+                "type": "object",
+                "properties": {
+                  "firstName": {
+                    "type": "string",
+                    "description": "First name of the individual.",
+                    "example": "Max"
+                  },
+                  "lastName": {
+                    "type": "string",
+                    "description": "Last name of the individual.",
+                    "example": "Mustermann"
+                  },
+                  "nativeFullName": {
+                    "type": "string",
+                    "description": "Native full name of the individual.",
+                    "example": "Max Mustermann"
+                  }
+                }
+              },
+              "gender": {
+                "type": "string",
+                "description": "Gender (M, F, or X).",
+                "enum": ["M", "F", "X"],
+                "example": "M"
+              },
+              "nationality": {
+                "type": "string",
+                "description": "Nationality code (ISO 3166).",
+                "example": "DE"
+              },
+              "dob": {
+                "type": "string",
+                "description": "Date of birth (YYYY/MM/DD).",
+                "example": "1990/01/01"
+              },
+              "addressSingleLine": {
+                "type": "string",
+                "description": "Extracted address in single-line format.",
+                "example": "123 Main St, City, Country"
+              },
+              "email": {
+                "type": "string",
+                "description": "Extracted email (if available).",
+                "example": "max.mustermann@example.com"
+              },
+              "mobileNumber": {
+                "type": "string",
+                "description": "Extracted mobile number (if available).",
+                "example": "+1234567890"
+              }
+            }
+          },
+          "authoritativeData": {
+            "type": "object",
+            "properties": {
+              "identityDocument": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "description": "Type of document.",
+                    "example": "passport"
+                  },
+                  "idNumber": {
+                    "type": "string",
+                    "description": "Document ID number.",
+                    "example": "123456789"
+                  },
+                  "issuingCountry": {
+                    "type": "string",
+                    "description": "Country that issued the document.",
+                    "example": "DE"
+                  },
+                  "expeditor": {
+                    "type": "string",
+                    "description": "Issuing authority.",
+                    "example": "BH Neunkirchen"
+                  },
+                  "expirationDate": {
+                    "type": "string",
+                    "description": "Expiry date of the document (YYYY/MM/DD).",
+                    "example": "2030/01/01"
+                  },
+                  "verificationChannel": {
+                    "type": "string",
+                    "description": "How verification was performed.",
+                    "example": "optical"
+                  }
+                }
+              }
+            }
+          },
+          "proofOfWork": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "description": "Type of proof.",
+                "example": "image"
+              },
+              "titleOfProof": {
+                "type": "string",
+                "description": "Title describing the proof.",
+                "example": "IDFront"
+              },
+              "timestampOfProof": {
+                "type": "string",
+                "description": "Timestamp when the proof was collected.",
+                "example": "2024/08/01T10:00:00Z"
+              }
+            }
+          },
+          "auditTrail": {
+            "type": "object",
+            "properties": {
+              "workId": {
+                "type": "string",
+                "description": "Unique ID of the verification attempt.",
+                "example": "abc123"
+              },
+              "workStatus": {
+                "type": "string",
+                "description": "Status of the work.",
+                "enum": ["PASS", "FAIL"],
+                "example": "PASS"
+              },
+              "workStartTst": {
+                "type": "string",
+                "description": "Timestamp when the verification started.",
+                "example": "2024/08/01T10:00:00Z"
+              },
+              "workEndTst": {
+                "type": "string",
+                "description": "Timestamp when the verification ended.",
+                "example": "2024/08/01T10:01:00Z"
+              },
+              "workResult": {
+                "type": "string",
+                "description": "Summary of the verification result.",
+                "example": "Verification successful"
+              }
+            }
+          },
+          "fraudAlerts": {
+            "type": "object",
+            "properties": {
+              "fraudAlertDetail": {
+                "type": "array",
+                "description": "List of detected fraud alerts (if any).",
+                "items": {
+                  "type": "object"
+                }
+              },
+              "aggregateFraudAlertScore": {
+                "type": "number",
+                "description": "Overall fraud risk score (0 = no risk).",
+                "example": 0
+              }
+            }
+          },
+          "croppedImages": {
+            "type": "object",
+            "properties": {
+              "front": {
+                "type": "string",
+                "description": "Base64-encoded image of the front side."
+              },
+              "portrait": {
+                "type": "string",
+                "description": "Base64-encoded portrait image from the document."
+              },
+              "signature": {
+                "type": "string",
+                "description": "Base64-encoded signature image."
+              },
+              "back": {
+                "type": "string",
+                "description": "Base64-encoded image of the back side."
+              },
+              "selfie": {
+                "type": "string",
+                "description": "Base64-encoded selfie image (if applicable)."
+              }
+            }
+          }
+        }
+      },
+      "InitiatePaymentRequest": {
+        "type": "object",
+        "properties": {
+          "referenceId": {
+            "type": "string",
+            "description": "Unique identifier for the transaction.",
+            "example": "unique-ref-id-123"
+          },
+          "transactionDescription": {
+            "type": "string",
+            "description": "Description of the transaction.",
+            "example": "Payment for Order #12345"
+          },
+          "returnUrl": {
+            "type": "string",
+            "description": "URL to redirect after payment completion.",
+            "example": "https://example.com/callback"
+          },
+          "IBAN": {
+            "type": "string",
+            "description": "User's IBAN for direct payment.",
+            "example": "DE89370400440532013000"
+          },
+          "storedBIC": {
+            "type": "string",
+            "description": "Pre-stored BIC code.",
+            "example": "BOFIIE2D"
+          },
+          "language": {
+            "type": "string",
+            "description": "Language code.",
+            "example": "DE"
+          },
+          "currency": {
+            "type": "string",
+            "description": "ISO 4217 currency code.",
+            "example": "EUR"
+          },
+          "amount": {
+            "type": "string",
+            "description": "Payment amount formatted as a decimal string.",
+            "example": "100.50"
+          },
+          "country": {
+            "type": "string",
+            "description": "Country code.",
+            "example": "DE"
+          }
+        }
+      },
+      "InitiatePaymentResponse": {
+        "type": "object",
+        "properties": {
+          "requestId": {
+            "type": "string",
+            "description": "Unique identifier for the request.",
+            "example": "req_123456789"
+          },
+          "redirectUrl": {
+            "type": "string",
+            "description": "URL to redirect the user to the payment page.",
+            "example": "https://example.com/app/req_123456789"
+          }
+        }
+      },
+      "RetrieveStatusRequest": {
+        "type": "object",
+        "properties": {
+          "referenceId": {
+            "type": "string",
+            "description": "Unique identifier for the transaction.",
+            "example": "unique-ref-id-123"
+          }
+        }
+      },
+      "RetrieveStatusResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "description": "Transaction status (e.g., PENDING, COMPLETED, FAILED).",
+            "example": "PENDING"
+          },
+          "statusReasonInformation": {
+            "type": "string",
+            "description": "Additional explanation for the transaction status.",
+            "example": "User redirected to bank."
+          }
+        }
+      },
+      "ChallengeDepositRequest": {
+        "type": "object",
+        "properties": {
+          "amount": {
+            "type": "string",
+            "description": "Small amount sent for verification.",
+            "example": "0.10"
+          },
+          "currency": {
+            "type": "string",
+            "description": "ISO 4217 currency code.",
+            "example": "EUR"
+          },
+          "referenceId": {
+            "type": "string",
+            "description": "Unique identifier for the transaction.",
+            "example": "unique-ref-id-123"
+          },
+          "firstName": {
+            "type": "string",
+            "description": "First name for identity verification.",
+            "example": "John"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "Last name for identity verification.",
+            "example": "Doe"
+          },
+          "piiToggle": {
+            "type": "integer",
+            "description": "Determines if PII details should be returned (`0` or `1`).",
+            "example": 1
+          },
+          "nameMatchLogic": {
+            "type": "string",
+            "description": "Name matching logic type.",
+            "example": "fuzzy"
+          }
+        }
+      },
+      "ChallengeDepositResponse": {
+        "type": "object",
+        "properties": {
+          "transactionId": {
+            "type": "string",
+            "description": "Unique identifier for the transaction.",
+            "example": "e5c81c78-272b-4307-9197-3ace19109fd3"
+          },
+          "referenceId": {
+            "type": "string",
+            "description": "The reference ID sent in the request.",
+            "example": "unique-ref-id-123"
+          },
+          "status": {
+            "type": "string",
+            "description": "Status of the challenge deposit (e.g., OK, FAIL).",
+            "example": "OK"
+          },
+          "globalResult": {
+            "type": "object",
+            "properties": {
+              "overall": {
+                "type": "string",
+                "description": "Overall assessment (e.g., review, pass, fail).",
+                "example": "review"
+              },
+              "totalScore": {
+                "type": "integer",
+                "description": "Score (0-100) indicating verification quality.",
+                "example": 85
+              }
+            }
+          },
+          "nameMatchScore": {
+            "type": "integer",
+            "description": "Score (0-100) indicating how well names matched.",
+            "example": 85
+          },
+          "iban": {
+            "type": "string",
+            "description": "Verified IBAN if piiToggle = 1, otherwise omitted.",
+            "example": "DE44500105175407324931"
+          },
+          "returnedFirstName": {
+            "type": "string",
+            "description": "First name returned from verification if available.",
+            "example": "John"
+          },
+          "returnedLastName": {
+            "type": "string",
+            "description": "Last name returned from verification if available.",
+            "example": "Doe"
+          }
+        }
+      },
+      "PhoneStatusRequest": {
+        "type": "object",
+        "required": ["phone"],
+        "properties": {
+          "phone": {
+            "type": "string",
+            "description": "The phone number to check, including country code.",
+            "example": "+436504142107"
+          }
+        }
+      },
+      "PhoneStatusResponse": {
+        "type": "object",
+        "properties": {
+          "reference_id": {
+            "type": "string",
+            "description": "Unique reference ID for the transaction.",
+            "example": "36475B3EB1DC0C2492E2889F4EACF2CC"
+          },
+          "sub_resource": {
+            "type": "string",
+            "description": "Sub-resource type (e.g., 'live').",
+            "example": "live"
+          },
+          "status": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "number",
+                "description": "Status code (e.g., 300 for success).",
+                "example": 300
+              },
+              "description": {
+                "type": "string",
+                "description": "Status description.",
+                "example": "Transaction successfully completed"
+              },
+              "updatedOn": {
+                "type": "string",
+                "description": "Timestamp of the last update (ISO 8601 format).",
+                "example": "2024/09/09T12:43:42.701105Z"
+              }
+            }
+          },
+          "errors": {
+            "type": "array",
+            "description": "List of errors, if any.",
+            "items": {
+              "type": "string"
+            }
+          },
+          "phoneType": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "string",
+                "description": "Phone type code (e.g., '2' for mobile).",
+                "example": "2"
+              },
+              "description": {
+                "type": "string",
+                "description": "Phone type description.",
+                "example": "MOBILE"
+              }
+            }
+          },
+          "blocklisting": {
+            "type": "object",
+            "properties": {
+              "blocked": {
+                "type": "boolean",
+                "description": "Whether the number is blocked.",
+                "example": false
+              },
+              "blockCode": {
+                "type": "number",
+                "description": "Block code (e.g., 0 for not blocked).",
+                "example": 0
+              },
+              "blockDescription": {
+                "type": "string",
+                "description": "Block description.",
+                "example": "Not blocked"
+              }
+            }
+          },
+          "numbering": {
+            "type": "object",
+            "properties": {
+              "cleansing": {
+                "type": "object",
+                "properties": {
+                  "call": {
+                    "type": "object",
+                    "properties": {
+                      "countryCode": {
+                        "type": "string",
+                        "description": "Country code.",
+                        "example": "43"
+                      },
+                      "phoneNumber": {
+                        "type": "string",
+                        "description": "Phone number.",
+                        "example": "6504142107"
+                      },
+                      "cleansedCode": {
+                        "type": "number",
+                        "description": "Cleansing status code.",
+                        "example": 100
+                      },
+                      "minLength": {
+                        "type": "number",
+                        "description": "Minimum allowed length.",
+                        "example": 7
+                      },
+                      "maxLength": {
+                        "type": "number",
+                        "description": "Maximum allowed length.",
+                        "example": 13
+                      }
+                    }
+                  },
+                  "sms": {
+                    "type": "object",
+                    "properties": {
+                      "countryCode": {
+                        "type": "string",
+                        "description": "Country code.",
+                        "example": "43"
+                      },
+                      "phoneNumber": {
+                        "type": "string",
+                        "description": "Phone number.",
+                        "example": "6504142107"
+                      },
+                      "cleansedCode": {
+                        "type": "number",
+                        "description": "Cleansing status code.",
+                        "example": 100
+                      },
+                      "minLength": {
+                        "type": "number",
+                        "description": "Minimum allowed length.",
+                        "example": 7
+                      },
+                      "maxLength": {
+                        "type": "number",
+                        "description": "Maximum allowed length.",
+                        "example": 13
+                      }
+                    }
+                  }
+                }
+              },
+              "original": {
+                "type": "object",
+                "properties": {
+                  "completePhoneNumber": {
+                    "type": "string",
+                    "description": "Complete phone number with country code.",
+                    "example": "+436504142107"
+                  },
+                  "countryCode": {
+                    "type": "string",
+                    "description": "Country code.",
+                    "example": "43"
+                  },
+                  "phoneNumber": {
+                    "type": "string",
+                    "description": "Phone number.",
+                    "example": "6504142107"
+                  }
+                }
+              }
+            }
+          },
+          "location": {
+            "type": "object",
+            "properties": {
+              "city": {
+                "type": "string",
+                "description": "City associated with the phone number.",
+                "example": "Countrywide"
+              },
+              "state": {
+                "type": "string",
+                "description": "State associated with the phone number.",
+                "nullable": true
+              },
+              "zip": {
+                "type": "string",
+                "description": "ZIP code associated with the phone number.",
+                "nullable": true
+              },
+              "metroCode": {
+                "type": "string",
+                "description": "Metro code associated with the phone number.",
+                "nullable": true
+              },
+              "county": {
+                "type": "string",
+                "description": "County associated with the phone number.",
+                "nullable": true
+              },
+              "country": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Country name.",
+                    "example": "Austria"
+                  },
+                  "iso2": {
+                    "type": "string",
+                    "description": "ISO 2-letter country code.",
+                    "example": "AT"
+                  },
+                  "iso3": {
+                    "type": "string",
+                    "description": "ISO 3-letter country code.",
+                    "example": "AUT"
+                  }
+                }
+              },
+              "coordinates": {
+                "type": "object",
+                "properties": {
+                  "latitude": {
+                    "type": "string",
+                    "description": "Latitude.",
+                    "nullable": true
+                  },
+                  "longitude": {
+                    "type": "string",
+                    "description": "Longitude.",
+                    "nullable": true
+                  }
+                }
+              },
+              "timeZone": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Time zone name.",
+                    "nullable": true
+                  },
+                  "utcOffsetMax": {
+                    "type": "string",
+                    "description": "Maximum UTC offset.",
+                    "example": "+1"
+                  },
+                  "utcOffsetMin": {
+                    "type": "string",
+                    "description": "Minimum UTC offset.",
+                    "example": "+1"
+                  }
+                }
+              }
+            }
+          },
+          "carrier": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Name of the carrier.",
+                "example": "Mass Response Service GmbH"
+              }
+            }
+          },
+          "live": {
+            "type": "object",
+            "properties": {
+              "subscriberStatus": {
+                "type": "string",
+                "description": "Subscriber status (e.g., 'ACTIVE').",
+                "example": "ACTIVE"
+              },
+              "deviceStatus": {
+                "type": "string",
+                "description": "Device status (e.g., 'REACHABLE').",
+                "example": "REACHABLE"
+              },
+              "roaming": {
+                "type": "string",
+                "description": "Roaming status (e.g., 'UNAVAILABLE').",
+                "example": "UNAVAILABLE"
+              },
+              "roamingCountry": {
+                "type": "string",
+                "description": "Roaming country name.",
+                "nullable": true
+              },
+              "roamingCountryIso2": {
+                "type": "string",
+                "description": "ISO 2-letter roaming country code.",
+                "nullable": true
+              }
+            }
+          }
+        }
+      },
+      "IdentityVerificationRequest": {
+        "type": "object",
+        "required": ["identity", "address"],
+        "properties": {
+          "raw": {
+            "type": "boolean",
+            "description": "Flag to request raw data return. Defaults to false.",
+            "default": false
+          },
+          "identity": {
+            "type": "object",
+            "required": ["firstName", "lastName", "nationalId", "birthDate"],
+            "properties": {
+              "firstName": {
+                "type": "string",
+                "description": "First name of the individual.",
+                "example": "John"
+              },
+              "lastName": {
+                "type": "string",
+                "description": "Last name of the individual.",
+                "example": "Doe"
+              },
+              "nationalId": {
+                "type": "string",
+                "description": "National identification number.",
+                "example": "123456789"
+              },
+              "birthDate": {
+                "type": "string",
+                "description": "Birthdate of the individual (format: yyyy/mm/dd).",
+                "example": "1985/05/15"
+              }
+            }
+          },
+          "address": {
+            "type": "object",
+            "required": ["street", "houseNumber", "postalCode", "city", "countryCode"],
+            "properties": {
+              "street": {
+                "type": "string",
+                "description": "Street name of the address.",
+                "example": "Main Street"
+              },
+              "houseNumber": {
+                "type": "string",
+                "description": "House or building number.",
+                "example": "123"
+              },
+              "building": {
+                "type": "string",
+                "description": "Building name or description.",
+                "example": "Apt 4B"
+              },
+              "postalCode": {
+                "type": "string",
+                "description": "Postal or ZIP code of the address.",
+                "example": "10001"
+              },
+              "city": {
+                "type": "string",
+                "description": "City of the address.",
+                "example": "New York"
+              },
+              "district": {
+                "type": "string",
+                "description": "District or borough of the address.",
+                "example": "Manhattan"
+              },
+              "province": {
+                "type": "string",
+                "description": "Province or state of the address.",
+                "example": "NY"
+              },
+              "countryCode": {
+                "type": "string",
+                "description": "ISO country code of the address.",
+                "example": "US"
+              }
+            }
+          },
+          "phone": {
+            "type": "object",
+            "properties": {
+              "phoneNumber": {
+                "type": "string",
+                "description": "Phone number including international dialing code.",
+                "example": "+1234567890"
+              }
+            }
+          }
+        }
+      },
+      "IdentityVerificationResponse": {
+        "type": "object",
+        "properties": {
+          "globalResult": {
+            "type": "object",
+            "properties": {
+              "totalScore": {
+                "type": "integer",
+                "description": "Aggregate score from the verification process. Values include: 0 (Verification failed), 50 (No match found), 75 (Partial match, review needed), 100 (Verification successful).",
+                "enum": [0, 50, 75, 100],
+                "example": 100
+              }
+            }
+          },
+          "resultDetails": {
+            "type": "array",
+            "description": "Lists detailed match results from various data sources.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "datasource": {
+                  "type": "string",
+                  "description": "Identifier for the data source used in verification."
+                },
+                "country": {
+                  "type": "string",
+                  "description": "Country associated with the data source."
+                },
+                "matches": {
+                  "type": "array",
+                  "description": "Detailed match results.",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "record": {
+                        "type": "string",
+                        "description": "Type of record matched."
+                      },
+                      "match": {
+                        "type": "string",
+                        "description": "Result of the match against the record. Possible values: full (Full match), partial (Partial match), not-present (Record not present in the data source).",
+                        "enum": ["full", "partial", "not-present"]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "AddressVerificationRequest": {
+        "type": "object",
+        "required": ["country", "address", "identity"],
+        "properties": {
+          "country": {
+            "type": "string",
+            "description": "ISO 3166-1 Alpha-2/Alpha-3 country code (e.g., DE, AT, ES).",
+            "example": "PL"
+          },
+          "address": {
+            "type": "object",
+            "required": ["street", "number", "zip", "city"],
+            "properties": {
+              "street": {
+                "type": "string",
+                "description": "Street name.",
+                "example": "Doktora Jana Piltza"
+              },
+              "number": {
+                "type": "string",
+                "description": "House or building number.",
+                "example": "41"
+              },
+              "zip": {
+                "type": "string",
+                "description": "Zip or post code.",
+                "example": "30-392"
+              },
+              "city": {
+                "type": "string",
+                "description": "Town or city name.",
+                "example": "Kraków"
+              },
+              "province": {
+                "type": "string",
+                "description": "District, province, or state.",
+                "example": ""
+              }
+            }
+          },
+          "identity": {
+            "type": "object",
+            "required": ["firstname", "lastname", "dob"],
+            "properties": {
+              "firstname": {
+                "type": "string",
+                "description": "First name of the person.",
+                "example": "Pawel"
+              },
+              "lastname": {
+                "type": "string",
+                "description": "Last name of the person.",
+                "example": "Ramski"
+              },
+              "dob": {
+                "type": "string",
+                "description": "Date of birth in the format YYYY/MM/DD.",
+                "example": "2001/10/25"
+              }
+            }
+          }
+        }
+      },
+      "AddressVerificationResponse": {
+        "type": "object",
+        "properties": {
+          "inputAddress": {
+            "type": "string",
+            "description": "Raw address provided.",
+            "example": "Doktora Jana Piltza 41 30-392 Kraków"
+          },
+          "correctedAddress": {
+            "type": "string",
+            "description": "Corrected version of the address.",
+            "example": "Piltza 41, 30-392 Kraków, Polska"
+          },
+          "finalAddress": {
+            "type": "string",
+            "description": "Final confirmed address.",
+            "example": "Doktora Jana Piltza 41 30-392 Kraków"
+          },
+          "addressStatus": {
+            "type": "string",
+            "description": "Status after verification (corrected, unchanged).",
+            "enum": ["corrected", "unchanged"],
+            "example": "corrected"
+          },
+          "addressComponents": {
+            "type": "object",
+            "description": "Detailed components of the final address."
+          },
+          "matchQuality": {
+            "type": "string",
+            "description": "Match level (EXACT, HOUSEHOLD_MATCH, etc.).",
+            "enum": [
+              "EXACT",
+              "HOUSEHOLD_MATCH",
+              "PARTIAL_MATCH",
+              "HOUSENUMBER_MATCH",
+              "STREET_MATCH",
+              "CITY_MATCH",
+              "IDENTITY_MISMATCH",
+              "NO_MATCH"
+            ],
+            "example": "CITY_MATCH"
+          },
+          "score": {
+            "type": "integer",
+            "description": "Confidence score (0-100).",
+            "minimum": 0,
+            "maximum": 100,
+            "example": 50
+          },
+          "globalResult": {
+            "type": "object",
+            "properties": {
+              "overall": {
+                "type": "string",
+                "description": "Overall operation status (OK, NOK, REVIEW, ERROR).",
+                "enum": ["OK", "NOK", "REVIEW", "ERROR"],
+                "example": "REVIEW"
+              },
+              "totalScore": {
+                "type": "integer",
+                "description": "Total score of the verification.",
+                "minimum": 0,
+                "maximum": 100,
+                "example": 50
+              }
+            }
+          },
+          "identity": {
+            "type": "object",
+            "properties": {
+              "fullName": {
+                "type": "string",
+                "description": "Full name of the person.",
+                "example": "Pawel Ramski"
+              },
+              "dob": {
+                "type": "string",
+                "description": "Date of birth.",
+                "example": "2001/10/25"
+              }
+            }
+          },
+          "extendedMessage": {
+            "type": "string",
+            "description": "Detailed feedback.",
+            "enum": [
+              "addressCorrected",
+              "postCodeMatch",
+              "localityMatch",
+              "cityMatch",
+              "districtMatch",
+              "previousAddress",
+              "incorrectAddress",
+              "identityNotFound",
+              "deceased",
+              "addressFakeSuspicion",
+              "noMatch",
+              "skippedDOB",
+              "dobPartial",
+              "dobFailedFull",
+              "lastNameOnly",
+              "firstNameOnly",
+              "NoCity",
+              "NoStreet",
+              "NoPostCode",
+              "addressFound"
+            ],
+            "example": "cityMatch"
+          }
+        }
+      },
+      "AMLIndividualCheckRequest": {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Search string checked against name fields.",
+            "example": "Boris Johnson"
+          },
+          "dob": {
+            "type": "string",
+            "description": "Date of birth in the format yyyy/mm/dd.",
+            "example": "1964/06/19"
+          }
+        }
+      },
+      "AMLIndividualCheckResponse": {
+        "type": "object",
+        "properties": {
+          "timestamp": {
+            "type": "string",
+            "description": "The timestamp of the response (ISO 8601 date time).",
+            "example": "2024/09/24T19:16:00Z"
+          },
+          "totalHits": {
+            "type": "number",
+            "description": "The total number of hits for the searched parameters.",
+            "example": 1
+          },
+          "foundRecords": {
+            "type": "array",
+            "description": "Array with attributes of type Individual.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Unique identifier for the record.",
+                  "example": "c438b18a93cd3c13"
+                },
+                "sourceType": {
+                  "type": "string",
+                  "description": "Possible values: SANCTION, PEP, CRIMINAL.",
+                  "enum": ["SANCTION", "PEP", "CRIMINAL"],
+                  "example": "PEP"
+                },
+                "pepType": {
+                  "type": "string",
+                  "description": "Type of PEP (e.g., POLITICIAN, JUDGE, BOARD_MEMBER_OF_CENTRAL_BANK).",
+                  "example": "POLITICIAN"
+                },
+                "sourceId": {
+                  "type": "string",
+                  "description": "The source ID of the list.",
+                  "example": "dilisense_pep"
+                },
+                "entityType": {
+                  "type": "string",
+                  "description": "Enumeration: INDIVIDUAL, UNKNOWN.",
+                  "enum": ["INDIVIDUAL", "UNKNOWN"],
+                  "example": "INDIVIDUAL"
+                },
+                "gender": {
+                  "type": "string",
+                  "description": "Enumeration: FEMALE, MALE, UNKNOWN.",
+                  "enum": ["FEMALE", "MALE", "UNKNOWN"],
+                  "example": "MALE"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Name of the individual.",
+                  "example": "Boris Johnson"
+                },
+                "lastNames": {
+                  "type": "array",
+                  "description": "A list of last names of this individual.",
+                  "items": {
+                    "type": "string"
+                  },
+                  "example": ["Johnson", "Pfeffel"]
+                },
+                "aliasNames": {
+                  "type": "array",
+                  "description": "A list of alias names of this individual.",
+                  "items": {
+                    "type": "string"
+                  },
+                  "example": ["Alexander Boris de Pfeffel Johnson", "Boris", "BoJo"]
+                },
+                "givenNames": {
+                  "type": "array",
+                  "description": "A list of given names of this individual.",
+                  "items": {
+                    "type": "string"
+                  },
+                  "example": ["Alexander", "Boris"]
+                },
+                "dateOfBirth": {
+                  "type": "array",
+                  "description": "A list of dates of birth for this individual.",
+                  "items": {
+                    "type": "string"
+                  },
+                  "example": ["1964/06/19"]
+                },
+                "placeOfBirth": {
+                  "type": "array",
+                  "description": "A list of places of birth for this individual.",
+                  "items": {
+                    "type": "string"
+                  },
+                  "example": ["New York City"]
+                },
+                "citizenship": {
+                  "type": "array",
+                  "description": "A list of citizenships for this individual in ISO 3166-1 alpha-2 format.",
+                  "items": {
+                    "type": "string"
+                  },
+                  "example": ["GB", "US"]
+                },
+                "occupations": {
+                  "type": "array",
+                  "description": "A list of occupations for this individual.",
+                  "items": {
+                    "type": "string"
+                  },
+                  "example": ["journalist", "politician"]
+                },
+                "positions": {
+                  "type": "array",
+                  "description": "A list of positions for this individual.",
+                  "items": {
+                    "type": "string"
+                  },
+                  "example": [
+                    "2001/06/07 - 2005/04/11 Member of the 53rd Parliament of the United Kingdom",
+                    "Since 2019/07/24 Prime Minister of the United Kingdom"
+                  ]
+                },
+                "politicalParties": {
+                  "type": "array",
+                  "description": "A list of political parties for this individual.",
+                  "items": {
+                    "type": "string"
+                  },
+                  "example": ["Conservative Party"]
+                },
+                "links": {
+                  "type": "array",
+                  "description": "A list of links for this individual (e.g., websites, email addresses).",
+                  "items": {
+                    "type": "string"
+                  },
+                  "example": [
+                    "https://www.gov.uk/government/people/boris-johnson",
+                    "Facebook: borisjohnson"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "AMLRegisterIndividualRequest": {
+        "type": "object",
+        "required": ["profileId", "names"],
+        "properties": {
+          "profileId": {
+            "type": "string",
+            "description": "Unique identifier for the individual profile in the system.",
+            "example": "8dac-b5393ce5ef3a"
+          },
+          "names": {
+            "type": "string",
+            "description": "Full name of the individual (e.g., \"Elon Musk\").",
+            "example": "Elon Musk"
+          },
+          "gender": {
+            "type": "string",
+            "description": "Gender of the individual (optional, e.g., \"male\").",
+            "example": "male"
+          },
+          "searchAll": {
+            "type": "string",
+            "description": "This field cannot be combined with the names parameter."
+          },
+          "dob": {
+            "type": "string",
+            "description": "Date of birth of the individual (optional).",
+            "example": "1971/06/28"
+          },
+          "fuzzySearch": {
+            "type": "string",
+            "description": "Enables fuzzy search for the name (optional)."
+          }
+        }
+      },
+      "AMLRegisterEntityRequest": {
+        "type": "object",
+        "required": ["profileId", "names"],
+        "properties": {
+          "profileId": {
+            "type": "string",
+            "description": "Unique identifier for the entity profile in the system.",
+            "example": "8dac-b5393ce5ef3a"
+          },
+          "names": {
+            "type": "string",
+            "description": "Full name of the entity (e.g., \"Tesla\").",
+            "example": "Tesla"
+          },
+          "searchAll": {
+            "type": "string",
+            "description": "This field cannot be combined with the names parameter."
+          },
+          "fuzzySearch": {
+            "type": "string",
+            "description": "Enables fuzzy search for the name (optional)."
+          }
+        }
+      },
+      "AMLRemoveProfileRequest": {
+        "type": "object",
+        "required": ["profileId"],
+        "properties": {
+          "profileId": {
+            "type": "string",
+            "description": "Unique identifier for the entity profile in the system.",
+            "example": "8dac-b5393ce5ef3a"
+          }
+        }
+      },
+      "KYBCountriesResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "boolean",
+            "description": "Indicates whether an error occurred. `false` means no errors."
+          },
+          "message": {
+            "type": "string",
+            "description": "A message describing the result of the request."
+          },
+          "version": {
+            "type": "string",
+            "nullable": true,
+            "description": "Reserved for future use."
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "countries": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "countryName": {
+                      "type": "string",
+                      "description": "Name of the country."
+                    },
+                    "states": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "List of states or regions within the country (if applicable)."
+                    },
+                    "countryCode": {
+                      "type": "string",
+                      "description": "ISO 2-letter country code."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "KYBSearchRequest": {
+        "type": "object",
+        "required": ["search", "countryNames", "searchType"],
+        "properties": {
+          "search": {
+            "type": "string",
+            "description": "The search query for the company name."
+          },
+          "registrationNumber": {
+            "type": "string",
+            "description": "The registration number of the company (optional)."
+          },
+          "countryNames": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "List of country names to search within."
+          },
+          "searchType": {
+            "type": "string",
+            "description": "The type of search to perform."
+          },
+          "webhookUrl": {
+            "type": "string",
+            "description": "URL for receiving webhook notifications (optional)."
+          }
+        }
+      },
+      "KYBSearchResponse": {
+        "type": "object",
+        "properties": {
+          "requestId": {
+            "type": "string",
+            "description": "Unique identifier for the request."
+          },
+          "companyId": {
+            "type": "string",
+            "description": "Unique identifier for the company."
+          },
+          "serviceId": {
+            "type": "string",
+            "description": "Unique identifier for the service."
+          }
+        }
+      },
+      "KYBCompanyProfileResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "boolean",
+            "description": "Indicates whether an error occurred."
+          },
+          "message": {
+            "type": "string",
+            "description": "A message describing the result of the request."
+          },
+          "version": {
+            "type": "string",
+            "nullable": true,
+            "description": "Reserved for future use."
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "resolvedPercentage": {
+                "type": "number",
+                "description": "Percentage of the request that has been resolved."
+              },
+              "resolvedCount": {
+                "type": "number",
+                "description": "Number of resolved items."
+              },
+              "fetchedCountriesWithStates": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "countryName": {
+                      "type": "string"
+                    },
+                    "states": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              },
+              "fetchedCountries": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "secondarySource": {
+                "type": "boolean"
+              },
+              "requestStatus": {
+                "type": "string"
+              },
+              "kybRequestData": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "type": "string"
+                    },
+                    "searchText": {
+                      "type": "string"
+                    },
+                    "countryName": {
+                      "type": "string"
+                    },
+                    "countryFlag": {
+                      "type": "string"
+                    },
+                    "extensiveData": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "registrationNumber": {
+                      "type": "string"
+                    },
+                    "registrationDate": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "primarySource": {
+                      "type": "boolean"
+                    },
+                    "secondarySource": {
+                      "type": "boolean"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "metaDetail": {
+                      "type": "object"
+                    },
+                    "riskLevel": {
+                      "type": "string"
+                    },
+                    "verificationStatus": {
+                      "type": "string"
+                    },
+                    "companyFetchedDataStatus": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "pagination": {
+                "type": "object",
+                "properties": {
+                  "total": {
+                    "type": "number"
+                  },
+                  "perPage": {
+                    "type": "number"
+                  },
+                  "currentPage": {
+                    "type": "number"
+                  },
+                  "lastPage": {
+                    "type": "number"
+                  },
+                  "from": {
+                    "type": "number"
+                  },
+                  "to": {
+                    "type": "number"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "KYBEnhancedCompanyProfileResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "registrationNumber": {
+            "type": "string"
+          },
+          "registrationDate": {
+            "type": "string"
+          },
+          "companyRegistrationPeriod": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "countryName": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "countryFlag": {
+            "type": "string"
+          },
+          "jurisdictionCode": {
+            "type": "string"
+          },
+          "incorporationDate": {
+            "type": "string"
+          },
+          "companyIncorporationPeriod": {
+            "type": "string"
+          },
+          "industries": {
+            "type": "string"
+          },
+          "taxNumber": {
+            "type": "string"
+          },
+          "dissolutionDate": {
+            "type": "string"
+          },
+          "yearsSinceDissolution": {
+            "type": "string"
+          },
+          "inactiveDate": {
+            "type": "string"
+          },
+          "jurisdiction": {
+            "type": "string"
+          },
+          "primarySource": {
+            "type": "boolean"
+          },
+          "secondarySource": {
+            "type": "boolean"
+          },
+          "companyFetchedDataStatus": {
+            "type": "string"
+          },
+          "metaDetail": {
+            "type": "object"
+          },
+          "companyAmlRequestId": {
+            "type": "string"
+          },
+          "companyAmlRequestStatus": {
+            "type": "string"
+          },
+          "companyAmlStatus": {
+            "type": "string"
+          }
+        }
+      },
+      "KYBCompanyAMLRequest": {
+        "type": "object",
+        "required": ["companyId", "requestId"],
+        "properties": {
+          "companyId": {
+            "type": "string",
+            "description": "Unique identifier for the company."
+          },
+          "requestId": {
+            "type": "string",
+            "description": "Unique identifier for the request."
+          }
+        }
+      },
+      "KYBCompanyAMLResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "boolean",
+            "description": "Indicates whether an error occurred."
+          },
+          "message": {
+            "type": "string",
+            "description": "Status message describing the operation result."
+          },
+          "version": {
+            "type": "string",
+            "nullable": true,
+            "description": "API version."
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "amlRequestId": {
+                "type": "string",
+                "description": "Unique identifier for the AML request."
+              }
+            }
+          }
+        }
+      },
+      "KYBPersonalAMLRequest": {
+        "type": "object",
+        "required": ["companyId", "requestId"],
+        "properties": {
+          "companyId": {
+            "type": "string",
+            "description": "Unique identifier for the company."
+          },
+          "requestId": {
+            "type": "string",
+            "description": "Unique identifier for the request."
+          }
+        }
+      },
+      "KYBPersonalAMLResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "boolean",
+            "description": "Indicates whether an error occurred."
+          },
+          "message": {
+            "type": "string",
+            "description": "Status message describing the operation result."
+          },
+          "version": {
+            "type": "string",
+            "nullable": true,
+            "description": "API version."
+          },
+          "data": {
+            "type": "object",
+            "description": "Empty object in this case."
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  }
+} 
