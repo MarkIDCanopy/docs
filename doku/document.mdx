@@ -1,0 +1,427 @@
+---
+title: Document Verification API
+description: Document Verification API Documentation
+date: 2025/01/23
+tags: ["document", "verification", "identity", "mdx"]
+published: true
+---
+
+# Document Verification API - Detailed Documentation
+
+The Document Verification API enables the submission and verification of identification documents through a multi-step journey or a single-step process. It also includes optional checks for age verification and disability assessment.
+---
+
+## Endpoints Overview
+
+1. **Document Verification with Journey Build-Up**:
+   - Open a verification journey.
+   - Upload document images (front, back, selfie).
+   - Initiate document verification.
+2. **Single-Step Verification**:
+   - Upload all images in a single request.
+   - Get instant verification results.
+3. **Age and Disability Check**:
+   - Verify user eligibility based on age or disability percentage.
+4. **Error Handling & Codes**:
+   - Standardized error messages for seamless integration.
+
+---
+
+## Authentication
+To access the Address Verification API, authentication is required. A **Bearer Token** must be included in every request.
+
+- Tokens are **valid for 60 minutes** and must be refreshed after expiration.
+- Refer to the [Authentication](#) for detailed steps on obtaining a token.
+- Include the token in the `Authorization` header as follows:
+
+Authorization: Bearer YOUR_ACCESS_TOKEN
+
+
+---
+
+## API Base URL
+https://api-umbrella.io/api/services
+
+---
+
+## 1. Document Verification with Journey Build-Up
+### Description
+This section covers the multi-step approach, where you first open a journey, then upload documents in steps, and finally call the verification endpoint(s).
+
+### 1.1 Open Journey
+### Endpoint
+**POST** `/openJourney`
+
+### Description
+Starts a new verification journey where the customer can submit documents in steps.
+
+### Required Headers
+| Header         | Value |
+|---------------|----------------------------|
+| Content-Type  | `application/json` |
+| Authorization | `Bearer yourAccessToken` |
+
+### Request Body Parameters
+None required (optional metadata can be included).
+
+### Response Structure
+| Parameter       | Type   | Required | Description                                      |
+|---------------|--------|----------|--------------------------------------------------|
+| journeyId     | string | Yes      | Unique identifier for the verification journey. |
+| passThroughData | object | No       | Optional metadata to be carried through the journey. |
+
+
+### Example Response
+```json
+{
+    "journeyId": "uniqueJourneyIdentifier",
+    "passThroughData": {}
+}
+```
+
+### 1.2 Add Image
+### Endpoint
+**POST** `/addImage`
+
+### Description
+After opening a journey, you can upload an image representing the front/back of an ID or a selfie.
+
+Adds an image (front, back, or selfie) to the ongoing journey. Images can be submitted as base64-encoded strings or as file uploads.
+
+### Request Body Parameters
+| Parameter       | Type    | Required | Description                                          |
+|---------------|---------|----------|------------------------------------------------------|
+| journeyId     | String  | Yes      | Unique identifier for the verification journey.     |
+| imageName     | String  | Yes      | Name of the uploaded image file.                    |
+| imageSide     | String  | Yes      | Specifies which side of the document (front, back, selfie). |
+| storeOnly     | Boolean | No       | If true, stores the image without classification.   |
+| imageData     | String  | Yes      | Base64-encoded image or multipart file.             |
+| passThroughData | Object  | No       | Custom metadata (e.g., user ID).                    |
+
+### Example Request
+```json
+{
+    "journeyId": "uniqueJourneyIdentifier",
+    "imageName": "uploadedFileName",
+    "imageSide": "front", // or "back", "selfie"
+    "storeOnly": true, // or false if classification is needed
+    "imageData": "base64EncodedImagestring", // or use multipart/form-data
+    "passThroughData": { "userId": "12345" }
+}
+```
+
+### Example Request with Multiple Images
+```json
+[
+  {
+    "imageName": "frontImage.jpg",
+    "imageSide": "front",
+    "imageData": "base64EncodedFrontImage"
+  },
+  {
+    "imageName": "backImage.jpg",
+    "imageSide": "back",
+    "imageData": "base64EncodedBackImage"
+  },
+  {
+    "imageName": "selfieImage.jpg",
+    "imageSide": "selfie",
+    "imageData": "base64EncodedSelfieImage"
+  }
+]
+```
+
+### 1.3 Verify
+### Endpoint
+**POST** `/verify`
+
+### Description
+Once you’ve uploaded all relevant images, you can call this endpoint to verify them.
+
+Initiates the verification of all images submitted in this journey. Returns a detailed verification result (see response structure below).
+
+### Required Headers
+| Header         | Value |
+|---------------|----------------------------|
+| Content-Type  | `application/json` |
+| Authorization | `Bearer yourAccessToken` |
+
+### Request Body Parameters
+| Parameter  | Type   | Required | Description                                  |
+|------------|--------|----------|----------------------------------------------|
+| journeyId  | String | Yes      | Unique identifier for the verification journey. |
+
+### Response Structure
+| Parameter                                      | Type     | Description |
+|------------------------------------------------|----------|-------------|
+| journeyId                                     | String   | Unique identifier for the verification journey. |
+| status                                        | String   | Status of the verification process (e.g., `verificationComplete`). |
+| identitySubject                               | Object   | Contains extracted identity details from the document. |
+| identitySubject.type                          | String   | Type of identity subject (e.g., `"person"`). |
+| identitySubject.fullName                      | String   | Full name as extracted from the document. |
+| identitySubject.nameStructure                 | Object   | Breakdown of the name details. |
+| identitySubject.nameStructure.firstName       | String   | First name of the individual. |
+| identitySubject.nameStructure.lastName        | String   | Last name of the individual. |
+| identitySubject.nameStructure.nativeFullName  | String   | Native full name of the individual. |
+| identitySubject.gender                        | String   | Gender (`M`, `F`, or `X`). |
+| identitySubject.nationality                   | String   | Nationality code (ISO 3166, e.g., `"DE"`). |
+| identitySubject.dob                           | String   | Date of birth (`YYYY/MM/DD`). |
+| identitySubject.addressSingleLine             | String   | Extracted address in single-line format. |
+| identitySubject.email                         | String   | Extracted email (if available). |
+| identitySubject.mobileNumber                  | String   | Extracted mobile number (if available). |
+| authoritativeData                             | Object   | Contains verified details from the identity document. |
+| authoritativeData.identityDocument            | Object   | Identity document details. |
+| authoritativeData.identityDocument.type       | String   | Type of document (`passport`, `IDCard`, etc.). |
+| authoritativeData.identityDocument.idNumber   | String   | Document ID number. |
+| authoritativeData.identityDocument.issuingCountry | String   | Country that issued the document. |
+| authoritativeData.identityDocument.expeditor  | String   | Issuing authority (e.g., `"BH Neunkirchen"`). |
+| authoritativeData.identityDocument.expirationDate | String | Expiry date of the document (`YYYY/MM/DD`). |
+| authoritativeData.identityDocument.verificationChannel | String | How verification was performed (`optical`, `manual`, etc.). |
+| proofOfWork                                   | Object   | Contains metadata related to proof of verification. |
+| proofOfWork.type                              | String   | Type of proof (e.g., `"image"`). |
+| proofOfWork.titleOfProof                      | String   | Title describing the proof (e.g., `"IDFront"`). |
+| proofOfWork.timestampOfProof                  | String   | Timestamp when the proof was collected (`YYYY/MM/DDTHH:MM:SSZ`). |
+| auditTrail                                    | Object   | Contains logging details about the verification process. |
+| auditTrail.workId                             | String   | Unique ID of the verification attempt. |
+| auditTrail.workStatus                         | String   | Status of the work (`PASS`, `FAIL`). |
+| auditTrail.workStartTst                       | String   | Timestamp when the verification started. |
+| auditTrail.workEndTst                         | String   | Timestamp when the verification ended. |
+| auditTrail.workResult                         | String   | Summary of the verification result. |
+| fraudAlerts                                   | Object   | Contains fraud detection-related data. |
+| fraudAlerts.fraudAlertDetail                  | Array    | List of detected fraud alerts (if any). |
+| fraudAlerts.aggregateFraudAlertScore          | Number   | Overall fraud risk score (`0 = no risk`). |
+| croppedImages                                 | Object   | Cropped images extracted from the document. |
+| croppedImages.front                           | String   | Base64-encoded image of the front side. |
+| croppedImages.portrait                        | String   | Base64-encoded portrait image from the document. |
+| croppedImages.signature                       | String   | Base64-encoded signature image. |
+| croppedImages.back                            | String   | Base64-encoded image of the back side. |
+| croppedImages.selfie                          | String   | Base64-encoded selfie image (if applicable). |
+
+### Example Request
+```json
+{
+    "journeyId": "uniqueJourneyIdentifier"
+}
+```
+
+### Example Response
+```json
+{
+    "journeyId": "uniqueJourneyIdentifier",
+    "status": "verificationComplete",
+    "identitySubject": {
+        "type": "person",
+        "fullName": "Max Mustermann",
+        "nameStructure": {
+            "firstName": "Max",
+            "lastName": "Mustermann",
+            "nativeFullName": "Max Mustermann"
+        },
+        "gender": "M",
+        "nationality": "DE",
+        "dob": "1990/01/01",
+        "addressSingleLine": "123 Main St, City, Country",
+        "email": "max.mustermann@example.com",
+        "mobileNumber": "+1234567890"
+    },
+    "authoritativeData": {
+        "identityDocument": {
+            "type": "passport",
+            "idNumber": "123456789",
+            "issuingCountry": "DE",
+            "expeditor": "BH Neunkirchen",
+            "expirationDate": "2030/01/01",
+            "verificationChannel": "optical"
+        }
+    },
+    "proofOfWork": {
+        "type": "image",
+        "titleOfProof": "IDFront",
+        "timestampOfProof": "2024/08/01T10:00:00Z"
+    },
+    "auditTrail": {
+        "workId": "abc123",
+        "workStatus": "PASS",
+        "workStartTst": "2024/08/01T10:00:00Z",
+        "workEndTst": "2024/08/01T10:01:00Z",
+        "workResult": "Verification successful"
+    },
+    "fraudAlerts": {
+        "fraudAlertDetail": [],
+        "aggregateFraudAlertScore": 0
+    },
+    "croppedImages": {
+        "front": "base64EncodedFrontImage",
+        "portrait": "base64EncodedPortraitImage",
+        "signature": "base64EncodedSignatureImage",
+        "back": "base64EncodedBackImage",
+        "selfie": "base64EncodedSelfieImage"
+    }
+}
+```
+
+### 1.4 Verify with Age and Disability Check
+### Endpoint
+**POST** `/verify/age`
+
+### Description
+Performs an optional age/disability verification after documents are submitted.
+Checks if the user meets certain age or disability thresholds.
+**Note**: `ageFrom` and `ageTo` are mutually exclusive—do not use both in the same request.
+
+### Required Headers
+| Header         | Value |
+|---------------|----------------------------|
+| Content-Type  | `application/json` |
+| Authorization | `Bearer yourAccessToken` |
+
+### Request Body Parameters
+| Parameter                | Type   | Description |
+|--------------------------|--------|-------------|
+| ageFrom                 | Number | Minimum age for eligibility (can't combine with `ageTo`). |
+| ageTo                   | Number | Maximum age for eligibility (can't combine with `ageFrom`). |
+| minDisabilityPercentage | Number | Minimum disability percentage required for eligibility. |
+
+### Response Structure
+| Parameter         | Type   | Description |
+|------------------|--------|-------------|
+| journeyId       | String | Unique identifier for the verification journey. |
+| status          | String | Status of the verification process (`ageAndDisabilityVerificationComplete`). |
+| ageResult       | String | Indicates if the individual meets the age requirement (`yes` or `no`). |
+| disabilityResult | String | Indicates if the individual meets the disability criteria (`eligible` or `not eligible`). |
+
+### Example Request
+```json
+{
+    "journeyId": "uniqueJourneyIdentifier",
+    "ageFrom": 21,
+    "ageTo": 65,
+    "minDisabilityPercentage": 50
+}
+```
+
+### Example Response
+```json
+{
+    "journeyId": "uniqueJourneyIdentifier",
+    "status": "ageAndDisabilityVerificationComplete",
+    "ageResult": "yes", // or "no"
+    "disabilityResult": "eligible" // or "not eligible"
+}
+```
+
+## 2. Single-Step Verification
+
+### Description
+This section describes the single-step approach, bypassing the journey creation. You must provide all images in one request.
+
+### 2.1 Verify in One Step
+### Endpoint
+**POST** `/verify/single`
+
+### Description
+Bypasses the journey build-up and processes all images in one request. No feedback is provided if pages are missing—all must be submitted at once.
+
+### Required Headers
+| Header         | Value |
+|---------------|----------------------------|
+| Content-Type  | `application/json` |
+| Authorization | `Bearer yourAccessToken` |
+
+### Request Body Parameters
+| Parameter  | Type   | Required | Description |
+|-----------|--------|----------|-------------|
+| images    | Array  | Yes      | List of image objects for verification. |
+| imageName | String | Yes      | Name of the uploaded image. |
+| imageSide | String | Yes      | Specifies document side (`front`, `back`, etc.). |
+| imageData | String | Yes      | Base64-encoded image data (or file upload via multipart). |
+
+### Response Structure
+**Note**: This single-step response shares the same field structure as in `/verify`, thus the example and table above also applies here if you need a breakdown of each field.
+
+### Example Request
+```json
+{
+  "images": [
+    {
+      "imageName": "frontImage.jpg",
+      "imageSide": "front",
+      "imageData": "base64EncodedFrontImage"
+    },
+    {
+      "imageName": "backImage.jpg",
+      "imageSide": "back",
+      "imageData": "base64EncodedBackImage"
+    }
+  ]
+}
+```
+
+## 3. Error Handling & Codes
+
+Below is how the Document Verification API handles errors. This section is divided into:
+
+1. **General HTTP Status Codes** - which apply across all endpoints.
+2. **Generic Error Response Structure** - the standard JSON format returned in error cases.
+3. **Endpoint-Specific Error Scenarios** - a reference table detailing common error codes for each endpoint.
+
+### 3.1 General HTTP Status Codes
+| HTTP Status | Meaning                 | Description |
+|------------|------------------------|-------------|
+| 200        | OK                     | Request succeeded. See response body for details. |
+| 400        | Bad Request             | The request was invalid or missing required parameters. |
+| 401        | Unauthorized            | Authentication failed or the user lacks valid credentials. |
+| 403        | Forbidden               | The user does not have permission to perform this operation. |
+| 404        | Not Found               | Resource or endpoint not found. |
+| 422        | Unprocessable Entity    | The request is understood, but cannot be processed (e.g., malformed base64 or missing data). |
+| 429        | Too Many Requests       | Rate limit exceeded. |
+| 500        | Internal Server Error   | A generic server-side error occurred. |
+
+### 3.2 Generic Error Response Structure
+When an error occurs (i.e., a `4xx` or `5xx` status code), the API returns a JSON body with the following format:
+
+### Response Structure
+| Field        | Type   | Description |
+|-------------|--------|-------------|
+| errorCode   | String | A short code identifying the specific error scenario, e.g., `invalidImageData`. |
+| errorMessage | String | A human-readable description of the error. |
+| details     | Object | Additional context (e.g., invalid field, expected values vs. actual). |
+
+### Example Response
+```json
+{
+    "errorCode": "invalidImageData",
+    "errorMessage": "The imageSide must be one of [front, back, selfie].",
+    "details": {
+      "field": "imageSide"
+    }
+}
+```
+
+**Note:**
+- `errorCode` is particularly useful for programmatic checks in client applications.
+- `errorMessage` should help developers quickly understand what went wrong.
+- `details` can be omitted if no extra info is needed.
+
+### 3.3 Endpoint-Specific Error Scenarios
+Each endpoint may have unique validation or domain-specific constraints. The table below summarizes common error codes per endpoint. All error responses conform to the Generic Error Response Structure above.
+
+| Endpoint         | Error Code             | HTTP Status | Error Message                                         | Description |
+|-----------------|-----------------------|-------------|------------------------------------------------------|-------------|
+| /openJourney   | journeyAlreadyExists | 400         | A journey already exists for this user/session.     | Occurs if the client tries to open a new journey while one is still active. |
+| /addImage      | invalidImageData     | 400         | Base64 string is malformed or missing.              | Triggered if `imageData` is not valid base64 or is absent. |
+|                 | journeyNotFound      | 404         | No active journey with the given `journeyId`.       | The provided `journeyId` does not exist or has already been closed. |
+| /verify         | journeyNotFound      | 404         | No active journey with the given `journeyId`.       | Attempted verification on an invalid or missing `journeyId`. |
+|                 | missingImages         | 422         | Required images (front/back/selfie) were not all provided. | Verification could not be completed because essential images are missing. |
+| /verify/age     | mutuallyExclusive    | 400         | `ageFrom` and `ageTo` cannot both be specified.     | The request included both `ageFrom` and `ageTo`, which is not allowed. |
+|                 | journeyNotFound      | 404         | No active journey with the given `journeyId`.       | As above. |
+| /verify/single  | missingImages         | 422         | Not all necessary images (front/back) were provided. | Single-step verification requires all images in a single request. |
+|                 | invalidImageData     | 400         | Base64 string is malformed or missing.              | Same as above, but specifically applies to single-step scenarios. |
+
+### 3.4 Handling Errors
+
+1. **Check the HTTP status code** returned from the API.
+2. **Parse the JSON** if the status code indicates an error (`4xx` or `5xx`).
+3. **Use `errorCode`** to determine the type of error (e.g., `JOURNEY_NOT_FOUND`), and handle it in your client application (e.g., show a specific user message).
+4. **Look at `errorMessage`** for a human-readable explanation of the issue.
+5. **Examine `details`** if present, to get more granular context (e.g., which field triggered the error).

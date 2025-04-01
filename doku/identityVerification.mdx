@@ -1,0 +1,124 @@
+---
+title: Identity Verification API
+description: Identity Verification API Documentation
+date: 2025/01/10
+tags: ["identity", "verification", "mdx"]
+published: true
+---
+
+# Phone Status Check - Detailed Documentation
+
+The Identity Verification API is designed to verify identity information against stored data records from various databases. It provides a reliable way to ensure identity verification based on multiple data points, including personal information and address details.
+
+---
+
+## Endpoints Overview
+
+1. **Verify Identity**: Verify identity information by matching it against external and internal databases.
+
+---
+
+## Authentication
+To access the Address Verification API, authentication is required. A **Bearer Token** must be included in every request.
+
+- Tokens are **valid for 60 minutes** and must be refreshed after expiration.
+- Refer to the [Authentication](#) for detailed steps on obtaining a token.
+- Include the token in the `Authorization` header as follows:
+
+Authorization: Bearer YOUR_ACCESS_TOKEN
+
+
+---
+
+## API Base URL
+https://api-umbrella.io/api/services
+
+---
+
+## 1. Verify Identity
+### Endpoint
+**POST** `/identity/verify`
+
+### Description
+This endpoint verifies identity information by matching it against external and internal databases.
+
+### Required Headers
+| Header         | Value |
+|---------------|----------------------------|
+| Content-Type  | `application/json` |
+| Authorization | `Bearer yourAccessToken` |
+
+### Request Body Parameters
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `raw` | boolean | No | Flag to request raw data return. Defaults to `false`. |
+| `identity` | object | Yes | Contains the personal identification details. |
+| `identity.firstName` | string | Yes | First name of the individual. |
+| `identity.lastName` | string | Yes | Last name of the individual. |
+| `identity.nationalId` | string | Yes | National identification number. |
+| `identity.birthDate` | string | Yes | Birthdate of the individual (format: `MM/DD/YYYY`). |
+| `address` | object | Yes | Contains address details. |
+| `address.street` | string | Yes | Street name of the address. |
+| `address.houseNumber` | string | Yes | House or building number. |
+| `address.building` | string | No | Building name or description. |
+| `address.postalCode` | string | Yes | Postal or ZIP code of the address. |
+| `address.city` | string | Yes | City of the address. |
+| `address.district` | string | No | District or borough of the address. |
+| `address.province` | string | No | Province or state of the address. |
+| `address.countryCode` | string | Yes | ISO country code of the address. |
+| `phone` | object | No | Contains phone contact details. |
+| `phone.phoneNumber` | string | No | Phone number including international dialing code. |
+
+### Response Structure
+| Field | Type | Description |
+|-------|------|-------------|
+| `globalResult` | object | Contains the aggregate score from the verification process. |
+| `globalResult.totalScore` | integer | Aggregate score from the verification process. Values include: `0` (Verification failed), `50` (No match found), `75` (Partial match, review needed), `100` (Verification successful). |
+| `resultDetails` | array | Lists detailed match results from various data sources. |
+| `resultDetails.datasource` | string | Identifier for the data source used in verification. |
+| `resultDetails.country` | string | Country associated with the data source. |
+| `resultDetails.matches` | array of `MatchRecord` | Detailed match results. |
+| `resultDetails.matches.record` | string | Type of record matched. |
+| `resultDetails.matches.match` | string | Result of the match against the record. Possible values: `full` (Full match), `partial` (Partial match), `not-present` (Record not present in the data source). |
+
+### Response Codes
+| Code | Description |
+|------|-------------|
+| `200` | Successfully retrieved the verification results. Returns the verification data including total score and details of matches from various data sources. |
+| `400` | Invalid request provided. |
+| `401` | Authorization information is missing or invalid. |
+
+### Global Result Table
+| Field | Type | Description |
+|-------|------|-------------|
+| `totalScore` | integer | Aggregate score from the verification process. Values include: |
+| `0` | integer | Verification failed. |
+| `50` | integer | No match found. |
+| `75` | integer | Partial match, review needed. |
+| `100` | integer | Verification successful. |
+
+### Example Request
+```json
+{
+"raw": false, // Optional: Flag to request raw data return. Defaults to false.
+"identity": {
+  "firstName": "John", // Required: First name of the individual.
+  "lastName": "Doe",   // Required: Last name of the individual.
+  "nationalId": "123456789", // Required: National identification number.
+  "birthDate": "1985/05/15"  // Required: Birthdate of the individual (format: yyyy/mm/dd).
+},
+"address": {
+  "street": "Main Street", // Required: Street name of the address.
+  "houseNumber": "123",    // Required: House or building number.
+  "building": "Apt 4B",   // Optional: Building name or description.
+  "postalCode": "10001",  // Required: Postal or ZIP code of the address.
+  "city": "New York",     // Required: City of the address.
+  "district": "Manhattan", // Optional: District or borough of the address.
+  "province": "NY",       // Optional: Province or state of the address.
+  "countryCode": "US"     // Required: ISO country code of the address.
+},
+"phone": {
+  "phoneNumber": "+1234567890" // Optional: Phone number including international dialing code.
+}
+}
+```
