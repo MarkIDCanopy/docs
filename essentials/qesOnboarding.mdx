@@ -45,9 +45,7 @@ sequenceDiagram
     EndUser->>QES Provider: Completes wizard
     QES Provider-->>UmbrellaID API: Webhook event
     UmbrellaID API-->>Client: Webhook delivery
-    Client->>UmbrellaID API: GET /getSignedDocument
-    Client->>UmbrellaID API: GET /getIdentification
-    Client->>UmbrellaID API: GET /getEvidences
+    Client->>UmbrellaID API: GET /getVerification
 
 ```
 <Note>
@@ -105,7 +103,7 @@ Starts a QES signing session for a specified user. Returns a URL that redirects 
 | Header        | Value                    |
 | ------------- | ------------------------ |
 | Content-Type  | `application/json`       |
-| Authorization | `Bearer yourAccessToken` |
+| Authorization | `Bearer EXAMPLE_TOKEN_1234567890abcdef` |
 
 ### Request Body Parameters
 <Accordion title="Request Body Parameters">
@@ -113,9 +111,10 @@ Starts a QES signing session for a specified user. Returns a URL that redirects 
 |-------------------------|--------|----------|---------------------------------------------------------------|
 | email                   | string | Yes      | User's email address.                                         |
 | phoneNumber             | string | Yes      | User's phone number (E.164 format).                           |
-| documentToSignTemplateUrl | string | Yes    | URL of PDF to sign. Must be accessible online over **HTTPS** and publicly reachable. Verify that the URL does not require authentication or headers to load. |
-| signforms               | array  | Optional | Signature fields in the PDF (AcroForm field IDs).             |
-| fillform                | array  | Optional | Pre-fillable text fields in the PDF.                          |
+| docUrl                  | string | Yes    | URL of PDF to sign. Must be accessible online over **HTTPS** and publicly reachable. Verify that the URL does not require authentication or headers to load. |
+| redirectUrl             | string | Yes    | URL to redirect user to after signing.           |
+| signForms               | array  | Optional | Signature fields in the PDF (AcroForm field IDs).             |
+| fillForm                | array  | Optional | Pre-fillable text fields in the PDF.                          |
 </Accordion>
 
 ### Response Structure
@@ -132,8 +131,23 @@ Starts a QES signing session for a specified user. Returns a URL that redirects 
 ```json
 {
   "email": "support@idcanopy.com",
-  "phoneNumber": "+393358021530",
-  "documentToSignTemplateUrl": "https://cdn.idcanopy.com/pdf/onb-t3.pdf"
+  "phoneNumber": "+436508021530",
+  "redirectUrl": "https://example.com/onboarding/success",
+  "docUrl": "https://cdn.idcanopy.com/pdf/onb-t3.pdf",
+  "signForms": [{
+      "fieldId": "Signature1",
+      "actorId": "userToIdentify"
+    },{
+      "fieldId": "Signature2",
+      "actorId": "userToIdentify"
+    }],
+    "fillForm": [{
+        "fieldId": "name",
+        "value": "${identification.firstName}"
+    },{
+        "fieldId": "surname",
+        "value": "${identification.lastName}"
+    }]
 }
 ```
 
@@ -163,7 +177,7 @@ Registers a webhook URL to receive onboarding status updates such as completed v
 | Header        | Value                    |
 | ------------- | ------------------------ |
 | Content-Type  | `application/json`       |
-| Authorization | `Bearer yourAccessToken` |
+| Authorization | `Bearer EXAMPLE_TOKEN_1234567890abcdef` |
 
 ### Request Body Parameters
 <Accordion title="Request Body Parameters">
@@ -185,7 +199,13 @@ Registers a webhook URL to receive onboarding status updates such as completed v
 ### Example Request
 ```json
 {
-  "webhookUrl": "https://api.idcanopy.com/webhooks/onboarding"
+  "webhookUrl": "https://api.idcanopy.com/webhooks/onboarding",
+  "metadata": {
+        "authHeader": {
+            "Authorization": "Bearer EXAMPLE_TOKEN_1234567890abcdef",
+            "Api-Key": "fQVZSAp18GqvbwId8LotQl"
+        }
+    }
 }
 ```
 
@@ -201,6 +221,24 @@ Registers a webhook URL to receive onboarding status updates such as completed v
 }
 ```
 
+### Webhook Event Payload Example
+When your webhook receives a status update, the payload will look like this:
+
+```json
+{
+  "requestId": "xxxxxxxxx",
+  "type": "STATUS_UPDATE",
+  "status": "COMPLETED"
+}
+```
+
+The `status` field in the webhook payload indicates the outcome of the onboarding session. Possible values are:
+
+- `COMPLETED`: The onboarding and signing process finished successfully.
+- `FAILED`: The process failed due to an error or unsuccessful verification.
+- `CANCELLED`: The process was cancelled by the user or system.
+
+
 ## 3. Get Verification
 ### Endpoint
 **GET** `/onboarding/getVerification/{sessionId}`
@@ -212,7 +250,7 @@ Retrieves identity and signature verification results for a given onboarding ses
 | Header        | Value                    |
 | ------------- | ------------------------ |
 | Content-Type  | `application/json`       |
-| Authorization | `Bearer yourAccessToken` |
+| Authorization | `Bearer EXAMPLE_TOKEN_1234567890abcdef` |
 
 ### URL Path Parameters
 <Accordion title="Path Parameters">
@@ -502,24 +540,10 @@ Standardized error codes and messages are returned to indicate issues with reque
 
 | Environment | Base URL                                        |
 | ----------- | ----------------------------------------------- |
-| Sandbox     | `https://sandbox.api.umbrellaid.com/onboarding` |
-| Production  | `https://api.umbrellaid.com/onboarding`         |
+| Sandbox     | `https://sandbox-umbrella-api.azurewebsites.net/api/services` |
+| Production  | `https://api-umbrella.io/api/services`         |
 
 > ⚠️ All test flows use mock data and static PDFs unless otherwise configured.
-
-### Test Data
-
-Use the following test users for sandbox environment:
-
-```json
-{
-  "firstName": "Test",
-  "lastName": "User",
-  "email": "testuser@umbrellaid.com",
-  "phoneNumber": "+491234567890"
-}
-```
-> ⚠️ Signing links will not produce legally binding signatures in the sandbox.
 
 ---
 
