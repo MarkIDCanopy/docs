@@ -32,7 +32,8 @@
               "essentials/identityVerification",
               "essentials/kyb",
               "essentials/paymentServices",
-              "essentials/phoneStatus"
+              "essentials/phoneStatus",
+              "essentials/qesOnboarding"
             ]
           }
         ]
@@ -97,6 +98,14 @@
                 "group": "Phone Status",
                 "pages": [
                   "api-reference/endpoint/phoneStatus_phoneid"
+                ]
+              },
+              {
+                "group": "QES Onboarding",
+                "pages": [
+                  "api-reference/endpoint/qesOnboarding_createSessionLink",
+                  "api-reference/endpoint/qesOnboarding_configureWebhook",
+                  "api-reference/endpoint/qesOnboarding_getVerification"
                 ]
               }
             ]

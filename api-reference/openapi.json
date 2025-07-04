@@ -7,8 +7,8 @@
   },
   "servers": [
     {
-      "url": "https://api-umbrella.io/api/services",
-      "description": "Production Server"
+      "url": "https://sandbox-umbrella-api.azurewebsites.net/api/services/",
+      "description": "Sandbox Server"
     }
   ],
   "security": [
@@ -1313,6 +1313,233 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/KYBPersonalAMLResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request payload.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error400"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error401"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/onboarding/createSessionLink": {
+      "post": {
+        "summary": "Create QES Session Link",
+        "description": "Starts a QES signing session and returns a URL to redirect the user to the signing wizard.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSessionLinkRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Session link successfully created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateSessionLinkResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request payload.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error400"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error401"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/onboarding/configureWebhook": {
+      "post": {
+        "summary": "Configure Webhook",
+        "description": "Registers a webhook URL to receive onboarding status events.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConfigureWebhookRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Webhook successfully configured",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConfigureWebhookResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request payload.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error400"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error401"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/onboarding/getVerification/{sessionId}": {
+      "get": {
+        "summary": "Get QES Verification Result",
+        "description": "Retrieves identity and signature verification results for the given onboarding session.",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Verification result retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VerificationResultResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request payload.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error400"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error401"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Session not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error404"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/verifySingle": {
+      "post": {
+        "summary": "Single-Step Document Verification",
+        "description": "Upload all document images in a single request and get instant verification results.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": ["imageName", "imageSide", "imageData"],
+                  "properties": {
+                    "imageName": {
+                      "type": "string",
+                      "description": "Name of the uploaded image file"
+                    },
+                    "imageSide": {
+                      "type": "string",
+                      "enum": ["front", "back", "selfie"],
+                      "description": "Specifies which side of the document (front, back, selfie)"
+                    },
+                    "storeOnly": {
+                      "type": "boolean",
+                      "description": "If true, stores the image without classification"
+                    },
+                    "imageData": {
+                      "type": "string",
+                      "description": "Base64-encoded image or multipart file"
+                    },
+                    "passThroughData": {
+                      "type": "object",
+                      "description": "Custom metadata (e.g., user ID)"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Verification successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VerificationResultResponse"
                 }
               }
             }
@@ -3056,6 +3283,143 @@
           "data": {
             "type": "object",
             "description": "Empty object in this case."
+          }
+        }
+      },
+      "CreateSessionLinkRequest": {
+        "type": "object",
+        "required": ["email", "phoneNumber", "redirectUrl", "docUrl"],
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "Email address of the user.",
+            "example": "user@example.com"
+          },
+          "phoneNumber": {
+            "type": "string",
+            "description": "Phone number of the user.",
+            "example": "+436769556026"
+          },
+          "redirectUrl": {
+            "type": "string",
+            "description": "URL to redirect after signing.",
+            "example": "https://google.com"
+          },
+          "docUrl": {
+            "type": "string",
+            "description": "URL of the PDF document to sign.",
+            "example": "https://facematchfast-files.namirial.com/NamirialOnboarding_TEST.pdf"
+          }
+        }
+      },
+      "CreateSessionLinkResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Indicates whether the session link was created successfully."
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "url": {
+                "type": "string",
+                "description": "URL to redirect the user to the signing wizard.",
+                "example": "https://test-eu-api.example.com/session"
+              },
+              "expiresAfter": {
+                "type": "string",
+                "format": "date-time",
+                "description": "Expiration timestamp of the session link."
+              }
+            }
+          }
+        }
+      },
+      "ConfigureWebhookRequest": {
+        "type": "object",
+        "required": ["webhookUrl"],
+        "properties": {
+          "webhookUrl": {
+            "type": "string",
+            "description": "URL to receive onboarding status events.",
+            "example": "https://your-webhook.url"
+          }
+        }
+      },
+      "ConfigureWebhookResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Indicates whether the webhook was configured successfully."
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "Unique identifier for the webhook configuration."
+              },
+              "url": {
+                "type": "string",
+                "description": "The configured webhook URL."
+              },
+              "createdAt": {
+                "type": "string",
+                "format": "date-time",
+                "description": "Timestamp when the webhook was configured."
+              }
+            }
+          }
+        }
+      },
+      "VerificationResultResponse": {
+        "type": "object",
+        "properties": {
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp of the verification result."
+          },
+          "total_hits": {
+            "type": "integer",
+            "description": "Total number of records found."
+          },
+          "found_records": {
+            "type": "array",
+            "description": "Array of found records.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "entity_type": {
+                  "type": "string",
+                  "description": "Type of the entity found."
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Name of the entity."
+                },
+                "pep_type": {
+                  "type": "string",
+                  "description": "Type of PEP (Politically Exposed Person) if applicable."
+                },
+                "date_of_birth": {
+                  "type": "array",
+                  "description": "Array of dates of birth associated with the entity.",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "citizenship": {
+                  "type": "array",
+                  "description": "Array of citizenship countries associated with the entity.",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
           }
         }
       }
