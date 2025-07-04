@@ -75,14 +75,21 @@ To ensure successful signing:
 | `${identification.personalNumber}`    | Personal identifier           |
 | `${identification.documentDetails.number}` | ID document number       |
 
-These fields must have matching `fieldId`s in the `fillform` array passed to the API. Onboarding will then substitute them with the correct values.
+These fields must have matching `fieldId`s in the `fillForm` array passed to the API. Onboarding will then substitute them with the correct values.
 For example:
 
 ```json
-"fillform": [
+"fillForm": [
   { "fieldId": "firstName", "value": "John" },
   { "fieldId": "email", "value": "john@example.com" }
-]
+],
+"signForms": [{
+      "fieldId": "Signature1",
+      "actorId": "userToIdentify"
+    },{
+      "fieldId": "Signature2",
+      "actorId": "userToIdentify"
+    }]
 ```
 
 <Note>Only AcroForm-compatible PDFs are supported. PDFs generated with third-party editors may not be recognized.</Note>
