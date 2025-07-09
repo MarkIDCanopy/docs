@@ -286,9 +286,9 @@ Initiates a challenge deposit by sending a small amount to the user's bank accou
 | globalResult.overall      | string  | Overall assessment (`"review"`, `"pass"`, `"fail"`). |
 | globalResult.totalScore   | integer | Score (0-100) indicating verification quality. |
 | nameMatchScore            | integer | Score (0-100) indicating how well names matched. |
-| iban                      | string  | Verified IBAN if `piiToggle = 1`, otherwise omitted. |
-| returnedFirstName         | string  | First name returned from verification if available. |
-| returnedLastName          | string  | Last name returned from verification if available. |
+| iban                      | string  | Verified IBAN. |
+| returnedFirstName         | string  | First name returned from verification, if `piiToggle = 1`, otherwise omitted. |
+| returnedLastName          | string  | Last name returned from verification, if `piiToggle = 1`, otherwise omitted. |
 </Accordion>
 
 ### Example Request
