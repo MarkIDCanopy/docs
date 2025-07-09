@@ -31,9 +31,15 @@
               "essentials/documentVerification",
               "essentials/identityVerification",
               "essentials/kyb",
-              "essentials/paymentServices",
               "essentials/phoneStatus",
-              "essentials/qesOnboarding"
+              "essentials/qesOnboarding",
+              {
+                "group": "Payment Services",
+                "pages": [
+                  "essentials/paymentServices",
+                  "essentials/paymentServices_credentials"
+                ]
+              }
             ]
           }
         ]
