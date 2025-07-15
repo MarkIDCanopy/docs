@@ -268,11 +268,11 @@ Initiates a challenge deposit by sending a small amount to the user's bank accou
 |---------------|---------|----------|--------------------------------------------------|-------------------------|
 | amount        | string  | Yes      | Small amount sent for verification.              | Decimal (e.g., `"0.10"`) |
 | currency      | string  | Yes      | Currency code.                                   | ISO 4217 (e.g., `"EUR"`) |
-| referenceId   | string  | Yes      | Unique identifier for the transaction.           | Alphanumeric |
+| description   | string  | Yes      | Description is mandatory and cannot be blank. It must not contain spaces or special characters, but hyphens (-) are allowed as separators.   | Alphanumeric |
 | firstName     | string  | Yes      | First name for identity verification.            | Free text |
 | lastName      | string  | Yes      | Last name for identity verification.             | Free text |
 | piiToggle     | integer | Yes      | Determines if PII details should be returned.    | `0` (no PII) / `1` (PII) |
-| nameMatchLogic | string  | Yes      | Name matching logic type.                        | `"exact"` or `"fuzzy"` |
+| nameMatchLogic | string | Yes      | Name matching logic type.                        | `"exact"` or `"fuzzy"` |
 </Accordion>
 
 
@@ -280,7 +280,7 @@ Initiates a challenge deposit by sending a small amount to the user's bank accou
 <Accordion title="Response Structure">
 | Field                     | Type    | Description |
 |---------------------------|---------|-------------|
-| referenceId               | string  | The reference ID sent in the request. |
+| description               | string  | The description sent in the request. |
 | status                    | string  | Status of the challenge deposit (`"OK"`, `"FAIL"`). |
 | globalResult              | object  | Contains verification score and assessment result. |
 | globalResult.overall      | string  | Overall assessment (`"review"`, `"pass"`, `"fail"`). |
@@ -297,7 +297,7 @@ Initiates a challenge deposit by sending a small amount to the user's bank accou
 {
     "amount": "0.10",
     "currency": "EUR",
-    "referenceId": "uniqueRefId123",
+    "description": "merchantId19887-65",
     "firstName": "John",
     "lastName": "Doe",
     "piiToggle": 1,
@@ -310,7 +310,7 @@ Initiates a challenge deposit by sending a small amount to the user's bank accou
 ```json
 {
     "transactionId": "e5c81c78-272b-4307-9197-3ace19109fd3",
-    "referenceId": "uniqueRefId123",
+    "description": "merchantId19887-65",
     "status": "OK",
     "globalResult": {
         "overall": "review",
