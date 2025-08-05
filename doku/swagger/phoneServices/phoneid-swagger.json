@@ -1,0 +1,620 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Phone ID API",
+    "description": "API documentation for Phone ID endpoint - provides identity checks and enriched data linked to a phone number",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://sandbox-umbrella-api.azurewebsites.net/api/services/",
+      "description": "Sandbox Server"
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/phoneid": {
+      "post": {
+        "summary": "Phone ID",
+        "description": "The Phone ID service provides identity checks and enriched data linked to a phone number. It includes several optional modules for age verification, breached data, call forwarding detection, contact information, contact match, number deactivation, subscriber status, porting history, porting status, SIM swap, and active call status.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PhoneIDRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved phone ID information.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PhoneIDResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Malformed syntax in the request.",
+            "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Error400"}}}
+          },
+          "401": {
+            "description": "Unauthorized - Authentication failed.",
+            "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Error401"}}}
+          },
+          "404": {
+            "description": "Not Found - The server could not find the requested resource.",
+            "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Error404"}}}
+          },
+          "429": {
+            "description": "Too Many Requests - Rate limit exceeded.",
+            "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Error429"}}}
+          },
+          "500": {
+            "description": "Invalid Transaction - Transaction not attempted due to a system issue.",
+            "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Error500"}}}
+          },
+          "503": {
+            "description": "Service Unavailable - System is temporarily unavailable.",
+            "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Error503"}}}
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "PhoneIDRequest": {
+        "type": "object",
+        "required": ["phoneNumber"],
+        "properties": {
+          "phoneNumber": {
+            "type": "string",
+            "description": "The phone number to check, including country code.",
+            "example": "11234567890"
+          },
+          "accountLifecycleEvent": {
+            "type": "string",
+            "description": "The action being evaluated.",
+            "example": "create"
+          },
+          "externalId": {
+            "type": "string",
+            "description": "A customer-generated ID for this transaction.",
+            "example": "CustomExternalID7349"
+          },
+          "originatingIp": {
+            "type": "string",
+            "description": "End user's IP address (IPv4 or IPv6).",
+            "example": "203.0.113.45"
+          },
+          "addons": {
+            "type": "object",
+            "description": "Optional add-ons for enhanced phone intelligence.",
+            "properties": {
+              "ageVerify": {
+                "type": "object",
+                "description": "Age verification module.",
+                "properties": {
+                  "ageThreshold": {
+                    "type": "integer",
+                    "description": "Age threshold to verify against.",
+                    "example": 21
+                  }
+                }
+              },
+              "contact": {
+                "type": "object",
+                "description": "Contact information module.",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "description": "Email address for contact verification.",
+                    "example": "jsmith@vero-finto.com"
+                  }
+                }
+              },
+              "contactMatch": {
+                "type": "object",
+                "description": "Contact match verification module.",
+                "properties": {
+                  "firstName": {
+                    "type": "string",
+                    "description": "First name to match against.",
+                    "example": "string"
+                  },
+                  "lastName": {
+                    "type": "string",
+                    "description": "Last name to match against.",
+                    "example": "string"
+                  },
+                  "address": {
+                    "type": "string",
+                    "description": "Address to match against.",
+                    "example": "string"
+                  },
+                  "city": {
+                    "type": "string",
+                    "description": "City to match against.",
+                    "example": "string"
+                  },
+                  "postalCode": {
+                    "type": "string",
+                    "description": "Postal code to match against.",
+                    "example": "string"
+                  },
+                  "state": {
+                    "type": "string",
+                    "description": "State to match against.",
+                    "example": "string"
+                  },
+                  "country": {
+                    "type": "string",
+                    "description": "Country to match against.",
+                    "example": "string"
+                  },
+                  "inputUsed": {
+                    "type": "string",
+                    "description": "Type of input used for matching.",
+                    "example": "email"
+                  }
+                }
+              },
+              "contactPlus": {
+                "type": "object",
+                "description": "Enhanced contact information module.",
+                "properties": {
+                  "billingPostalCode": {
+                    "type": "string",
+                    "description": "Billing postal code.",
+                    "example": "95110"
+                  }
+                }
+              },
+              "numberDeactivation": {
+                "type": "object",
+                "description": "Number deactivation history module.",
+                "properties": {
+                  "carrierName": {
+                    "type": "string",
+                    "description": "Name of the carrier.",
+                    "example": "Verizon"
+                  },
+                  "lastDeactivated": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Date when the number was last deactivated.",
+                    "example": "2016-04-05T00:00:00Z"
+                  },
+                  "trackingSince": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Date since when the number has been tracked.",
+                    "example": "2014-10-06T00:00:00Z"
+                  },
+                  "status": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer",
+                        "description": "Status code.",
+                        "example": 2800
+                      },
+                      "description": {
+                        "type": "string",
+                        "description": "Status description.",
+                        "example": "Request successfully completed"
+                      }
+                    }
+                  },
+                  "recycledSinceLastVerification": {
+                    "type": "string",
+                    "description": "Recycling status since last verification.",
+                    "example": "not_recycled"
+                  }
+                }
+              },
+              "portingHistory": {
+                "type": "object",
+                "description": "Porting history module.",
+                "properties": {
+                  "pastXDays": {
+                    "type": "integer",
+                    "description": "Number of days to look back for porting history.",
+                    "example": 10
+                  }
+                }
+              }
+            }
+          },
+          "consent": {
+            "type": "object",
+            "description": "Consent information for the request.",
+            "properties": {
+              "method": {
+                "type": "integer",
+                "description": "Method of consent.",
+                "example": 1
+              },
+              "timestamp": {
+                "type": "string",
+                "format": "date-time",
+                "description": "Timestamp of consent.",
+                "example": "2018-05-05T00:00:00Z"
+              }
+            }
+          }
+        }
+      },
+      "PhoneIDResponse": {
+        "type": "object",
+        "properties": {
+          "reference_id": {
+            "type": "string",
+            "description": "Unique reference ID for the transaction.",
+            "example": "36475B3EB1DC0C2492E2889F4EACF2CC"
+          },
+          "sub_resource": {
+            "type": "string",
+            "description": "Sub-resource type (e.g., 'live').",
+            "example": "live"
+          },
+          "status": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "number",
+                "description": "Status code (e.g., 300 for success).",
+                "example": 300
+              },
+              "description": {
+                "type": "string",
+                "description": "Status description.",
+                "example": "Transaction successfully completed"
+              },
+              "updatedOn": {
+                "type": "string",
+                "description": "Timestamp of the last update (ISO 8601 format).",
+                "example": "2024/09/09T12:43:42.701105Z"
+              }
+            }
+          },
+          "errors": {
+            "type": "array",
+            "description": "List of errors, if any.",
+            "items": {
+              "type": "string"
+            }
+          },
+          "phoneType": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "string",
+                "description": "Phone type code (e.g., '2' for mobile).",
+                "example": "2"
+              },
+              "description": {
+                "type": "string",
+                "description": "Phone type description.",
+                "example": "MOBILE"
+              }
+            }
+          },
+          "blocklisting": {
+            "type": "object",
+            "properties": {
+              "blocked": {
+                "type": "boolean",
+                "description": "Whether the number is blocked.",
+                "example": false
+              },
+              "blockCode": {
+                "type": "number",
+                "description": "Block code (e.g., 0 for not blocked).",
+                "example": 0
+              },
+              "blockDescription": {
+                "type": "string",
+                "description": "Block description.",
+                "example": "Not blocked"
+              }
+            }
+          },
+          "numbering": {
+            "type": "object",
+            "properties": {
+              "cleansing": {
+                "type": "object",
+                "properties": {
+                  "call": {
+                    "type": "object",
+                    "properties": {
+                      "countryCode": {
+                        "type": "string",
+                        "description": "Country code.",
+                        "example": "43"
+                      },
+                      "phoneNumber": {
+                        "type": "string",
+                        "description": "Phone number.",
+                        "example": "6504142107"
+                      },
+                      "cleansedCode": {
+                        "type": "number",
+                        "description": "Cleansing status code.",
+                        "example": 100
+                      },
+                      "minLength": {
+                        "type": "number",
+                        "description": "Minimum allowed length.",
+                        "example": 7
+                      },
+                      "maxLength": {
+                        "type": "number",
+                        "description": "Maximum allowed length.",
+                        "example": 13
+                      }
+                    }
+                  },
+                  "sms": {
+                    "type": "object",
+                    "properties": {
+                      "countryCode": {
+                        "type": "string",
+                        "description": "Country code.",
+                        "example": "43"
+                      },
+                      "phoneNumber": {
+                        "type": "string",
+                        "description": "Phone number.",
+                        "example": "6504142107"
+                      },
+                      "cleansedCode": {
+                        "type": "number",
+                        "description": "Cleansing status code.",
+                        "example": 100
+                      },
+                      "minLength": {
+                        "type": "number",
+                        "description": "Minimum allowed length.",
+                        "example": 7
+                      },
+                      "maxLength": {
+                        "type": "number",
+                        "description": "Maximum allowed length.",
+                        "example": 13
+                      }
+                    }
+                  }
+                }
+              },
+              "original": {
+                "type": "object",
+                "properties": {
+                  "completePhoneNumber": {
+                    "type": "string",
+                    "description": "Complete phone number with country code.",
+                    "example": "+436504142107"
+                  },
+                  "countryCode": {
+                    "type": "string",
+                    "description": "Country code.",
+                    "example": "43"
+                  },
+                  "phoneNumber": {
+                    "type": "string",
+                    "description": "Phone number.",
+                    "example": "6504142107"
+                  }
+                }
+              }
+            }
+          },
+          "location": {
+            "type": "object",
+            "properties": {
+              "city": {
+                "type": "string",
+                "description": "City associated with the phone number.",
+                "example": "Countrywide"
+              },
+              "state": {
+                "type": "string",
+                "description": "State associated with the phone number.",
+                "nullable": true
+              },
+              "zip": {
+                "type": "string",
+                "description": "ZIP code associated with the phone number.",
+                "nullable": true
+              },
+              "metroCode": {
+                "type": "string",
+                "description": "Metro code associated with the phone number.",
+                "nullable": true
+              },
+              "county": {
+                "type": "string",
+                "description": "County associated with the phone number.",
+                "nullable": true
+              },
+              "country": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Country name.",
+                    "example": "Austria"
+                  },
+                  "iso2": {
+                    "type": "string",
+                    "description": "ISO 2-letter country code.",
+                    "example": "AT"
+                  },
+                  "iso3": {
+                    "type": "string",
+                    "description": "ISO 3-letter country code.",
+                    "example": "AUT"
+                  }
+                }
+              },
+              "coordinates": {
+                "type": "object",
+                "properties": {
+                  "latitude": {
+                    "type": "string",
+                    "description": "Latitude.",
+                    "nullable": true
+                  },
+                  "longitude": {
+                    "type": "string",
+                    "description": "Longitude.",
+                    "nullable": true
+                  }
+                }
+              },
+              "timeZone": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Time zone name.",
+                    "nullable": true
+                  },
+                  "utcOffsetMax": {
+                    "type": "string",
+                    "description": "Maximum UTC offset.",
+                    "example": "+1"
+                  },
+                  "utcOffsetMin": {
+                    "type": "string",
+                    "description": "Minimum UTC offset.",
+                    "example": "+1"
+                  }
+                }
+              }
+            }
+          },
+          "carrier": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Name of the carrier.",
+                "example": "Mass Response Service GmbH"
+              }
+            }
+          },
+          "live": {
+            "type": "object",
+            "properties": {
+              "subscriberStatus": {
+                "type": "string",
+                "description": "Subscriber status (e.g., 'ACTIVE').",
+                "example": "ACTIVE"
+              },
+              "deviceStatus": {
+                "type": "string",
+                "description": "Device status (e.g., 'REACHABLE').",
+                "example": "REACHABLE"
+              },
+              "roaming": {
+                "type": "string",
+                "description": "Roaming status (e.g., 'UNAVAILABLE').",
+                "example": "UNAVAILABLE"
+              },
+              "roamingCountry": {
+                "type": "string",
+                "description": "Roaming country name.",
+                "nullable": true
+              },
+              "roamingCountryIso2": {
+                "type": "string",
+                "description": "ISO 2-letter roaming country code.",
+                "nullable": true
+              }
+            }
+          }
+        }
+      },
+      "Error400": {
+        "required": [
+          "message"
+        ],
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Invalid request payload"
+          }
+        }
+      },
+      "Error401": {
+        "required": [
+          "message"
+        ],
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Unauthorized request"
+          }
+        }
+      },
+      "Error404": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Resource not found"
+          }
+        }
+      },
+      "Error429": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Rate limit exceeded"
+          }
+        }
+      },
+      "Error500": {
+        "required": [
+          "message"
+        ],
+        "type": "object",
+        "properties": { 
+          "message": {
+            "type": "string",
+            "example": "Internal Server Error"
+          }
+        }
+      },
+      "Error503": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Service temporarily unavailable"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  }
+} 

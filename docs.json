@@ -31,7 +31,7 @@
               "essentials/documentVerification",
               "essentials/identityVerification",
               "essentials/kyb",
-              "essentials/phoneStatus",
+              "essentials/phoneServices",
               "essentials/qesOnboarding",
               {
                 "group": "Payment Services",
@@ -101,9 +101,14 @@
                 ]
               },
               {
-                "group": "Phone Status",
+                "group": "Phone Services",
                 "pages": [
-                  "api-reference/endpoint/phoneStatus_phoneid"
+                  "api-reference/endpoint/phoneServices_phoneStatus",
+                  "api-reference/endpoint/phoneServices_phoneid",
+                  "api-reference/endpoint/phoneServices_phoneRiskScore",
+                  "api-reference/endpoint/phoneServices_verification",
+                  "api-reference/endpoint/phoneServices_verificationMatch",
+                  "api-reference/endpoint/phoneServices_fullPhoneIntelligence"
                 ]
               },
               {

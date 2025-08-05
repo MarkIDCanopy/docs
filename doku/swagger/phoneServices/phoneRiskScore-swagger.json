@@ -1,0 +1,279 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Phone Risk Score API",
+    "description": "API documentation for Phone Risk Score endpoint",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://sandbox-umbrella-api.azurewebsites.net/api/services/",
+      "description": "Sandbox Server"
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/phoneRiskScore": {
+      "post": {
+        "summary": "Phone Risk Score",
+        "description": "Detects potentially fraudulent activity by analyzing the transaction risk associated with a phone number. Returns a risk score, level, and recommendation, along with detailed risk insights.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PhoneRiskScoreRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved phone risk score.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PhoneRiskScoreResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Malformed syntax in the request.",
+            "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Error400"}}}
+          },
+          "401": {
+            "description": "Unauthorized - Authentication failed.",
+            "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Error401"}}}
+          },
+          "404": {
+            "description": "Not Found - The server could not find the requested resource.",
+            "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Error404"}}}
+          },
+          "429": {
+            "description": "Too Many Requests - Rate limit exceeded.",
+            "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Error429"}}}
+          },
+          "500": {
+            "description": "Invalid Transaction - Transaction not attempted due to a system issue.",
+            "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Error500"}}}
+          },
+          "503": {
+            "description": "Service Unavailable - System is temporarily unavailable.",
+            "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Error503"}}}
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "PhoneRiskScoreRequest": {
+        "type": "object",
+        "required": ["phoneNumber"],
+        "properties": {
+          "phoneNumber": {
+            "type": "string",
+            "description": "The phone number to check, including country code.",
+            "example": "11234567890"
+          },
+          "transactionRisk": {
+            "type": "string",
+            "description": "The risk level associated with the transaction."
+          },
+          "transactionAmount": {
+            "type": "string",
+            "description": "The amount of the transaction."
+          },
+          "transactionCurrency": {
+            "type": "string",
+            "description": "The currency of the transaction."
+          },
+          "transactionDate": {
+            "type": "string",
+            "format": "date-time",
+            "description": "The date of the transaction."
+          },
+          "transactionType": {
+            "type": "string",
+            "description": "The type of transaction."
+          },
+          "transactionPurpose": {
+            "type": "string",
+            "description": "The purpose of the transaction."
+          },
+          "transactionOrigin": {
+            "type": "string",
+            "description": "The origin of the transaction."
+          },
+          "transactionDestination": {
+            "type": "string",
+            "description": "The destination of the transaction."
+          },
+          "transactionDetails": {
+            "type": "string",
+            "description": "Additional details about the transaction."
+          },
+          "transactionHistory": {
+            "type": "string",
+            "description": "The history of transactions associated with the phone number."
+          },
+          "transactionFrequency": {
+            "type": "string",
+            "description": "The frequency of transactions associated with the phone number."
+          },
+          "transactionLocation": {
+            "type": "string",
+            "description": "The location of the transaction."
+          },
+          "transactionDevice": {
+            "type": "string",
+            "description": "The device used for the transaction."
+          },
+          "transactionIP": {
+            "type": "string",
+            "description": "The IP address used for the transaction."
+          },
+          "transactionUserAgent": {
+            "type": "string",
+            "description": "The user agent used for the transaction."
+          },
+          "transactionEmail": {
+            "type": "string",
+            "description": "The email associated with the transaction."
+          },
+          "transactionSMS": {
+            "type": "string",
+            "description": "The SMS associated with the transaction."
+          },
+          "transactionCall": {
+            "type": "string",
+            "description": "The call associated with the transaction."
+          },
+          "transactionContact": {
+            "type": "string",
+            "description": "The contact information associated with the transaction."
+          },
+          "transactionMatch": {
+            "type": "string",
+            "description": "The match against the transaction data."
+          },
+          "transactionFraud": {
+            "type": "string",
+            "description": "The fraud associated with the transaction."
+          },
+          "transactionRiskScore": {
+            "type": "string",
+            "description": "The risk score associated with the transaction."
+          },
+          "transactionRiskLevel": {
+            "type": "string",
+            "description": "The risk level associated with the transaction."
+          },
+          "transactionRiskRecommendation": {
+            "type": "string",
+            "description": "The recommendation based on the transaction risk."
+          },
+          "transactionRiskInsights": {
+            "type": "string",
+            "description": "Detailed risk insights associated with the transaction."
+          }
+        }
+      },
+      "PhoneRiskScoreResponse": {
+        "type": "object",
+        "properties": {
+          "riskScore": {
+            "type": "string",
+            "description": "The risk score associated with the phone number."
+          },
+          "riskLevel": {
+            "type": "string",
+            "description": "The risk level associated with the phone number."
+          },
+          "riskRecommendation": {
+            "type": "string",
+            "description": "The recommendation based on the risk level."
+          },
+          "riskInsights": {
+            "type": "string",
+            "description": "Detailed risk insights associated with the phone number."
+          }
+        }
+      },
+      "Error400": {
+        "required": [
+          "message"
+        ],
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Invalid request payload"
+          }
+        }
+      },
+      "Error401": {
+        "required": [
+          "message"
+        ],
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Unauthorized request"
+          }
+        }
+      },
+      "Error404": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Resource not found"
+          }
+        }
+      },
+      "Error429": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Rate limit exceeded"
+          }
+        }
+      },
+      "Error500": {
+        "required": [
+          "message"
+        ],
+        "type": "object",
+        "properties": { 
+          "message": {
+            "type": "string",
+            "example": "Internal Server Error"
+          }
+        }
+      },
+      "Error503": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Service temporarily unavailable"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  }
+} 
