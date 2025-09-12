@@ -47,7 +47,7 @@ Use this action to get insights about a phone number such as whether it is activ
 ## 1. Phone Status Check
 
 ### Endpoint
-**POST** `/phoneStatus`
+**POST** `/phone-service/phoneStatus`
 
 ### Description
 
@@ -63,7 +63,7 @@ Use this action to get insights about a phone number, such as its activity statu
 <Accordion title="Request Body Parameters">
 | Field   | Type   | Required | Description                                        |
 | ------- | ------ | -------- | -------------------------------------------------- |
-| `phone` | string | Yes      | The phone number to check, including country code. |
+| `phoneNumber` | string | Yes      | The phone number to check, including country code. |
 </Accordion>
 
 ### Response Structure
@@ -132,7 +132,7 @@ Use this action to get insights about a phone number, such as its activity statu
 ### Example Request
 ```json
 {
-"phone": "+436504142107"
+    "phoneNumber": "+486504142304"
 }
 ```
 
@@ -140,77 +140,77 @@ Use this action to get insights about a phone number, such as its activity statu
 <Accordion title="Example Response">
 ```json
 {
-    "reference_id": "36475B3EB1DC0C2492E2889F4EACF2CC",
-    "sub_resource": "live",
-    "status": {
-        "code": 300,
-        "description": "Transaction successfully completed",
-        "updatedOn": "2024/09/09T12:43:42.701105Z"
+  "reference_id": "ABC123XYZ789",
+  "sub_resource": "live",
+  "status": {
+    "code": 300,
+    "description": "Transaction successfully completed",
+    "updated_on": "2025-08-01T14:32:10Z"
+  },
+  "errors": [],
+  "phone_type": {
+    "code": "2",
+    "description": "MOBILE"
+  },
+  "blocklisting": {
+    "blocked": false,
+    "block_code": 0,
+    "block_description": "Not blocked"
+  },
+  "numbering": {
+    "cleansing": {
+      "call": {
+        "country_code": "49",
+        "phone_number": "15123456789",
+        "cleansed_code": 100,
+        "min_length": 7,
+        "max_length": 13
+      },
+      "sms": {
+        "country_code": "49",
+        "phone_number": "15123456789",
+        "cleansed_code": 100,
+        "min_length": 7,
+        "max_length": 13
+      }
     },
-    "errors": [],
-    "phoneType": {
-        "code": "2",
-        "description": "MOBILE"
-    },
-    "blocklisting": {
-        "blocked": false,
-        "blockCode": 0,
-        "blockDescription": "Not blocked"
-    },
-    "numbering": {
-        "cleansing": {
-            "call": {
-                "countryCode": "43",
-                "phoneNumber": "6504142107",
-                "cleansedCode": 100,
-                "minLength": 7,
-                "maxLength": 13
-            },
-            "sms": {
-                "countryCode": "43",
-                "phoneNumber": "6504142107",
-                "cleansedCode": 100,
-                "minLength": 7,
-                "maxLength": 13
-            }
-        },
-        "original": {
-            "completePhoneNumber": "+436504142107",
-            "countryCode": "43",
-            "phoneNumber": "6504142107"
-        }
-    },
-    "location": {
-        "city": "Countrywide",
-        "state": null,
-        "zip": null,
-        "metroCode": null,
-        "county": null,
-        "country": {
-            "name": "Austria",
-            "iso2": "AT",
-            "iso3": "AUT"
-        },
-        "coordinates": {
-            "latitude": null,
-            "longitude": null
-        },
-        "timeZone": {
-            "name": null,
-            "utcOffsetMax": "+1",
-            "utcOffsetMin": "+1"
-        }
-    },
-    "carrier": {
-        "name": "Mass Response Service GmbH"
-    },
-    "live": {
-        "subscriberStatus": "ACTIVE",
-        "deviceStatus": "REACHABLE",
-        "roaming": "UNAVAILABLE",
-        "roamingCountry": null,
-        "roamingCountryIso2": null
+    "original": {
+      "complete_phone_number": "+4915123456789",
+      "country_code": "49",
+      "phone_number": "15123456789"
     }
+  },
+  "location": {
+    "city": "Berlin",
+    "state": "Berlin",
+    "zip": "10115",
+    "metro_code": null,
+    "county": "Berlin County",
+    "country": {
+      "name": "Germany",
+      "iso2": "DE",
+      "iso3": "DEU"
+    },
+    "coordinates": {
+      "latitude": 52.5200,
+      "longitude": 13.4050
+    },
+    "time_zone": {
+      "name": "Europe/Berlin",
+      "utc_offset_max": "+2",
+      "utc_offset_min": "+1"
+    }
+  },
+  "carrier": {
+    "name": "Generic Mobile GmbH"
+  },
+  "live": {
+    "subscriber_status": "ACTIVE",
+    "device_status": "REACHABLE",
+    "roaming": "UNAVAILABLE",
+    "roaming_country": null,
+    "roaming_country_iso2": null
+  }
 }
 ```
 </Accordion>
@@ -218,7 +218,7 @@ Use this action to get insights about a phone number, such as its activity statu
 ## 2. Phone ID (Upcoming)
 
 ### Endpoint
-**POST** `/phoneid`
+**POST** `/phone-service/phoneid`
 
 ### Description
 The **Phone ID** service provides identity checks and enriched data linked to a phone number. It includes several optional modules:
@@ -245,7 +245,7 @@ The **Phone ID** service provides identity checks and enriched data linked to a 
 | Field                   | Type   | Required | Description                                                                             |
 | ----------------------- | ------ | -------- | --------------------------------------------------------------------------------------- |
 | `phoneNumber`           | string | Yes      | Phone number to query, including country code (no spaces or symbols).                   |
-| `accountLifecycleEvent` | string | Yes      | Stage of the user journey. One of: `create`, `sign-in`, `transact`, `update`, `delete`. |
+| `accountLifecycleEvent` | string | No      | Stage of the user journey. One of: `create`, `sign-in`, `transact`, `update`, `delete`. |
 | `externalId`            | string | No       | Customer-defined ID echoed in the response.                                             |
 | `originatingIp`         | string | No       | End user’s IP address (IPv4 or IPv6).                                                   |
 | `addons`                | object | No       | Add-on services to enrich the phone lookup (see table below).                           |
@@ -279,83 +279,35 @@ The **Phone ID** service provides identity checks and enriched data linked to a 
 
 ### Response Structure
 <Accordion title="Response Structure">
-| Field                                              | Type           | Description                                                    | Source               |
-| -------------------------------------------------- | -------------- | -------------------------------------------------------------- | -------------------- |
-| `referenceId`                                      | string         | Unique 32-digit hex ID for the request, generated by Telesign. | basic                |
-| `externalId`                                       | string \| null | Custom ID provided in the request. Returned if included.       | basic                |
-| `status.code`                                      | integer        | Status code for the request processing.                        | basic                |
-| `status.description`                               | string         | Human-readable description of the transaction status.          | basic                |
-| `status.updatedOn`                                 | string         | RFC 3339 timestamp of last update.                             | basic                |
-| `phoneType.code`                                   | string         | Phone type code.                                               | basic                |
-| `phoneType.description`                            | string         | Description of the phone type.                                 | basic                |
-| `phoneType.overrideReason`                         | string         | Description of phone type override (if applicable).            | basic                |
-| `phoneType.overrideReasonId`                       | integer        | Code indicating the reason for phone type override.            | basic                |
-| `blocklisting.blockCode`                           | integer        | Block status code.                                             | basic                |
-| `blocklisting.blockDescription`                    | string         | Description of the block reason.                               | basic                |
-| `blocklisting.blocked`                             | boolean        | Indicates if the number is blocked.                            | basic                |
-| `carrier.name`                                     | string         | Name of the carrier.                                           | basic                |
-| `carrier.carrierId`                                | integer        | Internal carrier ID.                                           | basic                |
-| `carrier.mcc`                                      | string         | Mobile Country Code.                                           | basic                |
-| `carrier.mnc`                                      | string         | Mobile Network Code.                                           | basic                |
-| `numbering.original`                               | object         | Original phone number submitted.                               | basic                |
-| `numbering.cleansing`                              | object         | Cleansed/standardized phone number data.                       | basic                |
-| `location.city`                                    | string         | City where the number was activated.                           | basic                |
-| `location.state`                                   | string         | State or province where the number was activated.              | basic                |
-| `location.zip`                                     | string         | ZIP code associated with the rate center.                      | basic                |
-| `location.country`                                 | object         | Country info for the number.                                   | basic                |
-| `location.timeZone`                                | object         | Time zone information for the phone number.                    | basic                |
-| `location.coordinates`                             | object         | Latitude and longitude.                                        | basic                |
-| `location.metroCode`                               | string         | PMSA code for U.S. metro regions.                              | basic                |
-| `ageVerify.ageVerified`                            | boolean        | Whether age threshold was met.                                 | ageVerify            |
-| `ageVerify.status`                                 | object         | Status object for the age verification check.                  | ageVerify            |
-| `activeCallStatus.isCallActive`                    | boolean        | Indicates if the number is currently in a call.                | activeCallStatus     |
-| `activeCallStatus.callDuration`                    | integer        | Duration of the active call in seconds.                        | activeCallStatus     |
-| `activeCallStatus.callDirection`                   | string         | Direction of the call (called/calling).                        | activeCallStatus     |
-| `activeCallStatus.status`                          | object         | Status object for the call activity.                           | activeCallStatus     |
-| `breachedNumberCheck.phoneNumberBreached`          | boolean        | Indicates if the number was part of a breach.                  | breachedData         |
-| `breachedNumberCheck.breachDate`                   | string         | Date of the breach if known.                                   | breachedData         |
-| `breachedNumberCheck.breachedData`                 | array          | List of breached data types.                                   | breachedData         |
-| `breachedNumberCheck.status`                       | object         | Status object for breach check.                                | breachedData         |
-| `callForwardDetection.callForwardEnabled`          | string         | Whether call forwarding is enabled.                            | callForwardDetection |
-| `callForwardDetection.callForwardType`             | string         | Type of call forwarding (conditional, unconditional).          | callForwardDetection |
-| `callForwardDetection.callForwardCondition`        | string         | Forwarding condition (busy, unanswered, etc.).                 | callForwardDetection |
-| `callForwardDetection.status`                      | object         | Status object for call forwarding check.                       | callForwardDetection |
-| `contact.firstName`                                | string         | Subscriber’s first name.                                       | contact              |
-| `contact.lastName`                                 | string         | Subscriber’s last name.                                        | contact              |
-| `contact.emailAddress`                             | string         | Email address linked to the number.                            | contact              |
-| `contact.city`                                     | string         | City from subscriber’s address.                                | contact              |
-| `contact.country`                                  | string         | Country of subscriber.                                         | contact              |
-| `contact.dateOfBirth`                              | string         | Date of birth (if available).                                  | contact              |
-| `contact.status`                                   | object         | Status object for the contact package.                         | contact              |
-| `contactMatch.firstNameScore`                      | integer        | Match score for first name (0–100).                            | contactMatch         |
-| `contactMatch.lastNameScore`                       | integer        | Match score for last name (0–100).                             | contactMatch         |
-| `contactMatch.addressScore`                        | integer        | Match score for address (0–100).                               | contactMatch         |
-| `contactMatch.status`                              | object         | Status object for contact match.                               | contactMatch         |
-| `numberDeactivation.carrierName`                   | string         | Last associated carrier.                                       | numberDeactivation   |
-| `numberDeactivation.lastDeactivated`               | string         | When the number was last deactivated.                          | numberDeactivation   |
-| `numberDeactivation.trackingSince`                 | string         | When the number started being tracked.                         | numberDeactivation   |
-| `numberDeactivation.recycledSinceLastVerification` | string         | Recycling status.                                              | numberDeactivation   |
-| `numberDeactivation.status`                        | object         | Status of the number deactivation check.                       | numberDeactivation   |
-| `subscriberStatus.accountActivationDate`           | string         | When the account was activated.                                | subscriberStatus     |
-| `subscriberStatus.accountStatus`                   | string         | Whether account is active, suspended, or deactivated.          | subscriberStatus     |
-| `subscriberStatus.accountType`                     | string         | Type of account (prepaid/postpaid).                            | subscriberStatus     |
-| `subscriberStatus.contractType`                    | string         | Subscriber’s contract type.                                    | subscriberStatus     |
-| `subscriberStatus.accountTenureMin`                | integer        | Minimum months the account has been active.                    | subscriberStatus     |
-| `subscriberStatus.accountTenureMax`                | integer        | Maximum months the account has been active.                    | subscriberStatus     |
-| `subscriberStatus.primaryAccountHolder`            | boolean        | Whether it's the primary phone number for the account.         | subscriberStatus     |
-| `subscriberStatus.status`                          | object         | Status object for the subscriber check.                        | subscriberStatus     |
-| `portingHistory.portDate`                          | string         | Date the number was last ported.                               | portingHistory       |
-| `portingHistory.carrierCurrent`                    | string         | Current carrier.                                               | portingHistory       |
-| `portingHistory.carrierPrevious`                   | string         | Previous carrier.                                              | portingHistory       |
-| `portingHistory.status`                            | object         | Status of porting history check.                               | portingHistory       |
-| `portingStatus.ported`                             | boolean        | Whether the number was ported.                                 | portingStatus        |
-| `portingStatus.mccCurrent`                         | string         | Mobile Country Code of current carrier.                        | portingStatus        |
-| `portingStatus.mncCurrent`                         | string         | Mobile Network Code of current carrier.                        | portingStatus        |
-| `portingStatus.status`                             | object         | Status of porting status check.                                | portingStatus        |
-| `simSwap.swapDate`                                 | string         | Date the SIM was last swapped.                                 | simSwap              |
-| `simSwap.swapTime`                                 | string         | Time the SIM was swapped.                                      | simSwap              |
-| `simSwap.riskIndicator`                            | string         | Fraud risk level (1–4).                                        | simSwap              |
-| `simSwap.status`                                   | object         | Status of SIM swap detection.                                  | simSwap              |
+| Field                                 | Type           | Description                                                                                              | Source       |
+| ------------------------------------- | -------------- | -------------------------------------------------------------------------------------------------------- | ------------ |
+| `status`                              | boolean        | Indicates if the API request itself was successful.                                                      | basic        |
+| `data.referenceId`                    | string         | Unique 32-character hex ID for the transaction (provider-generated).                                     | basic        |
+| `data.externalId`                     | string \| null | Custom ID echoed back if provided in the request.                                                        | basic        |
+| `data.status.code`                    | integer        | Processing status code (e.g., 300 for success).                                                          | basic        |
+| `data.status.description`             | string         | Human-readable description of the transaction status.                                                    | basic        |
+| `data.status.updatedOn`               | string         | ISO 8601/RFC 3339 timestamp of last update.                                                              | basic        |
+| `data.phoneType.code`                 | string         | Phone type code.                                                                                         | phoneType    |
+| `data.phoneType.description`          | string         | Description of the phone type.                                                                           | phoneType    |
+| `data.blocklisting.blocked`           | boolean        | Whether the number is blocklisted.                                                                       | blocklisting |
+| `data.blocklisting.blockCode`         | integer        | Block status code.                                                                                       | blocklisting |
+| `data.blocklisting.blockDescription`  | string         | Description of the block reason.                                                                         | blocklisting |
+| `data.carrier.name`                   | string         | Carrier name.                                                                                            | carrier      |
+| `data.numbering.original`             | object         | Original number as received (completePhoneNumber/countryCode/phoneNumber).                               | numbering    |
+| `data.numbering.cleansing`            | object         | Cleansed number details for `call` and `sms` (countryCode/phoneNumber/minLength/maxLength/cleansedCode). | numbering    |
+| `data.location.city`                  | string \| null | City (may be null).                                                                                      | location     |
+| `data.location.state`                 | string \| null | State/region (may be null).                                                                              | location     |
+| `data.location.zip`                   | string \| null | Postal/ZIP code (may be null).                                                                           | location     |
+| `data.location.county`                | string \| null | County (may be null).                                                                                    | location     |
+| `data.location.metroCode`             | string \| null | Metro/PMSA code (U.S.; may be null).                                                                     | location     |
+| `data.location.country.name`          | string \| null | Country name.                                                                                            | location     |
+| `data.location.country.iso2`          | string \| null | ISO-3166-1 alpha-2 code.                                                                                 | location     |
+| `data.location.country.iso3`          | string \| null | ISO-3166-1 alpha-3 code.                                                                                 | location     |
+| `data.location.coordinates.latitude`  | number \| null | Latitude (may be null).                                                                                  | location     |
+| `data.location.coordinates.longitude` | number \| null | Longitude (may be null).                                                                                 | location     |
+| `data.location.timeZone.name`         | string \| null | IANA time zone name (may be null).                                                                       | location     |
+| `data.location.timeZone.utcOffsetMax` | string \| null | Max UTC offset (e.g., “+1”).                                                                             | location     |
+| `data.location.timeZone.utcOffsetMin` | string \| null | Min UTC offset (e.g., “+1”).                                                                             | location     |
 </Accordion>
 
 ### Example Request
@@ -412,221 +364,81 @@ The **Phone ID** service provides identity checks and enriched data linked to a 
 <Accordion title="Example Response">
 ```json
 {
-  "referenceId": "f0123456789abcdef0123456789abcde",
-  "phoneType": {
-    "code": "1",
-    "overrideReason": "NonSmsEnabledPhoneNumber",
-    "description": "FIXED_LINE",
-    "overrideReasonId": 11
-  },
-  "blocklisting": {
-    "blockCode": 0,
-    "blockDescription": "Not blocked",
-    "blocked": true
-  },
-  "status": {
-    "code": 300,
-    "description": "Transaction successfully completed",
-    "updatedOn": "2023-10-03T14:51:28.709Z"
-  },
-  "numbering": {
-    "original": {
-      "phoneNumber": "9876543210",
-      "completePhoneNumber": "19876543210",
-      "countryCode": "1"
+  "status": true,
+  "data": {
+    "referenceId": "0123456789ABCDEF0123456789ABCDEF",
+    "externalId": null,
+    "status": {
+      "code": 300,
+      "description": "Transaction successfully completed",
+      "updatedOn": "2025-01-01T00:00:00Z"
     },
-    "cleansing": {
-      "call": {
-        "cleansedCode": 100,
-        "countryCode": "1",
-        "maxLength": 10,
-        "minLength": 10,
-        "phoneNumber": "9876543210"
+    "location": {
+      "city": "Countrywide",
+      "state": null,
+      "zip": null,
+      "metroCode": null,
+      "county": null,
+      "country": {
+        "name": "Exampleland",
+        "iso2": "EX",
+        "iso3": "EXL"
       },
-      "sms": {
-        "cleansedCode": 100,
-        "countryCode": "1",
-        "maxLength": 10,
-        "minLength": 10,
-        "phoneNumber": "9876543210"
+      "coordinates": {
+        "latitude": null,
+        "longitude": null
+      },
+      "timeZone": {
+        "name": null,
+        "utcOffsetMax": "+0",
+        "utcOffsetMin": "+0"
       }
-    }
-  },
-  "location": {
-    "city": "New York",
-    "county": "Kings",
-    "state": "NY",
-    "zip": "11201",
-    "country": {
-      "iso2": "US",
-      "iso3": "USA",
-      "name": "United States"
     },
-    "timeZone": {
-      "name": "America/New_York",
-      "utcOffsetMax": "-5",
-      "utcOffsetMin": "-5"
+    "blocklisting": {
+      "blocked": false,
+      "blockCode": 0,
+      "blockDescription": "Not blocked"
     },
-    "coordinates": {
-      "latitude": 40.7128,
-      "longitude": -74.006
+    "numbering": {
+      "cleansing": {
+        "call": {
+          "countryCode": "99",
+          "phoneNumber": "5550123456",
+          "cleansedCode": 100,
+          "minLength": 7,
+          "maxLength": 13
+        },
+        "sms": {
+          "countryCode": "99",
+          "phoneNumber": "5550123456",
+          "cleansedCode": 100,
+          "minLength": 7,
+          "maxLength": 13
+        }
+      },
+      "original": {
+        "completePhoneNumber": "+995550123456",
+        "countryCode": "99",
+        "phoneNumber": "5550123456"
+      }
     },
-    "metroCode": "56000"
-  },
-  "carrier": {
-    "carrierId": 101,
-    "name": "AT&T Wireless",
-    "mcc": "310",
-    "mnc": "410"
-  },
-  "ageVerify": {
-    "ageVerified": true,
-    "status": {
-      "code": 2800,
-      "description": "Age verification successful"
-    }
-  },
-  "activeCallStatus": {
-    "isCallActive": true,
-    "callDuration": 180,
-    "callDirection": "called",
-    "status": {
-      "code": 2800,
-      "description": "Active call status retrieved"
-    }
-  },
-  "breachedNumberCheck": {
-    "phoneNumberBreached": true,
-    "breachDate": "2021-11-18T00:00:00Z",
-    "breachedData": ["email", "password"],
-    "status": {
-      "code": 2800,
-      "description": "Breach data found"
-    }
-  },
-  "callForwardDetection": {
-    "callForwardEnabled": "true",
-    "callForwardType": "unconditional",
-    "callForwardCondition": "unanswered",
-    "status": {
-      "code": 2800,
-      "description": "Call forwarding detected"
-    }
-  },
-  "contact": {
-    "address1": "456 Elm Street",
-    "address2": "Apt 2B",
-    "address3": "Brooklyn",
-    "address4": "11201",
-    "city": "New York",
-    "country": "US",
-    "dateOfBirth": "1985-06-15T00:00:00Z",
-    "emailAddress": "jdoe@example.com",
-    "firstName": "John",
-    "id": "ID123456789",
-    "lastName": "Doe",
-    "stateProvince": "NY",
-    "zipPostalCode": "11201",
-    "status": {
-      "code": 2800,
-      "description": "Contact data retrieved"
-    }
-  },
-  "contactMatch": {
-    "addressScore": 92,
-    "firstNameScore": 100,
-    "lastNameScore": 98,
-    "status": {
-      "code": 2800,
-      "description": "Contact match success"
-    }
-  },
-  "contactPlus": {
-    "address1": "456 Elm Street",
-    "address2": "Apt 2B",
-    "address3": "Brooklyn",
-    "address4": "11201",
-    "city": "New York",
-    "country": "US",
-    "dateOfBirth": "1985-06-15T00:00:00Z",
-    "emailAddress": "jdoe@example.com",
-    "firstName": "John",
-    "id": "ID123456789",
-    "lastName": "Doe",
-    "stateProvince": "NY",
-    "zipPostalCode": "11201",
-    "status": {
-      "code": 2800,
-      "description": "Contact+ data retrieved"
-    }
-  },
-  "numberDeactivation": {
-    "carrierName": "T-Mobile",
-    "lastDeactivated": "2022-07-01T00:00:00Z",
-    "status": {
-      "code": 2800,
-      "description": "Deactivation check passed"
+    "phoneType": {
+      "code": "2",
+      "description": "MOBILE"
     },
-    "trackingSince": "2020-01-01T00:00:00Z",
-    "recycledSinceLastVerification": "notRecycled"
-  },
-  "subscriberStatus": {
-    "status": {
-      "code": 2800,
-      "description": "Subscriber status retrieved"
-    },
-    "accountActivationDate": "2021-05-15T00:00:00Z",
-    "accountType": "individual",
-    "accountTenureMax": 12,
-    "accountTenureMin": 6,
-    "primaryAccountHolder": true,
-    "accountStatus": "active",
-    "contractType": "postpaid"
-  },
-  "portingHistory": {
-    "carrierCurrent": "T-Mobile USA",
-    "carrierPrevious": "Verizon Wireless",
-    "mccCarrierCurrent": "310",
-    "mccCarrierPrevious": "310",
-    "mncCarrierCurrent": "260",
-    "mncCarrierPrevious": "012",
-    "phoneTypeCurrent": "MOBILE",
-    "phoneTypePrevious": "MOBILE",
-    "portDate": "2023-01-10T09:00:00Z",
-    "numberOfPortings": "2",
-    "status": {
-      "code": 2800,
-      "description": "Porting history retrieved"
+    "carrier": {
+      "name": "Example Mobile Ltd"
     }
-  },
-  "portingStatus": {
-    "mccCurrent": "310",
-    "mncCurrent": "260",
-    "ported": true,
-    "status": {
-      "code": 2800,
-      "description": "Porting status confirmed"
-    }
-  },
-  "simSwap": {
-    "swapDate": "2023-07-15T00:00:00Z",
-    "swapTime": "14:32:00",
-    "riskIndicator": "2",
-    "status": {
-      "code": 2800,
-      "description": "SIM swap risk evaluated"
-    }
-  },
-  "externalId": "customExternalId123"
+  }
 }
 ```
 </Accordion>
 
 
-## 3. Phone Risk Score (Upcoming)
+## 3. Phone Risk Score 
 
 ### Endpoint
-**POST** `/phoneRiskScore`
+**POST** `/phone-service/phoneRiskScore`
 
 ### Description
 
@@ -648,7 +460,7 @@ What’s evaluated:
 <Accordion title="Request Body Parameters">
 | Field               | Type   | Required | Description                                                                                                                                                     |
 |---------------------|--------|----------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `phone`               | string | Yes      | The phone number to check, including country code.                                                                                                              |
+| `phoneNumber`               | string | Yes      | The phone number to check, including country code.                                                                                                              |
 | `accountLifecycleEvent` | string | Yes      | The action being evaluated. Accepted values: `create`, `sign-in`, `transact`, `update`, `delete`.                                                              |
 | `externalId`             | string | No       | A customer-generated ID for this transaction. The response echoes this value.                                                                                  |
 | `originatingIp`          | string | No       | End user's IP address (IPv4 or IPv6). Do not send your own IP.                                                                                                  |
@@ -659,49 +471,79 @@ What’s evaluated:
 
 ### Response Structure
 <Accordion title="Response Structure">
-| Field               | Type   | Description                                                                                                                                                     |
-|---------------------------|---------------------|--------------------------------------------------------------------------------------------------|
-| `referenceId`             | string              | Unique ID for the web service request.                                                           |
-| `externalId`              | string \| null      | Echo of the custom ID you provided in the request.                                               |
-| `status.code`             | integer             | Internal status code of the transaction.                                                         |
-| `status.description`      | string              | Description of the transaction status.                                                           |
-| `status.updatedOn`        | string              | RFC 3339 timestamp of last update.                                                               |
-| `location.city`           | string              | City associated with the phone number's rate center.                                             |
-| `location.county`         | string              | County or parish (U.S. only).                                                                    |
-| `location.state`          | string              | Two-letter state or province abbreviation.                                                       |
-| `location.zip`            | string              | 5-digit U.S. ZIP code.                                                                           |
-| `location.country`        | object              | Country information (ISO codes, name).                                                           |
-| `location.timeZone`       | object              | Time zone data including UTC offset.                                                             |
-| `location.coordinates`    | object              | Latitude and longitude of the number's location.                                                 |
-| `location.metroCode`      | string              | PMSA code for large U.S. metro areas.                                                            |
-| `numbering.original`      | object              | The original submitted phone number and details.                                                 |
-| `numbering.cleansing`     | object              | Cleaned version of the phone number for calling and SMS.                                         |
-| `phoneType.code`          | string              | Phone type code.                                                                                 |
-| `phoneType.description`   | string              | Description of the phone type (e.g., `FIXED_LINE`).                                              |
-| `phoneType.overrideReason`| string              | Why the phone type was overridden (if applicable).                                               |
-| `phoneType.overrideReasonId` | integer         | Override reason ID code.                                                                         |
-| `blocklisting.blocked`    | boolean             | Whether the phone number is currently blocked.                                                   |
-| `blocklisting.blockCode`  | integer             | Reason code for the block.                                                                       |
-| `blocklisting.blockDescription` | string        | Explanation for the block status.                                                                |
-| `carrier.carrierId`       | integer             | Carrier ID (if provided).                                                                        |
-| `carrier.name`            | string              | Carrier name (e.g., `AT&T Wireless`).                                                            |
-| `risk.level`              | string              | Severity of the risk (e.g., `low`, `high`).                                                      |
-| `risk.recommendation`     | string              | Recommended action: `allow`, `flag`, or `block`.                                                 |
-| `risk.score`              | integer             | Risk score from 0 to 1000, higher = riskier.                                                     |
-| `riskInsights.status`     | integer             | Status of the insights package.                                                                  |
-| `riskInsights.category`   | array of integers   | Reason codes related to the phone number's category.                                             |
-| `riskInsights.a2p`        | array of integers   | A2P-specific reason codes (e.g., automated messages).                                            |
-| `riskInsights.p2p`        | array of integers   | P2P-specific reason codes (e.g., human-to-human messages).                                       |
-| `riskInsights.numberType` | array of integers   | Reason codes related to the phone number type.                                                   |
-| `riskInsights.ip`         | array of integers   | Reason codes related to IP address activity.                                                     |
-| `riskInsights.email`      | array of integers   | Reason codes related to email address activity.                                                  |
+| Field                                         | Type    | Description                                        |
+| --------------------------------------------- | ------- | -------------------------------------------------- |
+| `status`                                      | boolean | Indicates if the API request was successful.       |
+| `data`                                        | object  | Contains the transaction result details.           |
+| `data.referenceId`                            | string  | Unique reference ID for the transaction.           |
+| `data.externalId`                             | string  | External reference ID (nullable).                  |
+| `data.status`                                 | object  | Transaction status details.                        |
+| `data.status.updatedOn`                       | string  | Timestamp of the last update (ISO 8601 format).    |
+| `data.status.code`                            | number  | Status code (e.g., `300` for success).             |
+| `data.status.description`                     | string  | Status description message.                        |
+| `data.numbering`                              | object  | Original and cleansed phone number details.        |
+| `data.numbering.original`                     | object  | Original phone number information.                 |
+| `data.numbering.original.completePhoneNumber` | string  | Complete phone number in international format.     |
+| `data.numbering.original.countryCode`         | string  | Country dialing code.                              |
+| `data.numbering.original.phoneNumber`         | string  | Local phone number.                                |
+| `data.numbering.cleansing`                    | object  | Cleansed phone number details for call and SMS.    |
+| `data.numbering.cleansing.call`               | object  | Cleansed phone number details for calling.         |
+| `data.numbering.cleansing.call.countryCode`   | string  | Country dialing code after cleansing.              |
+| `data.numbering.cleansing.call.phoneNumber`   | string  | Cleansed local phone number for calling.           |
+| `data.numbering.cleansing.call.cleansedCode`  | number  | Result code of cleansing (e.g., `100` = valid).    |
+| `data.numbering.cleansing.call.minLength`     | number  | Minimum valid length of phone number.              |
+| `data.numbering.cleansing.call.maxLength`     | number  | Maximum valid length of phone number.              |
+| `data.numbering.cleansing.sms`                | object  | Cleansed phone number details for SMS.             |
+| `data.numbering.cleansing.sms.countryCode`    | string  | Country dialing code after cleansing.              |
+| `data.numbering.cleansing.sms.phoneNumber`    | string  | Cleansed local phone number for SMS.               |
+| `data.numbering.cleansing.sms.cleansedCode`   | number  | Result code of cleansing (e.g., `100` = valid).    |
+| `data.numbering.cleansing.sms.minLength`      | number  | Minimum valid length of phone number.              |
+| `data.numbering.cleansing.sms.maxLength`      | number  | Maximum valid length of phone number.              |
+| `data.riskInsights`                           | object  | Risk assessment details.                           |
+| `data.riskInsights.status`                    | number  | Risk status code.                                  |
+| `data.riskInsights.category`                  | array   | Risk category codes.                               |
+| `data.riskInsights.a2P`                       | array   | Application-to-Person (A2P) risk indicators.       |
+| `data.riskInsights.p2P`                       | array   | Person-to-Person (P2P) risk indicators.            |
+| `data.riskInsights.numberType`                | array   | Number type risk indicators (if any).              |
+| `data.riskInsights.ip`                        | array   | IP-related risk indicators (if any).               |
+| `data.riskInsights.email`                     | array   | Email-related risk indicators (if any).            |
+| `data.phoneType`                              | object  | Phone type information.                            |
+| `data.phoneType.code`                         | string  | Phone type code (e.g., `2`).                       |
+| `data.phoneType.description`                  | string  | Phone type description (e.g., "MOBILE").           |
+| `data.location`                               | object  | Location details associated with the phone number. |
+| `data.location.city`                          | string  | City of the number (if available).                 |
+| `data.location.state`                         | string  | State or region (nullable).                        |
+| `data.location.zip`                           | string  | ZIP or postal code (nullable).                     |
+| `data.location.metroCode`                     | string  | Metro code (nullable).                             |
+| `data.location.county`                        | string  | County (nullable).                                 |
+| `data.location.country`                       | object  | Country details.                                   |
+| `data.location.country.name`                  | string  | Country name.                                      |
+| `data.location.country.iso2`                  | string  | ISO 2-letter country code.                         |
+| `data.location.country.iso3`                  | string  | ISO 3-letter country code.                         |
+| `data.location.coordinates`                   | object  | Geographic coordinates.                            |
+| `data.location.coordinates.latitude`          | number  | Latitude (nullable).                               |
+| `data.location.coordinates.longitude`         | number  | Longitude (nullable).                              |
+| `data.location.timeZone`                      | object  | Time zone information.                             |
+| `data.location.timeZone.name`                 | string  | Time zone name (nullable).                         |
+| `data.location.timeZone.utcOffsetMin`         | string  | Minimum UTC offset.                                |
+| `data.location.timeZone.utcOffsetMax`         | string  | Maximum UTC offset.                                |
+| `data.carrier`                                | object  | Carrier (telecom provider) details.                |
+| `data.carrier.name`                           | string  | Carrier name.                                      |
+| `data.blocklisting`                           | object  | Blocklisting details.                              |
+| `data.blocklisting.blocked`                   | boolean | Indicates if the number is blocklisted.            |
+| `data.blocklisting.blockCode`                 | number  | Blocklisting code (e.g., `0` = not blocked).       |
+| `data.blocklisting.blockDescription`          | string  | Blocklisting description.                          |
+| `data.risk`                                   | object  | Overall risk score and recommendation.             |
+| `data.risk.level`                             | string  | Risk level (e.g., `medium-low`).                   |
+| `data.risk.recommendation`                    | string  | Risk handling recommendation (e.g., `allow`).      |
+| `data.risk.score`                             | number  | Risk score (numerical value).                      |
 </Accordion>
 
 ### Example Request
 <Accordion title="Example Request">
 ```json
 {
-  "phone": "+15555551212",
+  "phoneNumber": "+436501234567",
   "accountLifecycleEvent": "create",
   "externalId": "1234567890",   
   "originatingIp": "192.168.1.1",
@@ -715,185 +557,96 @@ What’s evaluated:
 ### Example Response
 <Accordion title="Example Response">
 ```json
-{ 
-
-  "referenceId": "B567DC5D1180011C8952823CF6B40773", 
-
-  "status": { 
-
-    "updatedOn": "2022-02-01T00:33:34.860418Z", 
-
-    "code": 300, 
-
-    "description": "Transaction successfully completed" 
-
-  }, 
-
-  "numbering": { 
-
-    "original": { 
-
-      "completePhoneNumber": "15555551212", 
-
-      "countryCode": "1", 
-
-      "phoneNumber": "5555551212" 
-
-    }, 
-
-    "cleansing": { 
-
-      "call": { 
-
-        "countryCode": "1", 
-
-        "phoneNumber": "5555551212", 
-
-        "cleansedCode": 105, 
-
-        "minLength": 10, 
-
-        "maxLength": 10 
-
-      }, 
-
-      "sms": { 
-
-        "countryCode": "1", 
-
-        "phoneNumber": "5555551212", 
-
-        "cleansedCode": 105, 
-
-        "minLength": 10, 
-
-        "maxLength": 10 
-
-      } 
-
-    } 
-
-  }, 
-
-  "phoneType": { 
-
-    "code": "8", 
-
-    "description": "INVALID" 
-
-  }, 
-
-  "location": { 
-
-    "city": "Countrywide", 
-
-    "state": null, 
-
-    "zip": null, 
-
-    "metroCode": null, 
-
-    "county": null, 
-
-    "country": { 
-
-      "name": "United Kingdom", 
-
-      "iso2": "GB", 
-
-      "iso3": "GBR" 
-
-    }, 
-
-    "coordinates": { 
-
-      "latitude": null, 
-
-      "longitude": null 
-
-    }, 
-
-    "timeZone": { 
-
-      "name": null, 
-
-      "utcOffsetMin": "0", 
-
-      "utcOffsetMax": "0" 
-
-    } 
-
-  }, 
-
-  "carrier": { 
-
-    "name": "Telefonica UK Limited" 
-
-  }, 
-
-  "risk": { 
-
-    "level": "high", 
-
-    "recommendation": "block", 
-
-    "score": 959 
-
-  }, 
-
-  "riskInsights": { 
-
-    "status": 800, 
-
-    "category": [ 
-
-      10002 
-
-    ], 
-
-    "a2p": [ 
-
-      20001, 
-
-      20101, 
-
-      21002 
-
-    ], 
-
-    "p2p": [ 
-
-      30201 
-
-    ], 
-
-    "numberType": [ 
-
-      40005, 
-
-      40011 
-
-    ], 
-
-    "ip": [ 
-
-      50001, 
-
-      50004 
-
-    ], 
-
-    "email": [ 
-
-      60003, 
-
-      60006 
-
-    ] 
-
-  } 
-
-} 
+{
+    "status": true,
+    "data": {
+        "referenceId": "3661FDC7EAA8111C93048FA6FB8C300C",
+        "externalId": null,
+        "status": {
+            "updatedOn": "2025-08-06T12:53:53.082687Z",
+            "code": 300,
+            "description": "Transaction successfully completed"
+        },
+        "numbering": {
+            "original": {
+                "completePhoneNumber": "+436501234567",
+                "countryCode": "43",
+                "phoneNumber": "6501234567"
+            },
+            "cleansing": {
+                "call": {
+                    "countryCode": "43",
+                    "phoneNumber": "6501234567",
+                    "cleansedCode": 100,
+                    "minLength": 7,
+                    "maxLength": 13
+                },
+                "sms": {
+                    "countryCode": "43",
+                    "phoneNumber": "6501234567",
+                    "cleansedCode": 100,
+                    "minLength": 7,
+                    "maxLength": 13
+                }
+            }
+        },
+        "riskInsights": {
+            "status": 800,
+            "category": [
+                10010
+            ],
+            "a2P": [
+                22001,
+                20011,
+                20101
+            ],
+            "p2P": [
+                30201
+            ],
+            "numberType": [],
+            "ip": [],
+            "email": []
+        },
+        "phoneType": {
+            "code": "2",
+            "description": "MOBILE"
+        },
+        "location": {
+            "city": "Countrywide",
+            "state": null,
+            "zip": null,
+            "metroCode": null,
+            "county": null,
+            "country": {
+                "name": "Austria",
+                "iso2": "AT",
+                "iso3": "AUT"
+            },
+            "coordinates": {
+                "latitude": null,
+                "longitude": null
+            },
+            "timeZone": {
+                "name": null,
+                "utcOffsetMin": "+1",
+                "utcOffsetMax": "+1"
+            }
+        },
+        "carrier": {
+            "name": "T-Mobile Austria GmbH"
+        },
+        "blocklisting": {
+            "blocked": false,
+            "blockCode": 0,
+            "blockDescription": "Not blocked"
+        },
+        "risk": {
+            "level": "medium-low",
+            "recommendation": "allow",
+            "score": 301
+        }
+    }
+}
 ```
 </Accordion>
 
@@ -1118,7 +871,7 @@ These codes specify additional reasons for altering the original phone type clas
 
 ### Endpoint        
 
-**POST** `/verification`
+**POST** `/phone-service/verification`
 
 ### Description
 The Messaging API enables you to deliver important verification messages to your users through the channels they use most. For the verification endpoint, supported delivery methods include:
@@ -1136,8 +889,8 @@ The Messaging API enables you to deliver important verification messages to your
 <Accordion title="Request Body Parameters">
 | Field                         | Type    | Required    | Description                                                                                       |
 |-------------------------------|---------|-------------|---------------------------------------------------------------------------------------------------|
-| `recipient.phoneNumber`       | string  | Yes for SMS    | Recipient's phone number in international format, no spaces or special characters.               |
-| `recipient.email`             | string  | Yes for EMAIL  | Recipient's email address.                                                                       |
+| `phoneNumber`                 | string  | Yes for SMS    | Recipient's phone number in international format, no spaces or special characters.               |
+| `email`                       | string  | Yes for EMAIL  | Recipient's email address.                                                                       |
 | `method`                      | string  | Yes         | The delivery method to use. Only accepted values: `sms` or `email`.                              |
 | `securityFactor`             | string  | No          | A custom numeric OTP (3–10 digits). If omitted, a 6-digit OTP is auto-generated.                 |
 | `externalId`                 | string  | No          | Customer-defined transaction ID. Max length: 100 characters.                                     |
@@ -1163,17 +916,9 @@ The Messaging API enables you to deliver important verification messages to your
 <Accordion title="Example Request">
 ```json
 {
-  "recipient": {
-    "phoneNumber": "14155550123"
-  },
-  "method": "sms",
-  "securityFactor": "123456",
-  "externalId": "verifyRequest123",
-  "messageTemplate": {
-    "name": "welcome_otp",
-    "verificationTemplate": "Your code is {{code}}. It expires in 5 minutes."
-  },
-  "voiceLang": "en-US"
+    "phoneNumber": "+436501234567",
+    "method": "sms",
+    "email": "test@test.com"
 }
 ```
 </Accordion>
@@ -1196,7 +941,7 @@ The Messaging API enables you to deliver important verification messages to your
 ```
 </Accordion>
 
-### 4.2 Verification Match
+### 4.2 Verification Match (Upcoming)
 
 ### Endpoint
 **PATCH** `/verificationMatch/{referenceId}`
@@ -1254,7 +999,7 @@ If the OTP is correct, the verification process is marked as VERIFIED. If incorr
 ## 5. Full Phone Intelligence (Upcoming)
 
 ### Endpoint
-**POST** `/fullPhoneIntelligence`   
+**POST** `/phone-service/fullPhoneIntelligence`   
 
 ### Description
 **Full Phone Intelligence** delivers a comprehensive risk and identity assessment for a phone number in a single API call. It combines behavioral signals, telecom intelligence, and historical data to help you detect fraud, verify identity, and make confident risk decisions.
@@ -1269,6 +1014,194 @@ This service analyzes the phone number using various trust and risk indicators s
 - **Active call status**
 - **Geolocation and time zone data**
 - **Contact matching and scoring**
+
+### Required Headers
+| Header        | Value                    |
+| ------------- | ------------------------ |
+| Content-Type  | `application/json`       |
+| Authorization | `Bearer yourAccessToken` |
+
+### Request Body Parameters
+<Accordion title="Request Body Parameters">
+| Field   | Type   | Required | Description                                        |
+| ------- | ------ | -------- | -------------------------------------------------- |
+| `phoneNumber` | string | Yes      | The phone number to check, including country code. |
+</Accordion>
+
+### Response Structure
+<Accordion title="Response Structure">
+| Field                                         | Type    | Description                                        |
+| --------------------------------------------- | ------- | -------------------------------------------------- |
+| `status`                                      | boolean | Indicates if the API request was successful.       |
+| `data`                                        | object  | Contains the transaction result details.           |
+| `data.referenceId`                            | string  | Unique reference ID for the transaction.           |
+| `data.externalId`                             | string  | External reference ID (nullable).                  |
+| `data.status`                                 | object  | Transaction status details.                        |
+| `data.status.updatedOn`                       | string  | Timestamp of the last update (ISO 8601 format).    |
+| `data.status.code`                            | number  | Status code (e.g., `300` for success).             |
+| `data.status.description`                     | string  | Status description message.                        |
+| `data.numbering`                              | object  | Original and cleansed phone number details.        |
+| `data.numbering.original`                     | object  | Original phone number information.                 |
+| `data.numbering.original.completePhoneNumber` | string  | Complete phone number in international format.     |
+| `data.numbering.original.countryCode`         | string  | Country dialing code.                              |
+| `data.numbering.original.phoneNumber`         | string  | Local phone number.                                |
+| `data.numbering.cleansing`                    | object  | Cleansed phone number details for call and SMS.    |
+| `data.numbering.cleansing.call`               | object  | Cleansed phone number details for calling.         |
+| `data.numbering.cleansing.call.countryCode`   | string  | Country dialing code after cleansing.              |
+| `data.numbering.cleansing.call.phoneNumber`   | string  | Cleansed local phone number for calling.           |
+| `data.numbering.cleansing.call.cleansedCode`  | number  | Result code of cleansing (e.g., `100` = valid).    |
+| `data.numbering.cleansing.call.minLength`     | number  | Minimum valid length of phone number.              |
+| `data.numbering.cleansing.call.maxLength`     | number  | Maximum valid length of phone number.              |
+| `data.numbering.cleansing.sms`                | object  | Cleansed phone number details for SMS.             |
+| `data.numbering.cleansing.sms.countryCode`    | string  | Country dialing code after cleansing.              |
+| `data.numbering.cleansing.sms.phoneNumber`    | string  | Cleansed local phone number for SMS.               |
+| `data.numbering.cleansing.sms.cleansedCode`   | number  | Result code of cleansing (e.g., `100` = valid).    |
+| `data.numbering.cleansing.sms.minLength`      | number  | Minimum valid length of phone number.              |
+| `data.numbering.cleansing.sms.maxLength`      | number  | Maximum valid length of phone number.              |
+| `data.riskInsights`                           | object  | Risk assessment details.                           |
+| `data.riskInsights.status`                    | number  | Risk status code.                                  |
+| `data.riskInsights.category`                  | array   | Risk category codes.                               |
+| `data.riskInsights.a2P`                       | array   | Application-to-Person (A2P) risk indicators.       |
+| `data.riskInsights.p2P`                       | array   | Person-to-Person (P2P) risk indicators.            |
+| `data.riskInsights.numberType`                | array   | Number type risk indicators (if any).              |
+| `data.riskInsights.ip`                        | array   | IP-related risk indicators (if any).               |
+| `data.riskInsights.email`                     | array   | Email-related risk indicators (if any).            |
+| `data.phoneType`                              | object  | Phone type information.                            |
+| `data.phoneType.code`                         | string  | Phone type code (e.g., `2`).                       |
+| `data.phoneType.description`                  | string  | Phone type description (e.g., "MOBILE").           |
+| `data.location`                               | object  | Location details associated with the phone number. |
+| `data.location.city`                          | string  | City of the number (if available).                 |
+| `data.location.state`                         | string  | State or region (nullable).                        |
+| `data.location.zip`                           | string  | ZIP or postal code (nullable).                     |
+| `data.location.metroCode`                     | string  | Metro code (nullable).                             |
+| `data.location.county`                        | string  | County (nullable).                                 |
+| `data.location.country`                       | object  | Country details.                                   |
+| `data.location.country.name`                  | string  | Country name.                                      |
+| `data.location.country.iso2`                  | string  | ISO 2-letter country code.                         |
+| `data.location.country.iso3`                  | string  | ISO 3-letter country code.                         |
+| `data.location.coordinates`                   | object  | Geographic coordinates.                            |
+| `data.location.coordinates.latitude`          | number  | Latitude (nullable).                               |
+| `data.location.coordinates.longitude`         | number  | Longitude (nullable).                              |
+| `data.location.timeZone`                      | object  | Time zone information.                             |
+| `data.location.timeZone.name`                 | string  | Time zone name (nullable).                         |
+| `data.location.timeZone.utcOffsetMin`         | string  | Minimum UTC offset.                                |
+| `data.location.timeZone.utcOffsetMax`         | string  | Maximum UTC offset.                                |
+| `data.carrier`                                | object  | Carrier (telecom provider) details.                |
+| `data.carrier.name`                           | string  | Carrier name.                                      |
+| `data.blocklisting`                           | object  | Blocklisting details.                              |
+| `data.blocklisting.blocked`                   | boolean | Indicates if the number is blocklisted.            |
+| `data.blocklisting.blockCode`                 | number  | Blocklisting code (e.g., `0` = not blocked).       |
+| `data.blocklisting.blockDescription`          | string  | Blocklisting description.                          |
+| `data.risk`                                   | object  | Overall risk score and recommendation.             |
+| `data.risk.level`                             | string  | Risk level (e.g., `medium-low`).                   |
+| `data.risk.recommendation`                    | string  | Risk handling recommendation (e.g., `allow`).      |
+| `data.risk.score`                             | number  | Risk score (numerical value).                      |
+</Accordion>
+
+### Example Request
+<Accordion title="Example Request">
+```json
+{
+    "phoneNumber": "+436501234567"
+}
+```
+</Accordion>
+
+### Example Response
+<Accordion title="Example Response">
+```json
+{
+    "status": true,
+    "data": {
+        "referenceId": "3661FDC54750091C93078058241C3036",
+        "externalId": null,
+        "status": {
+            "updatedOn": "2025-08-06T12:53:09.929413Z",
+            "code": 300,
+            "description": "Transaction successfully completed"
+        },
+        "numbering": {
+            "original": {
+                "completePhoneNumber": "+436501234567",
+                "countryCode": "43",
+                "phoneNumber": "6501234567"
+            },
+            "cleansing": {
+                "call": {
+                    "countryCode": "43",
+                    "phoneNumber": "6501234567",
+                    "cleansedCode": 100,
+                    "minLength": 7,
+                    "maxLength": 13
+                },
+                "sms": {
+                    "countryCode": "43",
+                    "phoneNumber": "6501234567",
+                    "cleansedCode": 100,
+                    "minLength": 7,
+                    "maxLength": 13
+                }
+            }
+        },
+        "riskInsights": {
+            "status": 800,
+            "category": [
+                10010
+            ],
+            "a2P": [
+                22007,
+                20011,
+                20101
+            ],
+            "p2P": [
+                30201
+            ],
+            "numberType": [],
+            "ip": [],
+            "email": []
+        },
+        "phoneType": {
+            "code": "2",
+            "description": "MOBILE"
+        },
+        "location": {
+            "city": "Countrywide",
+            "state": null,
+            "zip": null,
+            "metroCode": null,
+            "county": null,
+            "country": {
+                "name": "Austria",
+                "iso2": "AT",
+                "iso3": "AUT"
+            },
+            "coordinates": {
+                "latitude": null,
+                "longitude": null
+            },
+            "timeZone": {
+                "name": null,
+                "utcOffsetMin": "+1",
+                "utcOffsetMax": "+1"
+            }
+        },
+        "carrier": {
+            "name": "T-Mobile Austria GmbH"
+        },
+        "blocklisting": {
+            "blocked": false,
+            "blockCode": 0,
+            "blockDescription": "Not blocked"
+        },
+        "risk": {
+            "level": "medium-low",
+            "recommendation": "allow",
+            "score": 301
+        }
+    }
+}
+```
+</Accordion>
 
 ## Status Codes
 

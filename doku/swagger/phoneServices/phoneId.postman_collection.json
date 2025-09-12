@@ -1,0 +1,333 @@
+{
+	"info": {
+		"_postman_id": "3a07a504-a680-4282-8f88-44310acdb75c",
+		"name": "phoneId",
+		"description": "API documentation for IdCanopy",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "39862055"
+	},
+	"item": [
+		{
+			"name": "phone-service",
+			"item": [
+				{
+					"name": "phoneId",
+					"item": [
+						{
+							"name": "Phone ID Info",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{accessToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"phoneNumber\": \"+436504142107\",\r\n    // \"accountLifecycleEvent\": \"create\",\r\n    // \"externalId\": \"CustomExternalID7349\",\r\n    // \"originatingIp\": \"203.0.113.45\",\r\n    \"addons\": {\r\n        \"callForwardDetection\": {},\r\n        \"numberDeactivation\": {\r\n            \"lastVerified\": \"2018-04-05T00:00:00Z\"\r\n        },\r\n        \"portingStatus\": {},\r\n        \"simSwap\": {},\r\n        \"breachedNumberCheck\": {},\r\n        \"activeCallStatus\": {},\r\n        \"ageVerify\": {\r\n            \"ageThreshold\": 21\r\n        },\r\n        \"contact\": {\r\n            \"email\": \"jsmith@vero-finto.com\"\r\n        },\r\n        \"contact_match\": {\r\n            \"firstName\": \"string\",\r\n            \"lastName\": \"string\",\r\n            \"address\": \"string\",\r\n            \"city\": \"string\",\r\n            \"postalCode\": \"string\",\r\n            \"state\": \"string\",\r\n            \"country\": \"string\",\r\n            \"inputUsed\": \"email\"\r\n        },\r\n        \"contactPlus\": {\r\n            \"billingPostalCode\": \"95110\"\r\n        },\r\n        \"portingHistory\": {\r\n            \"pastXDays\": 10\r\n        }\r\n    }\r\n    // \"consent\": {\r\n    //     \"method\": 1,\r\n    //     \"timestamp\": \"2018-05-05T00: 00: 00Z\"\r\n    // }\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{apiUrl}}/phone-service/phoneid",
+									"host": [
+										"{{apiUrl}}"
+									],
+									"path": [
+										"phone-service",
+										"phoneid"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Phone ID Info",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"phone_number\": \"+436504142107\"\r\n    // \"account_lifecycle_event\": \"create\",\r\n    // \"external_id\": \"CustomExternalID7349\",\r\n    // \"originating_ip\": \"203.0.113.45\",\r\n    // \"addons\": {\r\n    //     \"age_verify\": {\r\n    //         \"age_threshold\": 21\r\n    //     },\r\n    //     \"contact\": {\r\n    //         \"email\": \"jsmith@vero-finto.com\"\r\n    //     },\r\n    //     \"contact_match\": {\r\n    //         \"first_name\": \"string\",\r\n    //         \"last_name\": \"string\",\r\n    //         \"address\": \"string\",\r\n    //         \"city\": \"string\",\r\n    //         \"postal_code\": \"string\",\r\n    //         \"state\": \"string\",\r\n    //         \"country\": \"string\",\r\n    //         \"input_used\": \"email\"\r\n    //     },\r\n    //     \"contact_plus\": {\r\n    //         \"billing_postal_code\": \"95110\"\r\n    //     },\r\n    //     \"number_deactivation\": {\r\n    //         \"carrier_name\": \"Verizon\",\r\n    //         \"last_deactivated\": \"2016-04-05T00: 00: 00Z\",\r\n    //         \"tracking_since\": \"2014-10-06T00: 00: 00Z\",\r\n    //         \"status\": {\r\n    //             \"code\": 2800,\r\n    //             \"description\": \"Request successfully completed\"\r\n    //         },\r\n    //         \"recycled_since_last_verification\": \"not_recycled\"\r\n    //     },\r\n    //     \"porting_history\": {\r\n    //         \"past_x_days\": 10\r\n    //     }\r\n    // },\r\n    // \"consent\": {\r\n    //     \"method\": 1,\r\n    //     \"timestamp\": \"2018-05-05T00: 00: 00Z\"\r\n    // }\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{apiUrl}}/phone-service/phoneid",
+											"host": [
+												"{{apiUrl}}"
+											],
+											"path": [
+												"phone-service",
+												"phoneid"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "Text",
+									"header": [
+										{
+											"key": "vary",
+											"value": "RSC, Next-Router-State-Tree, Next-Router-Prefetch"
+										},
+										{
+											"key": "content-type",
+											"value": "application/json"
+										},
+										{
+											"key": "Date",
+											"value": "Mon, 04 Aug 2025 11:40:50 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										},
+										{
+											"key": "Transfer-Encoding",
+											"value": "chunked"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"status\": true,\n    \"data\": {\n        \"reference_id\": \"2661D3899F540D0892E138E30E9C3BE7\",\n        \"external_id\": null,\n        \"status\": {\n            \"code\": 300,\n            \"description\": \"Transaction successfully completed\",\n            \"updated_on\": \"2025-08-04T11:40:51.639351Z\"\n        },\n        \"phone_type\": {\n            \"code\": \"2\",\n            \"description\": \"MOBILE\"\n        },\n        \"blocklisting\": {\n            \"blocked\": false,\n            \"block_code\": 0,\n            \"block_description\": \"Not blocked\"\n        },\n        \"location\": {\n            \"city\": \"Countrywide\",\n            \"state\": null,\n            \"zip\": null,\n            \"metro_code\": null,\n            \"county\": null,\n            \"country\": {\n                \"name\": \"Austria\",\n                \"iso2\": \"AT\",\n                \"iso3\": \"AUT\"\n            },\n            \"coordinates\": {\n                \"latitude\": null,\n                \"longitude\": null\n            },\n            \"time_zone\": {\n                \"name\": null,\n                \"utc_offset_max\": \"+1\",\n                \"utc_offset_min\": \"+1\"\n            }\n        },\n        \"numbering\": {\n            \"cleansing\": {\n                \"call\": {\n                    \"country_code\": \"43\",\n                    \"phone_number\": \"6504142107\",\n                    \"cleansed_code\": 100,\n                    \"min_length\": 7,\n                    \"max_length\": 13\n                },\n                \"sms\": {\n                    \"country_code\": \"43\",\n                    \"phone_number\": \"6504142107\",\n                    \"cleansed_code\": 100,\n                    \"min_length\": 7,\n                    \"max_length\": 13\n                }\n            },\n            \"original\": {\n                \"complete_phone_number\": \"+436504142107\",\n                \"country_code\": \"43\",\n                \"phone_number\": \"6504142107\"\n            }\n        },\n        \"carrier\": {\n            \"name\": \"T-Mobile Austria GmbH\"\n        }\n    }\n}"
+								},
+								{
+									"name": "Phone ID Info-Addons",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"phone_number\": \"+436504142107\",\r\n    // \"account_lifecycle_event\": \"create\",\r\n    // \"external_id\": \"CustomExternalID7349\",\r\n    // \"originating_ip\": \"203.0.113.45\",\r\n    \"addons\": {\r\n        \"call_forward_detection\": {},\r\n        \"number_deactivation\": {\r\n            \"last_verified\": \"2018-04-05T00:00:00Z\"\r\n        },\r\n        \"porting_status\": {},\r\n        \"sim_swap\": {},\r\n        \"breached_number_check\": {},\r\n        \"active_call_status\": {}\r\n        //     \"age_verify\": {\r\n        //         \"age_threshold\": 21\r\n        //     },\r\n        //     \"contact\": {\r\n        //         \"email\": \"jsmith@vero-finto.com\"\r\n        //     },\r\n        //     \"contact_match\": {\r\n        //         \"first_name\": \"string\",\r\n        //         \"last_name\": \"string\",\r\n        //         \"address\": \"string\",\r\n        //         \"city\": \"string\",\r\n        //         \"postal_code\": \"string\",\r\n        //         \"state\": \"string\",\r\n        //         \"country\": \"string\",\r\n        //         \"input_used\": \"email\"\r\n        //     },\r\n        //     \"contact_plus\": {\r\n        //         \"billing_postal_code\": \"95110\"\r\n        //     },\r\n        //     \"porting_history\": {\r\n        //         \"past_x_days\": 10\r\n        //     }\r\n    }\r\n    // \"consent\": {\r\n    //     \"method\": 1,\r\n    //     \"timestamp\": \"2018-05-05T00: 00: 00Z\"\r\n    // }\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{apiUrl}}/phone-service/phoneid",
+											"host": [
+												"{{apiUrl}}"
+											],
+											"path": [
+												"phone-service",
+												"phoneid"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "Text",
+									"header": [
+										{
+											"key": "vary",
+											"value": "RSC, Next-Router-State-Tree, Next-Router-Prefetch"
+										},
+										{
+											"key": "content-type",
+											"value": "application/json"
+										},
+										{
+											"key": "Date",
+											"value": "Tue, 05 Aug 2025 10:03:19 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										},
+										{
+											"key": "Transfer-Encoding",
+											"value": "chunked"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"status\": true,\n    \"data\": {\n        \"reference_id\": \"5661E6BE0D3C030892E050553D1CCE55\",\n        \"external_id\": null,\n        \"status\": {\n            \"code\": 301,\n            \"description\": \"Transaction partially completed\",\n            \"updated_on\": \"2025-08-05T10:03:22.376465Z\"\n        },\n        \"phone_type\": {\n            \"code\": \"2\",\n            \"description\": \"MOBILE\"\n        },\n        \"blocklisting\": {\n            \"blocked\": false,\n            \"block_code\": 0,\n            \"block_description\": \"Not blocked\"\n        },\n        \"location\": {\n            \"city\": \"Countrywide\",\n            \"state\": null,\n            \"zip\": null,\n            \"metro_code\": null,\n            \"county\": null,\n            \"country\": {\n                \"name\": \"Austria\",\n                \"iso2\": \"AT\",\n                \"iso3\": \"AUT\"\n            },\n            \"coordinates\": {\n                \"latitude\": null,\n                \"longitude\": null\n            },\n            \"time_zone\": {\n                \"name\": null,\n                \"utc_offset_max\": \"+1\",\n                \"utc_offset_min\": \"+1\"\n            }\n        },\n        \"numbering\": {\n            \"cleansing\": {\n                \"call\": {\n                    \"country_code\": \"43\",\n                    \"phone_number\": \"6504142107\",\n                    \"cleansed_code\": 100,\n                    \"min_length\": 7,\n                    \"max_length\": 13\n                },\n                \"sms\": {\n                    \"country_code\": \"43\",\n                    \"phone_number\": \"6504142107\",\n                    \"cleansed_code\": 100,\n                    \"min_length\": 7,\n                    \"max_length\": 13\n                }\n            },\n            \"original\": {\n                \"complete_phone_number\": \"+436504142107\",\n                \"country_code\": \"43\",\n                \"phone_number\": \"6504142107\"\n            }\n        },\n        \"carrier\": {\n            \"name\": \"T-Mobile Austria GmbH\"\n        },\n        \"number_deactivation\": {\n            \"status\": {\n                \"code\": 2806,\n                \"description\": \"number_deactivation add-on is not enabled.\"\n            }\n        },\n        \"porting_status\": {\n            \"status\": {\n                \"code\": 2806,\n                \"description\": \"porting_status add-on is not enabled.\"\n            }\n        },\n        \"breached_number_check\": {\n            \"status\": {\n                \"code\": 2806,\n                \"description\": \"breached_number_check add-on is not enabled.\"\n            }\n        },\n        \"call_forward_detection\": {\n            \"status\": {\n                \"code\": 2806,\n                \"description\": \"call_forward_detection add-on is not enabled.\"\n            }\n        },\n        \"sim_swap\": {\n            \"status\": {\n                \"code\": 2806,\n                \"description\": \"sim_swap add-on is not enabled.\"\n            }\n        }\n    }\n}"
+								},
+								{
+									"name": "Phone ID Info - All",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"phone_number\": \"+436504142107\",\r\n    // \"account_lifecycle_event\": \"create\",\r\n    // \"external_id\": \"CustomExternalID7349\",\r\n    // \"originating_ip\": \"203.0.113.45\",\r\n    \"addons\": {\r\n        \"call_forward_detection\": {},\r\n        \"number_deactivation\": {\r\n            \"last_verified\": \"2018-04-05T00:00:00Z\"\r\n        },\r\n        \"porting_status\": {},\r\n        \"sim_swap\": {},\r\n        \"breached_number_check\": {},\r\n        \"active_call_status\": {},\r\n        \"age_verify\": {\r\n            \"age_threshold\": 21\r\n        },\r\n        \"contact\": {\r\n            \"email\": \"jsmith@vero-finto.com\"\r\n        },\r\n        \"contact_match\": {\r\n            \"first_name\": \"string\",\r\n            \"last_name\": \"string\",\r\n            \"address\": \"string\",\r\n            \"city\": \"string\",\r\n            \"postal_code\": \"string\",\r\n            \"state\": \"string\",\r\n            \"country\": \"string\",\r\n            \"input_used\": \"email\"\r\n        },\r\n        \"contact_plus\": {\r\n            \"billing_postal_code\": \"95110\"\r\n        },\r\n        \"porting_history\": {\r\n            \"past_x_days\": 10\r\n        }\r\n    }\r\n    // \"consent\": {\r\n    //     \"method\": 1,\r\n    //     \"timestamp\": \"2018-05-05T00: 00: 00Z\"\r\n    // }\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{apiUrl}}/phone-service/phoneid",
+											"host": [
+												"{{apiUrl}}"
+											],
+											"path": [
+												"phone-service",
+												"phoneid"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "Text",
+									"header": [
+										{
+											"key": "vary",
+											"value": "RSC, Next-Router-State-Tree, Next-Router-Prefetch"
+										},
+										{
+											"key": "content-type",
+											"value": "application/json"
+										},
+										{
+											"key": "Date",
+											"value": "Tue, 05 Aug 2025 12:39:37 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										},
+										{
+											"key": "Transfer-Encoding",
+											"value": "chunked"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"status\": true,\n    \"data\": {\n        \"referenceId\": \"5661E8FA7328010892E0501789ACE764\",\n        \"externalId\": null,\n        \"status\": {\n            \"code\": 301,\n            \"description\": \"Transaction partially completed\",\n            \"updatedOn\": \"2025-08-05T12:39:41.063782Z\"\n        },\n        \"phoneType\": {\n            \"code\": \"2\",\n            \"description\": \"MOBILE\"\n        },\n        \"blocklisting\": {\n            \"blocked\": false,\n            \"blockCode\": 0,\n            \"blockDescription\": \"Not blocked\"\n        },\n        \"location\": {\n            \"city\": \"Countrywide\",\n            \"state\": null,\n            \"zip\": null,\n            \"metroCode\": null,\n            \"county\": null,\n            \"country\": {\n                \"name\": \"Austria\",\n                \"iso2\": \"AT\",\n                \"iso3\": \"AUT\"\n            },\n            \"coordinates\": {\n                \"latitude\": null,\n                \"longitude\": null\n            },\n            \"timeZone\": {\n                \"name\": null,\n                \"utcOffsetMax\": \"+1\",\n                \"utcOffsetMin\": \"+1\"\n            }\n        },\n        \"numbering\": {\n            \"cleansing\": {\n                \"call\": {\n                    \"countryCode\": \"43\",\n                    \"phoneNumber\": \"6504142107\",\n                    \"cleansedCode\": 100,\n                    \"minLength\": 7,\n                    \"maxLength\": 13\n                },\n                \"sms\": {\n                    \"countryCode\": \"43\",\n                    \"phoneNumber\": \"6504142107\",\n                    \"cleansedCode\": 100,\n                    \"minLength\": 7,\n                    \"maxLength\": 13\n                }\n            },\n            \"original\": {\n                \"completePhoneNumber\": \"+436504142107\",\n                \"countryCode\": \"43\",\n                \"phoneNumber\": \"6504142107\"\n            }\n        },\n        \"carrier\": {\n            \"name\": \"T-Mobile Austria GmbH\"\n        },\n        \"ageVerify\": {\n            \"status\": {\n                \"code\": 2806,\n                \"description\": \"age_verify add-on is not enabled.\"\n            }\n        },\n        \"contactMatch\": {\n            \"status\": {\n                \"code\": 2806,\n                \"description\": \"contact_match add-on is not enabled.\"\n            }\n        },\n        \"contactPlus\": {\n            \"status\": {\n                \"code\": 2806,\n                \"description\": \"contact_plus add-on is not enabled.\"\n            }\n        },\n        \"numberDeactivation\": {\n            \"status\": {\n                \"code\": 2806,\n                \"description\": \"number_deactivation add-on is not enabled.\"\n            }\n        },\n        \"portingHistory\": {\n            \"status\": {\n                \"code\": 2806,\n                \"description\": \"porting_history add-on is not enabled.\"\n            }\n        },\n        \"portingStatus\": {\n            \"status\": {\n                \"code\": 2806,\n                \"description\": \"porting_status add-on is not enabled.\"\n            }\n        },\n        \"breachedNumberCheck\": {\n            \"status\": {\n                \"code\": 2806,\n                \"description\": \"breached_number_check add-on is not enabled.\"\n            }\n        },\n        \"callForwardDetection\": {\n            \"status\": {\n                \"code\": 2806,\n                \"description\": \"call_forward_detection add-on is not enabled.\"\n            }\n        },\n        \"activeCallStatus\": {\n            \"status\": {\n                \"code\": 2806,\n                \"description\": \"active_call_status add-on is not enabled.\"\n            }\n        },\n        \"simSwap\": {\n            \"status\": {\n                \"code\": 2806,\n                \"description\": \"sim_swap add-on is not enabled.\"\n            }\n        },\n        \"contact\": {\n            \"status\": {\n                \"code\": 2805,\n                \"description\": \"No contact add-on information for phone number.\"\n            }\n        }\n    }\n}"
+								},
+								{
+									"name": "Phone ID Info-Complete",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"phoneNumber\": \"+436504142107\",\r\n    // \"accountLifecycleEvent\": \"create\",\r\n    // \"externalId\": \"CustomExternalID7349\",\r\n    // \"originatingIp\": \"203.0.113.45\",\r\n    \"addons\": {\r\n        \"callForwardDetection\": {},\r\n        \"numberDeactivation\": {\r\n            \"lastVerified\": \"2018-04-05T00:00:00Z\"\r\n        },\r\n        \"portingStatus\": {},\r\n        \"simSwap\": {},\r\n        \"breachedNumberCheck\": {},\r\n        \"activeCallStatus\": {},\r\n        \"ageVerify\": {\r\n            \"ageThreshold\": 21\r\n        },\r\n        \"contact\": {\r\n            \"email\": \"jsmith@vero-finto.com\"\r\n        },\r\n        \"contact_match\": {\r\n            \"firstName\": \"string\",\r\n            \"lastName\": \"string\",\r\n            \"address\": \"string\",\r\n            \"city\": \"string\",\r\n            \"postalCode\": \"string\",\r\n            \"state\": \"string\",\r\n            \"country\": \"string\",\r\n            \"inputUsed\": \"email\"\r\n        },\r\n        \"contactPlus\": {\r\n            \"billingPostalCode\": \"95110\"\r\n        },\r\n        \"portingHistory\": {\r\n            \"pastXDays\": 10\r\n        }\r\n    }\r\n    // \"consent\": {\r\n    //     \"method\": 1,\r\n    //     \"timestamp\": \"2018-05-05T00: 00: 00Z\"\r\n    // }\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{apiUrl}}/phone-service/phoneid",
+											"host": [
+												"{{apiUrl}}"
+											],
+											"path": [
+												"phone-service",
+												"phoneid"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "Text",
+									"header": [
+										{
+											"key": "vary",
+											"value": "RSC, Next-Router-State-Tree, Next-Router-Prefetch"
+										},
+										{
+											"key": "content-type",
+											"value": "application/json"
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 06 Aug 2025 12:49:08 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										},
+										{
+											"key": "Transfer-Encoding",
+											"value": "chunked"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"status\": true,\n    \"data\": {\n        \"referenceId\": \"3661FDB689A00B0892E2639855BC1DFF\",\n        \"externalId\": null,\n        \"status\": {\n            \"code\": 301,\n            \"description\": \"Transaction partially completed\",\n            \"updatedOn\": \"2025-08-06T12:49:08.710031Z\"\n        },\n        \"phoneType\": {\n            \"code\": \"2\",\n            \"description\": \"MOBILE\"\n        },\n        \"blocklisting\": {\n            \"blocked\": false,\n            \"blockCode\": 0,\n            \"blockDescription\": \"Not blocked\"\n        },\n        \"numbering\": {\n            \"cleansing\": {\n                \"call\": {\n                    \"countryCode\": \"43\",\n                    \"phoneNumber\": \"6504142107\",\n                    \"cleansedCode\": 100,\n                    \"minLength\": 7,\n                    \"maxLength\": 13\n                },\n                \"sms\": {\n                    \"countryCode\": \"43\",\n                    \"phoneNumber\": \"6504142107\",\n                    \"cleansedCode\": 100,\n                    \"minLength\": 7,\n                    \"maxLength\": 13\n                }\n            },\n            \"original\": {\n                \"completePhoneNumber\": \"+436504142107\",\n                \"countryCode\": \"43\",\n                \"phoneNumber\": \"6504142107\"\n            }\n        },\n        \"location\": {\n            \"city\": \"Countrywide\",\n            \"state\": null,\n            \"zip\": null,\n            \"metroCode\": null,\n            \"county\": null,\n            \"country\": {\n                \"name\": \"Austria\",\n                \"iso2\": \"AT\",\n                \"iso3\": \"AUT\"\n            },\n            \"coordinates\": {\n                \"latitude\": null,\n                \"longitude\": null\n            },\n            \"timeZone\": {\n                \"name\": null,\n                \"utcOffsetMax\": \"+1\",\n                \"utcOffsetMin\": \"+1\"\n            }\n        },\n        \"carrier\": {\n            \"name\": \"T-Mobile Austria GmbH\"\n        },\n        \"ageVerify\": {\n            \"status\": {\n                \"code\": 2806,\n                \"description\": \"age_verify add-on is not enabled.\"\n            }\n        },\n        \"contactPlus\": {\n            \"status\": {\n                \"code\": 2806,\n                \"description\": \"contact_plus add-on is not enabled.\"\n            }\n        },\n        \"numberDeactivation\": {\n            \"status\": {\n                \"code\": 2806,\n                \"description\": \"number_deactivation add-on is not enabled.\"\n            }\n        },\n        \"portingHistory\": {\n            \"status\": {\n                \"code\": 2806,\n                \"description\": \"porting_history add-on is not enabled.\"\n            }\n        },\n        \"portingStatus\": {\n            \"status\": {\n                \"code\": 2806,\n                \"description\": \"porting_status add-on is not enabled.\"\n            }\n        },\n        \"breachedNumberCheck\": {\n            \"status\": {\n                \"code\": 2806,\n                \"description\": \"breached_number_check add-on is not enabled.\"\n            }\n        },\n        \"callForwardDetection\": {\n            \"status\": {\n                \"code\": 2806,\n                \"description\": \"call_forward_detection add-on is not enabled.\"\n            }\n        },\n        \"activeCallStatus\": {\n            \"status\": {\n                \"code\": 2806,\n                \"description\": \"active_call_status add-on is not enabled.\"\n            }\n        },\n        \"simSwap\": {\n            \"status\": {\n                \"code\": 2806,\n                \"description\": \"sim_swap add-on is not enabled.\"\n            }\n        },\n        \"contact\": {\n            \"status\": {\n                \"code\": 2805,\n                \"description\": \"No contact add-on information for phone number.\"\n            }\n        }\n    }\n}"
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{bearerToken}}",
+				"type": "string"
+			}
+		]
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "https://sandbox-umbrella-api.azurewebsites.net/api/services/"
+		}
+	]
+}

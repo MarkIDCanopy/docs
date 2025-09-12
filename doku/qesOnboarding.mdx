@@ -101,9 +101,10 @@ Starts a QES signing session for a specified user. Returns a URL that redirects 
 |-------------------------|--------|----------|---------------------------------------------------------------|
 | email                   | string | Yes      | User's email address.                                         |
 | phoneNumber             | string | Yes      | User's phone number (E.164 format).                           |
-| firstName               | string | Yes      | User's first name.                                            |
-| lastName                | string | Yes      | User's last name.                                             |
-| documentToSignTemplateUrl | string | Yes      | URL of PDF to sign. Must be accessible online.               |
+| firstName               | string | Optional      | User's first name.                                            |
+| lastName                | string | Optional      | User's last name.                                             |
+| redirectUrl             | string | Yes     | Redirect URL.                                           |
+| docUrl                  | string | Yes      | URL of PDF to sign. Must be accessible online.               |
 | signforms               | array  | Optional | Signature fields in the PDF (AcroForm field IDs).             |
 | fillform                | array  | Optional | Pre-fillable text fields in the PDF.                          |
 </Accordion>
@@ -124,7 +125,8 @@ Starts a QES signing session for a specified user. Returns a URL that redirects 
   "phoneNumber": "+393358021530",
   "firstName": "MARIA",
   "lastName": "SPECIMEN",
-  "documentToSignTemplateUrl": "https://cdn.idcanopy.com/pdf/onb-t3.pdf"
+  "redirectUrl": "https://google.com",
+  "docUrl": "https://cdn.idcanopy.com/pdf/onb-t3.pdf"
 }
 ```
 
@@ -133,6 +135,7 @@ Starts a QES signing session for a specified user. Returns a URL that redirects 
 {
   "success": true,
   "data": {
+    "requestId": "68d14dd8-ca21-41da-8679-12345678909876",
     "url": "https://test.idcanopy.com/api/v2/voucher/start?...",
     "expiresAfter": "2025-05-28T18:33:25.778Z"
   }

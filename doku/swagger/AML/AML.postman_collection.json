@@ -1,0 +1,269 @@
+{
+	"info": {
+		"_postman_id": "b8e3bf7b-c859-4582-bf70-2a842c13dcec",
+		"name": "AML",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "39862055"
+	},
+	"item": [
+		{
+			"name": "AML",
+			"item": [
+				{
+					"name": "Ongoing-Monitoring",
+					"item": [
+						{
+							"name": "Register Individual",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{accessToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"profile_id\": \"8dac-b5393ce5ef3a\",         //required\r\n    \"names\": \"Elon Musk\",                      //required\r\n    // \"search_all\": \"\",                       //Cannot be combined with 'names' parameter\r\n    // \"dob\": \"\",                              //optional\r\n    \"gender\": \"male\"                            //optional\r\n    // \"fuzzy_search\": \"\"              //optional\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{apiUrl}}/aml/ongoingMonitoring/registerIndividual",
+									"host": [
+										"{{apiUrl}}"
+									],
+									"path": [
+										"aml",
+										"ongoingMonitoring",
+										"registerIndividual"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Register Entity",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{accessToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"profile_id\": \"8dac-b5393ce5ef3a\",          //required\r\n    \"names\": \"Elon Musk\"                        //required\r\n    // \"search_all\": \"\",                        //Cannot be combined with 'names' parameter\r\n    // \"fuzzy_search\": \"\"                       //optional\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{apiUrl}}/aml/ongoingMonitoring/registerEntity",
+									"host": [
+										"{{apiUrl}}"
+									],
+									"path": [
+										"aml",
+										"ongoingMonitoring",
+										"registerEntity"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Remove Search Profile",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{accessToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"profile_id\": \"8dac-b5393ce5ef3a\"          //required\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{apiUrl}}/aml/ongoingMonitoring/removeSearchProfile",
+									"host": [
+										"{{apiUrl}}"
+									],
+									"path": [
+										"aml",
+										"ongoingMonitoring",
+										"removeSearchProfile"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Check Individual",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Donald Trump\",\r\n    \"dob\": \"\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{apiUrl}}/aml/checkIndividual",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"aml",
+								"checkIndividual"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Pas Person",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"cristiano ronaldo\",\r\n    \"dob\": \"\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{apiUrl}}/api/aml/check_individual",
+									"host": [
+										"{{apiUrl}}"
+									],
+									"path": [
+										"api",
+										"aml",
+										"check_individual"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "vary",
+									"value": "RSC, Next-Router-State-Tree, Next-Router-Prefetch"
+								},
+								{
+									"key": "access_control-allow-origin",
+									"value": "*"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 09 Sep 2024 12:43:59 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"timestamp\": \"2024-09-09T12:44:03Z\",\n    \"total_hits\": 1,\n    \"found_records\": [\n        {\n            \"entity_type\": \"INDIVIDUAL\",\n            \"children\": [\n                \"Alana Martina dos Santos Aveiro\",\n                \"Bella Esmeralda\",\n                \"Cristiano Ronaldo Jr\"\n            ],\n            \"name\": \"Cristiano Ronaldo\",\n            \"source_type\": \"PEP\",\n            \"pep_type\": \"RELATIVES_AND_CLOSE_ASSOCIATES\",\n            \"last_names\": [\n                \"dos Santos\",\n                \"Aveiro\"\n            ],\n            \"gender\": \"MALE\",\n            \"given_names\": [\n                \"Ronaldo\",\n                \"Cristiano\"\n            ],\n            \"date_of_birth\": [\n                \"05/02/1985\"\n            ],\n            \"citizenship\": [\n                \"PT\"\n            ],\n            \"links\": [\n                \"https://www.cristianoronaldo.com/\",\n                \"Cristiano\"\n            ],\n            \"other_information\": [\n                \"Relative / close associate of a PEP.\"\n            ],\n            \"place_of_birth\": [\n                \"Funchal\"\n            ],\n            \"siblings\": [\n                \"Elma dos Santos Aveiro\",\n                \"Hugo Aveiro\",\n                \"Kátia Aveiro\"\n            ],\n            \"occupations\": [\n                \"association football player\",\n                \"fashion entrepreneur\",\n                \"model\"\n            ],\n            \"alias_given_names\": [\n                \"Cristiano Ronaldo\"\n            ],\n            \"list_date\": \"0\",\n            \"source_id\": \"dilisense_pep\",\n            \"parents\": [\n                \"José Dinis Aveiro\",\n                \"Maria Dolores dos Santos Aveiro\"\n            ]\n        }\n    ]\n}"
+						}
+					]
+				}
+			]
+		}
+	]
+}

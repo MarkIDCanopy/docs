@@ -1,0 +1,149 @@
+{
+	"info": {
+		"_postman_id": "697ff8ca-c7c0-4cff-9e57-96d62d7b9a87",
+		"name": "phoneStatus",
+		"description": "API documentation for IdCanopy",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "39862055"
+	},
+	"item": [
+		{
+			"name": "phone-service",
+			"item": [
+				{
+					"name": "phoneStatus",
+					"item": [
+						{
+							"name": "Phone ID Live",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{accessToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"phoneNumber\": \"+486504142304\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{apiUrl}}/phone-service/phoneStatus",
+									"host": [
+										"{{apiUrl}}"
+									],
+									"path": [
+										"phone-service",
+										"phoneStatus"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Phone ID Live",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											},
+											{
+												"key": "Authorization",
+												"value": "Bearer {{access_token}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"phone\": \"+436504142107\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{apiUrl}}/phone-service/phoneStatus",
+											"host": [
+												"{{apiUrl}}"
+											],
+											"path": [
+												"phone-service",
+												"phoneStatus"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "vary",
+											"value": "RSC, Next-Router-State-Tree, Next-Router-Prefetch"
+										},
+										{
+											"key": "content-type",
+											"value": "application/json"
+										},
+										{
+											"key": "Date",
+											"value": "Mon, 09 Sep 2024 12:43:39 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										},
+										{
+											"key": "Transfer-Encoding",
+											"value": "chunked"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"reference_id\": \"36475B3EB1DC0C2492E2889F4EACF2CC\",\n    \"sub_resource\": \"live\",\n    \"status\": {\n        \"code\": 300,\n        \"description\": \"Transaction successfully completed\",\n        \"updated_on\": \"2024-09-09T12:43:42.701105Z\"\n    },\n    \"errors\": [],\n    \"phone_type\": {\n        \"code\": \"2\",\n        \"description\": \"MOBILE\"\n    },\n    \"blocklisting\": {\n        \"blocked\": false,\n        \"block_code\": 0,\n        \"block_description\": \"Not blocked\"\n    },\n    \"numbering\": {\n        \"cleansing\": {\n            \"call\": {\n                \"country_code\": \"43\",\n                \"phone_number\": \"6504142107\",\n                \"cleansed_code\": 100,\n                \"min_length\": 7,\n                \"max_length\": 13\n            },\n            \"sms\": {\n                \"country_code\": \"43\",\n                \"phone_number\": \"6504142107\",\n                \"cleansed_code\": 100,\n                \"min_length\": 7,\n                \"max_length\": 13\n            }\n        },\n        \"original\": {\n            \"complete_phone_number\": \"+436504142107\",\n            \"country_code\": \"43\",\n            \"phone_number\": \"6504142107\"\n        }\n    },\n    \"location\": {\n        \"city\": \"Countrywide\",\n        \"state\": null,\n        \"zip\": null,\n        \"metro_code\": null,\n        \"county\": null,\n        \"country\": {\n            \"name\": \"Austria\",\n            \"iso2\": \"AT\",\n            \"iso3\": \"AUT\"\n        },\n        \"coordinates\": {\n            \"latitude\": null,\n            \"longitude\": null\n        },\n        \"time_zone\": {\n            \"name\": null,\n            \"utc_offset_max\": \"+1\",\n            \"utc_offset_min\": \"+1\"\n        }\n    },\n    \"carrier\": {\n        \"name\": \"Mass Response Service GmbH\"\n    },\n    \"live\": {\n        \"subscriber_status\": \"ACTIVE\",\n        \"device_status\": \"REACHABLE\",\n        \"roaming\": \"UNAVAILABLE\",\n        \"roaming_country\": null,\n        \"roaming_country_iso2\": null\n    }\n}"
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{bearerToken}}",
+				"type": "string"
+			}
+		]
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "https://sandbox-umbrella-api.azurewebsites.net/api/services/"
+		}
+	]
+}

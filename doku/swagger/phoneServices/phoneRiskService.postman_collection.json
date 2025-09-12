@@ -1,0 +1,207 @@
+{
+	"info": {
+		"_postman_id": "1ae5caec-15a8-4b3a-8ca4-a3577117cee2",
+		"name": "IdCanopy API Documentation",
+		"description": "API documentation for IdCanopy",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "39862055"
+	},
+	"item": [
+		{
+			"name": "phone-service",
+			"item": [
+				{
+					"name": "phoneRiskScore",
+					"item": [
+						{
+							"name": "Phone Risk Score Copy",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{accessToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"phoneNumber\": \"+436501234567\",\r\n    \"accountLifecycleEvent\": \"create\"\r\n    // \"externalId\": \"CustomExternalID7349\",\r\n    // \"originatingIp\": \"string\",\r\n    // \"deviceId\": \"string\",\r\n    // \"accountId\": \"string\",\r\n    // \"emailAddress\": \"string\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{apiUrl}}/phone-service/phoneRiskScore",
+									"host": [
+										"{{apiUrl}}"
+									],
+									"path": [
+										"phone-service",
+										"phoneRiskScore"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Phone Risk Score",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"phone_number\": \"+436501234567\",\r\n    \"account_lifecycle_event\": \"create\"\r\n    // \"external_id\": \"CustomExternalID7349\",\r\n    // \"originating_ip\": \"string\",\r\n    // \"device_id\": \"string\",\r\n    // \"account_id\": \"string\",\r\n    // \"email_address\": \"string\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{apiUrl}}/phone-service/phoneRiskScore",
+											"host": [
+												"{{apiUrl}}"
+											],
+											"path": [
+												"phone-service",
+												"phoneRiskScore"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "Text",
+									"header": [
+										{
+											"key": "vary",
+											"value": "RSC, Next-Router-State-Tree, Next-Router-Prefetch"
+										},
+										{
+											"key": "content-type",
+											"value": "application/json"
+										},
+										{
+											"key": "Date",
+											"value": "Mon, 04 Aug 2025 12:59:51 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										},
+										{
+											"key": "Transfer-Encoding",
+											"value": "chunked"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"status\": true,\n    \"data\": {\n        \"reference_id\": \"5661D4AB005C081C9307BACE884C4368\",\n        \"external_id\": null,\n        \"status\": {\n            \"updated_on\": \"2025-08-04T12:59:52.952753Z\",\n            \"code\": 300,\n            \"description\": \"Transaction successfully completed\"\n        },\n        \"numbering\": {\n            \"original\": {\n                \"complete_phone_number\": \"+436501234567\",\n                \"country_code\": \"43\",\n                \"phone_number\": \"6504142107\"\n            },\n            \"cleansing\": {\n                \"call\": {\n                    \"country_code\": \"43\",\n                    \"phone_number\": \"6504142107\",\n                    \"cleansed_code\": 100,\n                    \"min_length\": 7,\n                    \"max_length\": 13\n                },\n                \"sms\": {\n                    \"country_code\": \"43\",\n                    \"phone_number\": \"6504142107\",\n                    \"cleansed_code\": 100,\n                    \"min_length\": 7,\n                    \"max_length\": 13\n                }\n            }\n        },\n        \"risk_insights\": {\n            \"status\": 800,\n            \"category\": [\n                10010\n            ],\n            \"a2p\": [\n                22001,\n                20012,\n                20101\n            ],\n            \"p2p\": [\n                30201\n            ],\n            \"number_type\": [],\n            \"ip\": [],\n            \"email\": []\n        },\n        \"phone_type\": {\n            \"code\": \"2\",\n            \"description\": \"MOBILE\"\n        },\n        \"location\": {\n            \"city\": \"Countrywide\",\n            \"state\": null,\n            \"zip\": null,\n            \"metro_code\": null,\n            \"county\": null,\n            \"country\": {\n                \"name\": \"Austria\",\n                \"iso2\": \"AT\",\n                \"iso3\": \"AUT\"\n            },\n            \"coordinates\": {\n                \"latitude\": null,\n                \"longitude\": null\n            },\n            \"time_zone\": {\n                \"name\": null,\n                \"utc_offset_min\": \"+1\",\n                \"utc_offset_max\": \"+1\"\n            }\n        },\n        \"carrier\": {\n            \"name\": \"T-Mobile Austria GmbH\"\n        },\n        \"blocklisting\": {\n            \"blocked\": false,\n            \"block_code\": 0,\n            \"block_description\": \"Not blocked\"\n        },\n        \"risk\": {\n            \"level\": \"medium-low\",\n            \"recommendation\": \"allow\",\n            \"score\": 301\n        }\n    }\n}"
+								},
+								{
+									"name": "Phone Risk Score-Complete",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"phoneNumber\": \"+436501234567\",\r\n    \"accountLifecycleEvent\": \"create\"\r\n    // \"externalId\": \"CustomExternalID7349\",\r\n    // \"originatingIp\": \"string\",\r\n    // \"deviceId\": \"string\",\r\n    // \"accountId\": \"string\",\r\n    // \"emailAddress\": \"string\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{apiUrl}}/phone-service/phoneRiskScore",
+											"host": [
+												"{{apiUrl}}"
+											],
+											"path": [
+												"phone-service",
+												"phoneRiskScore"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "Text",
+									"header": [
+										{
+											"key": "vary",
+											"value": "RSC, Next-Router-State-Tree, Next-Router-Prefetch"
+										},
+										{
+											"key": "content-type",
+											"value": "application/json"
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 06 Aug 2025 12:53:52 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										},
+										{
+											"key": "Transfer-Encoding",
+											"value": "chunked"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"status\": true,\n    \"data\": {\n        \"referenceId\": \"3661FDC7EAA8111C93048FA6FB8C300C\",\n        \"externalId\": null,\n        \"status\": {\n            \"updatedOn\": \"2025-08-06T12:53:53.082687Z\",\n            \"code\": 300,\n            \"description\": \"Transaction successfully completed\"\n        },\n        \"numbering\": {\n            \"original\": {\n                \"completePhoneNumber\": \"+436501234567\",\n                \"countryCode\": \"43\",\n                \"phoneNumber\": \"6504142107\"\n            },\n            \"cleansing\": {\n                \"call\": {\n                    \"countryCode\": \"43\",\n                    \"phoneNumber\": \"6504142107\",\n                    \"cleansedCode\": 100,\n                    \"minLength\": 7,\n                    \"maxLength\": 13\n                },\n                \"sms\": {\n                    \"countryCode\": \"43\",\n                    \"phoneNumber\": \"6504142107\",\n                    \"cleansedCode\": 100,\n                    \"minLength\": 7,\n                    \"maxLength\": 13\n                }\n            }\n        },\n        \"riskInsights\": {\n            \"status\": 800,\n            \"category\": [\n                10010\n            ],\n            \"a2P\": [\n                22001,\n                20011,\n                20101\n            ],\n            \"p2P\": [\n                30201\n            ],\n            \"numberType\": [],\n            \"ip\": [],\n            \"email\": []\n        },\n        \"phoneType\": {\n            \"code\": \"2\",\n            \"description\": \"MOBILE\"\n        },\n        \"location\": {\n            \"city\": \"Countrywide\",\n            \"state\": null,\n            \"zip\": null,\n            \"metroCode\": null,\n            \"county\": null,\n            \"country\": {\n                \"name\": \"Austria\",\n                \"iso2\": \"AT\",\n                \"iso3\": \"AUT\"\n            },\n            \"coordinates\": {\n                \"latitude\": null,\n                \"longitude\": null\n            },\n            \"timeZone\": {\n                \"name\": null,\n                \"utcOffsetMin\": \"+1\",\n                \"utcOffsetMax\": \"+1\"\n            }\n        },\n        \"carrier\": {\n            \"name\": \"T-Mobile Austria GmbH\"\n        },\n        \"blocklisting\": {\n            \"blocked\": false,\n            \"blockCode\": 0,\n            \"blockDescription\": \"Not blocked\"\n        },\n        \"risk\": {\n            \"level\": \"medium-low\",\n            \"recommendation\": \"allow\",\n            \"score\": 301\n        }\n    }\n}"
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{bearerToken}}",
+				"type": "string"
+			}
+		]
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "https://sandbox-umbrella-api.azurewebsites.net/api/services/"
+		}
+	]
+}

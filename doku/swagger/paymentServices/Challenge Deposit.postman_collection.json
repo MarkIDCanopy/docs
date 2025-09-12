@@ -1,0 +1,82 @@
+{
+	"info": {
+		"_postman_id": "b4200d5e-556e-4456-b124-20b33cb3de1e",
+		"name": "Challenge Deposit",
+		"description": "Please view the documentation first to start the Authentication process - Importantly for the Authenctication to succeed you have to first configure the Request Parameters as follows:\n\nThe request body must be sent in `application/x-www-form-urlencoded` format and should include the following parameters:\n\n- Customer-Id(text): The unique identifier for the user attempting to authenticate.\n    \n- Api-Key(text): The API password associated with the provided Customer-id.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "39862055"
+	},
+	"item": [
+		{
+			"name": "Challenge Deposit",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"amount\": \"0.01\",\r\n    \"currency\": \"EUR\",\r\n    \"referenceId\":\"123xyz\", //Must be unique each time\r\n    \"firstName\": \"John\",\r\n    \"lastName\": \"Doe\",\r\n    \"language\": \"en\", //de for German, en for English, fr for French\r\n    \"country\": \"DE\", //2 letter ISO code in Caps - eg. DE for Germany or GB for UK\r\n    \"paymentReason\": \"Challenge Deposit\",\r\n    \"merchantIBAN\": \"ES2501822200160201933547\", //This is a test IBAN\r\n    \"piiToggle\": 1,\r\n    \"nameMatchLogic\": \"fuzzy\",\r\n    \"redirectUrl\": \"https://www.idcanopy.com\" //replace with your required redirect URL\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{apiUrl}}/payments/challenge-deposit",
+					"host": [
+						"{{apiUrl}}"
+					],
+					"path": [
+						"payments",
+						"challenge-deposit"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "apiUrl",
+			"value": "https://sandbox-umbrella-api.azurewebsites.net/api/services",
+			"type": "string"
+		},
+		{
+			"key": "accessToken",
+			"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjdXN0b21lck5hbWUiOiJJZENhbm9weSBGbGV4Q28iLCJjdXN0b21lcklkIjoiMTZhNmMzZTctN2E3Ni00NzE0LTliMzQtOTcxMzVhYjRiZGNkIiwiYXBpS2V5IjoiNDBhYjBkNjktZmMzZS01ZmVhLWJmYTgtYjk0ZTkzNDYyYWQ5IiwianRpIjoiNDMzYzBiOTAtMmNhNS00OWQxLTk1YzItYmQ4ZmE4MmIxYzYxIiwiZW52Ijoic2FuZGJveCIsImlhdCI6MTc1MTY1NDY0NywiZXhwIjoxNzUxNjU4MjQ3fQ.qy-n3YNfwyTdbW9yjmZJ7nGxVffyMdOKmQcQVYw3IUA",
+			"type": "string"
+		}
+	]
+}

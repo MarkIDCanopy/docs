@@ -44,7 +44,7 @@ The Document Verification API enables the submission and verification of identif
 <Auth/>
 ---
 
-## 1. Document Verification with Journey Build-Up
+## 1. Document Verification with Journey Build-Up (Upcoming)
 ### Description
 This section covers the multi-step approach, where you first open a journey, then upload documents in steps, and finally call the verification endpoint(s).
 
@@ -80,7 +80,7 @@ Starts a new verification journey where the customer can submit documents in ste
 }
 ```
 
-### 1.2 Add Image
+### 1.2 Add Image (Upcoming)
 ### Endpoint
 **POST** `/addImage`
 
@@ -133,7 +133,7 @@ Adds an image (front, back, or selfie) to the ongoing journey. Images can be sub
 ]
 ```
 
-### 1.3 Verify
+### 1.3 Verify (Upcoming)
 ### Endpoint
 **POST** `/verify`
 
@@ -266,7 +266,7 @@ Initiates the verification of all images submitted in this journey. Returns a de
 }
 ```
 
-### 1.4 Verify with Age and Disability Check
+### 1.4 Verify with Age and Disability Check (Upcoming)
 ### Endpoint
 **POST** `/verify/age`
 
@@ -327,7 +327,7 @@ This section describes the single-step approach, bypassing the journey creation.
 
 ### 2.1 Verify in One Step
 ### Endpoint
-**POST** `/verify/single`
+**POST** `/verifySingle`
 
 ### Description
 Bypasses the journey build-up and processes all images in one request. No feedback is provided if pages are missing—all must be submitted at once.
@@ -374,17 +374,10 @@ Bypasses the journey build-up and processes all images in one request. No feedba
 | authoritativeData.identityDocument.issuingCountry | String   | Country that issued the document. |
 | authoritativeData.identityDocument.expeditor  | String   | Issuing authority (e.g., `"BH Neunkirchen"`). |
 | authoritativeData.identityDocument.expirationDate | String | Expiry date of the document (`YYYY/MM/DD`). |
-| authoritativeData.identityDocument.verificationChannel | String | How verification was performed (`optical`, `manual`, etc.). |
 | proofOfWork                                   | Object   | Contains metadata related to proof of verification. |
 | proofOfWork.type                              | String   | Type of proof (e.g., `"image"`). |
 | proofOfWork.titleOfProof                      | String   | Title describing the proof (e.g., `"IDFront"`). |
 | proofOfWork.timestampOfProof                  | String   | Timestamp when the proof was collected (`YYYY/MM/DDTHH:MM:SSZ`). |
-| auditTrail                                    | Object   | Contains logging details about the verification process. |
-| auditTrail.workId                             | String   | Unique ID of the verification attempt. |
-| auditTrail.workStatus                         | String   | Status of the work (`PASS`, `FAIL`). |
-| auditTrail.workStartTst                       | String   | Timestamp when the verification started. |
-| auditTrail.workEndTst                         | String   | Timestamp when the verification ended. |
-| auditTrail.workResult                         | String   | Summary of the verification result. |
 | fraudAlerts                                   | Object   | Contains fraud detection-related data. |
 | fraudAlerts.fraudAlertDetail                  | Array    | List of detected fraud alerts (if any). |
 | fraudAlerts.aggregateFraudAlertScore          | Number   | Overall fraud risk score (`0 = no risk`). |
@@ -414,7 +407,7 @@ Bypasses the journey build-up and processes all images in one request. No feedba
 }
 ```
 
-## 3. Error Handling & Codes
+## Error Handling & Codes
 
 Below is how the Document Verification API handles errors. This section is divided into:
 
@@ -422,7 +415,7 @@ Below is how the Document Verification API handles errors. This section is divid
 2. **Generic Error Response Structure** - the standard JSON format returned in error cases.
 3. **Endpoint-Specific Error Scenarios** - a reference table detailing common error codes for each endpoint.
 
-### 3.1 General HTTP Status Codes
+### General HTTP Status Codes
 | HTTP Status | Meaning                 | Description |
 |------------|------------------------|-------------|
 | 200        | OK                     | Request succeeded. See response body for details. |
@@ -434,7 +427,7 @@ Below is how the Document Verification API handles errors. This section is divid
 | 429        | Too Many Requests       | Rate limit exceeded. |
 | 500        | Internal Server Error   | A generic server-side error occurred. |
 
-### 3.2 Generic Error Response Structure
+### Generic Error Response Structure
 When an error occurs (i.e., a `4xx` or `5xx` status code), the API returns a JSON body with the following format:
 
 ### Response Structure
@@ -463,7 +456,7 @@ When an error occurs (i.e., a `4xx` or `5xx` status code), the API returns a JSO
 - `details` can be omitted if no extra info is needed.
 </Note>
 
-### 3.3 Endpoint-Specific Error Scenarios
+### Endpoint-Specific Error Scenarios
 Each endpoint may have unique validation or domain-specific constraints. The table below summarizes common error codes per endpoint. All error responses conform to the Generic Error Response Structure above.
 
 | Endpoint         | Error Code             | HTTP Status | Error Message                                         | Description |
@@ -475,10 +468,10 @@ Each endpoint may have unique validation or domain-specific constraints. The tab
 |                 | missingImages         | 422         | Required images (front/back/selfie) were not all provided. | Verification could not be completed because essential images are missing. |
 | /verify/age     | mutuallyExclusive    | 400         | `ageFrom` and `ageTo` cannot both be specified.     | The request included both `ageFrom` and `ageTo`, which is not allowed. |
 |                 | journeyNotFound      | 404         | No active journey with the given `journeyId`.       | As above. |
-| /verify/single  | missingImages         | 422         | Not all necessary images (front/back) were provided. | Single-step verification requires all images in a single request. |
+| /verifySingle  | missingImages         | 422         | Not all necessary images (front/back) were provided. | Single-step verification requires all images in a single request. |
 |                 | invalidImageData     | 400         | Base64 string is malformed or missing.              | Same as above, but specifically applies to single-step scenarios. |
 
-### 3.4 Handling Errors
+### Handling Errors
 
 1. **Check the HTTP status code** returned from the API.
 2. **Parse the JSON** if the status code indicates an error (`4xx` or `5xx`).

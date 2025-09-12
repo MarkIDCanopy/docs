@@ -1,0 +1,80 @@
+{
+	"info": {
+		"_postman_id": "897f273f-990d-4e91-b6f2-2c8af1c93670",
+		"name": "phoneVerification",
+		"description": "API documentation for IdCanopy",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "39862055"
+	},
+	"item": [
+		{
+			"name": "phone-service",
+			"item": [
+				{
+					"name": "phoneVerification",
+					"item": [
+						{
+							"name": "Verification",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{accessToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"phoneNumber\": \"436504142107\",\r\n    \"method\": \"sms\"\r\n    // \"email\": \"test@test.com\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{apiUrl}}/phone-service/verification",
+									"host": [
+										"{{apiUrl}}"
+									],
+									"path": [
+										"phone-service",
+										"verification"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{bearerToken}}",
+				"type": "string"
+			}
+		]
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "https://sandbox-umbrella-api.azurewebsites.net/api/services/"
+		}
+	]
+}

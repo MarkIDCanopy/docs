@@ -1,0 +1,207 @@
+{
+	"info": {
+		"_postman_id": "0a3742b2-73f2-4702-9ce7-551297f0052b",
+		"name": "phoneFullIntelligence",
+		"description": "API documentation for IdCanopy",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "39862055"
+	},
+	"item": [
+		{
+			"name": "phone-service",
+			"item": [
+				{
+					"name": "phoneFullIntelligence",
+					"item": [
+						{
+							"name": "Full Phone Intelligence",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{accessToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"phoneNumber\": \"+436504142107\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{apiUrl}}/phone-service/fullPhoneIntelligence",
+									"host": [
+										"{{apiUrl}}"
+									],
+									"path": [
+										"phone-service",
+										"fullPhoneIntelligence"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Full Phone Intelligence",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"phone_number\": \"+436504142107\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{apiUrl}}/phone-service/fullPhoneIntelligence",
+											"host": [
+												"{{apiUrl}}"
+											],
+											"path": [
+												"phone-service",
+												"fullPhoneIntelligence"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "Text",
+									"header": [
+										{
+											"key": "vary",
+											"value": "RSC, Next-Router-State-Tree, Next-Router-Prefetch"
+										},
+										{
+											"key": "content-type",
+											"value": "application/json"
+										},
+										{
+											"key": "Date",
+											"value": "Tue, 05 Aug 2025 11:49:06 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										},
+										{
+											"key": "Transfer-Encoding",
+											"value": "chunked"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"status\": true,\n    \"data\": {\n        \"referenceId\": \"5661E8417A000F1C9307979FE74C8A01\",\n        \"externalId\": null,\n        \"status\": {\n            \"updatedOn\": \"2025-08-05T11:49:10.125583Z\",\n            \"code\": 300,\n            \"description\": \"Transaction successfully completed\"\n        },\n        \"numbering\": {\n            \"original\": {\n                \"completePhoneNumber\": \"+436504142107\",\n                \"countryCode\": \"43\",\n                \"phoneNumber\": \"6504142107\"\n            },\n            \"cleansing\": {\n                \"call\": {\n                    \"countryCode\": \"43\",\n                    \"phoneNumber\": \"6504142107\",\n                    \"cleansedCode\": 100,\n                    \"minLength\": 7,\n                    \"maxLength\": 13\n                },\n                \"sms\": {\n                    \"countryCode\": \"43\",\n                    \"phoneNumber\": \"6504142107\",\n                    \"cleansedCode\": 100,\n                    \"minLength\": 7,\n                    \"maxLength\": 13\n                }\n            }\n        },\n        \"riskInsights\": {\n            \"status\": 800,\n            \"category\": [\n                10010\n            ],\n            \"a2P\": [\n                22001,\n                20012,\n                20101\n            ],\n            \"p2P\": [\n                30201\n            ],\n            \"numberType\": [],\n            \"ip\": [],\n            \"email\": []\n        },\n        \"phoneType\": {\n            \"code\": \"2\",\n            \"description\": \"MOBILE\"\n        },\n        \"location\": {\n            \"city\": \"Countrywide\",\n            \"state\": null,\n            \"zip\": null,\n            \"metroCode\": null,\n            \"county\": null,\n            \"country\": {\n                \"name\": \"Austria\",\n                \"iso2\": \"AT\",\n                \"iso3\": \"AUT\"\n            },\n            \"coordinates\": {\n                \"latitude\": null,\n                \"longitude\": null\n            },\n            \"timeZone\": {\n                \"name\": null,\n                \"utcOffsetMin\": \"+1\",\n                \"utcOffsetMax\": \"+1\"\n            }\n        },\n        \"carrier\": {\n            \"name\": \"T-Mobile Austria GmbH\"\n        },\n        \"blocklisting\": {\n            \"blocked\": false,\n            \"blockCode\": 0,\n            \"blockDescription\": \"Not blocked\"\n        },\n        \"risk\": {\n            \"level\": \"medium-low\",\n            \"recommendation\": \"allow\",\n            \"score\": 301\n        },\n        \"callForwardDetection\": {\n            \"status\": {\n                \"code\": 2806,\n                \"description\": \"call_forward_detection add-on is not enabled.\"\n            }\n        },\n        \"breachedNumberCheck\": {\n            \"status\": {\n                \"code\": 2806,\n                \"description\": \"breached_number_check add-on is not enabled.\"\n            }\n        },\n        \"numberDeactivation\": {\n            \"status\": {\n                \"code\": 2806,\n                \"description\": \"number_deactivation add-on is not enabled.\"\n            }\n        },\n        \"activeCallStatus\": {\n            \"status\": {\n                \"code\": 2806,\n                \"description\": \"active_call_status add-on is not enabled.\"\n            }\n        },\n        \"portingStatus\": {\n            \"status\": {\n                \"code\": 2806,\n                \"description\": \"porting_status add-on is not enabled.\"\n            }\n        },\n        \"simSwap\": {\n            \"status\": {\n                \"code\": 2806,\n                \"description\": \"sim_swap add-on is not enabled.\"\n            }\n        }\n    }\n}"
+								},
+								{
+									"name": "Full Phone Intelligence-Complete",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"phoneNumber\": \"+436504142107\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{apiUrl}}/phone-service/fullPhoneIntelligence",
+											"host": [
+												"{{apiUrl}}"
+											],
+											"path": [
+												"phone-service",
+												"fullPhoneIntelligence"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "Text",
+									"header": [
+										{
+											"key": "vary",
+											"value": "RSC, Next-Router-State-Tree, Next-Router-Prefetch"
+										},
+										{
+											"key": "content-type",
+											"value": "application/json"
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 06 Aug 2025 12:53:09 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										},
+										{
+											"key": "Transfer-Encoding",
+											"value": "chunked"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"status\": true,\n    \"data\": {\n        \"referenceId\": \"3661FDC54750091C93078058241C3036\",\n        \"externalId\": null,\n        \"status\": {\n            \"updatedOn\": \"2025-08-06T12:53:09.929413Z\",\n            \"code\": 300,\n            \"description\": \"Transaction successfully completed\"\n        },\n        \"numbering\": {\n            \"original\": {\n                \"completePhoneNumber\": \"+436504142107\",\n                \"countryCode\": \"43\",\n                \"phoneNumber\": \"6504142107\"\n            },\n            \"cleansing\": {\n                \"call\": {\n                    \"countryCode\": \"43\",\n                    \"phoneNumber\": \"6504142107\",\n                    \"cleansedCode\": 100,\n                    \"minLength\": 7,\n                    \"maxLength\": 13\n                },\n                \"sms\": {\n                    \"countryCode\": \"43\",\n                    \"phoneNumber\": \"6504142107\",\n                    \"cleansedCode\": 100,\n                    \"minLength\": 7,\n                    \"maxLength\": 13\n                }\n            }\n        },\n        \"riskInsights\": {\n            \"status\": 800,\n            \"category\": [\n                10010\n            ],\n            \"a2P\": [\n                22007,\n                20011,\n                20101\n            ],\n            \"p2P\": [\n                30201\n            ],\n            \"numberType\": [],\n            \"ip\": [],\n            \"email\": []\n        },\n        \"phoneType\": {\n            \"code\": \"2\",\n            \"description\": \"MOBILE\"\n        },\n        \"location\": {\n            \"city\": \"Countrywide\",\n            \"state\": null,\n            \"zip\": null,\n            \"metroCode\": null,\n            \"county\": null,\n            \"country\": {\n                \"name\": \"Austria\",\n                \"iso2\": \"AT\",\n                \"iso3\": \"AUT\"\n            },\n            \"coordinates\": {\n                \"latitude\": null,\n                \"longitude\": null\n            },\n            \"timeZone\": {\n                \"name\": null,\n                \"utcOffsetMin\": \"+1\",\n                \"utcOffsetMax\": \"+1\"\n            }\n        },\n        \"carrier\": {\n            \"name\": \"T-Mobile Austria GmbH\"\n        },\n        \"blocklisting\": {\n            \"blocked\": false,\n            \"blockCode\": 0,\n            \"blockDescription\": \"Not blocked\"\n        },\n        \"risk\": {\n            \"level\": \"medium-low\",\n            \"recommendation\": \"allow\",\n            \"score\": 301\n        }\n    }\n}"
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{bearerToken}}",
+				"type": "string"
+			}
+		]
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "https://sandbox-umbrella-api.azurewebsites.net/api/services/"
+		}
+	]
+}

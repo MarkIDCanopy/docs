@@ -7,6 +7,12 @@
     "light": "#f8fafc",
     "dark": "#020817"
   },
+  "api": {
+    "baseUrl": "https://sandbox-umbrella-api.azurewebsites.net/api/services",
+    "auth": {
+      "method": "bearer"
+    }
+  },
   "contextual": {
   "options": ["copy", "view", "chatgpt"]
   },
@@ -133,7 +139,7 @@
     "links": [
       {
         "label": "Support",
-        "href": "mailto:mark@idcanopy.com"
+        "href": "https://idcanopy.atlassian.net/servicedesk/customer/portals"
       }
     ]
   },

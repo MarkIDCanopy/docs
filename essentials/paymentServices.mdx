@@ -87,9 +87,9 @@ The Payment Service API enables seamless and secure payment processing through o
 <Auth/>
 ---
 
-# Regular A2A Payment
+# 1. Regular A2A Payment
 
-## 1. Initiate Payment
+## 1.1 Initiate Payment
 ### Endpoint
 **POST** `/payments/initiate`
 
@@ -149,7 +149,7 @@ Initiates a payment by redirecting the user to a hosted payment page.
 
 ---
 
-## 2. Retrieve Transaction Status
+## 1.2 Retrieve Transaction Status
 ### Endpoint
 **POST** `/payments/status`
 
@@ -242,14 +242,14 @@ To specify the language for the hosted page, use the `language` field in the pay
 | 504        | Gateway has timed out. |
 
 
-# Challenge Deposit (Penny Drop)
+# 2. Challenge Deposit (Penny Drop)
 
 ## Introduction
 The Challenge Deposit (also known as Penny Drop) is an additional compliance step used for identity verification in regulated markets.
 
 ---
 
-## 1. Initiate Challenge Deposit
+## 2.1. Initiate Challenge Deposit
 ### Endpoint
 **POST** `/payments/challenge-deposit`
 
