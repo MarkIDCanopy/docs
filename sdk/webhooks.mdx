@@ -124,32 +124,31 @@ http_response_code(200);
 | `generalTransactionData.success`                          | string              | Business outcome in the summary.                                                 |
 | `journeySummary`                                          | object              | Aggregated results and artifacts for the journey.                                |
 | `journeySummary.journeyStats`                             | object              | High-level timings and counts.                                                   |
-| `journeySummary.journeyStats.completedSteps`              | integer \*          | Number of completed steps (*sample shows string `"2"`; recommended as integer*). |
-| `journeySummary.journeyStats.startTime`                   | string (ISO 8601)   | Journey start time.                                                              |
-| `journeySummary.journeyStats.endTime`                     | string (ISO 8601)   | Journey end time.                                                                |
+| `journeyStats.completedSteps`                             | integer \*          | Number of completed steps (*sample shows string `"2"`; recommended as integer*). |
+| `journeyStats.startTime`                                  | string (ISO 8601)   | Journey start time.                                                              |
+| `journeyStats.endTime`                                    | string (ISO 8601)   | Journey end time.                                                                |
 | `journeySummary.identitySubject`                          | object              | Subject details (person/company/government).                                     |
-| `journeySummary.identitySubject.type`                     | string              | Subject type, e.g. `person`.                                                     |
-| `journeySummary.identitySubject.fullName`                 | string              | Full name.                                                                       |
-| `journeySummary.identitySubject.nameStructure`            | object              | Structured name breakdown.                                                       |
-| `journeySummary.identitySubject.nameStructure.firstName`  | string              | Given name.                                                                      |
-| `journeySummary.identitySubject.nameStructure.lastName`   | string              | Family name.                                                                     |
-| `journeySummary.identitySubject.gender`                   | string              | `M`, `F`, `D` (as applicable).                                                   |
-| `journeySummary.identitySubject.nationality`              | string              | ISO 3166-1 alpha-2 nationality (e.g., `AT`).                                     |
-| `journeySummary.identitySubject.dob`                      | string (date)       | Date of birth (format `YYYY/MM/DD`).                      |
-| `journeySummary.identitySubject.mobileNumber`             | string              | Phone number (e.g., E.164 format).                                               |
+| `identitySubject.type`                                    | string              | Subject type, e.g. `person`.                                                     |
+| `identitySubject.fullName`                                | string              | Full name.                                                                       |
+| `identitySubject.nameStructure`                           | object              | Structured name breakdown.                                                       |
+| `nameStructure.firstName`                                 | string              | Given name.                                                                      |
+| `nameStructure.lastName`                                  | string              | Family name.                                                                     |
+| `identitySubject.gender`                                  | string              | `M`, `F`, `D` (as applicable).                                                   |
+| `identitySubject.nationality`                             | string              | ISO 3166-1 alpha-2 nationality (e.g., `AT`).                                     |
+| `identitySubject.dob`                                     | string (date)       | Date of birth (format `YYYY/MM/DD`).                      |
+| `identitySubject.mobileNumber`                            | string              | Phone number (e.g., E.164 format).                                               |
 | `journeySummary.authoritativeData`                        | array       | Identity document data extracted/verified.                                       |
-| `journeySummary.authoritativeData[].type`                 | string              | Document type (e.g., `drivers_license`, `passport`).                             |
-| `journeySummary.authoritativeData[].idNumber`             | string              | Document number.                                                                 |
-| `journeySummary.authoritativeData[].issuingDate`          | string (date)       | Issue date (e.g., `YYYY/MM/DD`).                                                 |
-| `journeySummary.authoritativeData[].expirationDate`       | string (date)       | Expiry date (e.g., `YYYY/MM/DD`).                                                |
-| `journeySummary.authoritativeData[].expeditor`            | string              | Issuing authority.                                                               |
-| `journeySummary.authoritativeData[].issuingCountry`       | string              | ISO country code of issuance (e.g., `AT`).                                       |
+| `authoritativeData[].type`                                | string              | Document type (e.g., `drivers_license`, `passport`).                             |
+| `authoritativeData[].idNumber`                            | string              | Document number.                                                                 |
+| `authoritativeData[].issuingDate`                         | string (date)       | Issue date (e.g., `YYYY/MM/DD`).                                                 |
+| `authoritativeData[].expirationDate`                      | string (date)       | Expiry date (e.g., `YYYY/MM/DD`).                                                |
+| `authoritativeData[].expeditor`                           | string              | Issuing authority.                                                               |
+| `authoritativeData[].issuingCountry`                      | string              | ISO country code of issuance (e.g., `AT`).                                       |
 | `journeySummary.proofOfWork`                              | array               | Captured artifacts (images, excerpts, etc.).                                     |
-| `journeySummary.proofOfWork[].type`                       | string              | Artifact type (e.g., `image`).                                                   |
-| `journeySummary.proofOfWork[].title`                      | string              | Artifact label (e.g., `selfie`, `documentFront`).                               |
-| `journeySummary.proofOfWork[].contentOfProof`             | string (URL/handle) | Secure link or opaque handle to the artifact.                                    |
-| `journeySummary.proofOfWork[].timestampOfProof`           | string (ISO 8601)   | Artifact capture timestamp.                                                      |
-| `journeySummary.proofOfWork[].workstepVerificationSource` | string              | Source (e.g., `camera`).                                                         |
+| `proofOfWork[].type`                                      | string              | Artifact type (e.g., `image`).                                                   |
+| `proofOfWork[].title`                                     | string              | Artifact label (e.g., `selfie`, `documentFront`).                               |
+| `proofOfWork[].contentOfProof`                            | string (URL/handle) | Secure link or opaque handle to the artifact.                                    |
+| `proofOfWork[].workstepVerificationSource`                | string              | Source (e.g., `camera`).                                                         |
 | `journeySummary.steps`                                    | array               | Per-step breakdown (work status, scores, data).                                  |
 | `journeySummary.fraudAlerts`                              | array               | Fraud events, details, evidence, and scores.                                     |
 | `journeySummary.auditTrail`                               | array               | Chronological work records (start/end/status/result).                            |
