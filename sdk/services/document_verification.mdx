@@ -1,0 +1,193 @@
+---
+title: "Document Verification (SDK)"
+description: "Service methods for multi-step and single-step document verification"
+icon: 'code'
+tag: "NEW"
+---
+
+# Document Verification (SDK)
+
+Use these SDK methods to run document verification either as a **multi-step journey** (`openJourney` → `addImage` → `verify` [+ optional `verifyAge`]) or as a **single-step** call (`verifySingle`).  
+All requests use the bearer token managed in [Authentication](/sdk/authentication).
+
+<Note>
+**Status:** Preview (aligns with the provider API you’re integrating). Some fields/endpoints may be gated by feature flags.
+</Note>
+
+## Methods
+
+| SDK Method | Purpose | Under the hood |
+|---|---|---|
+| `documentVerification.openJourney()` | Start a new verification journey. | POST `/openJourney` |
+| `documentVerification.addImage(dto)` | Upload one image (`front`, `back`, or `selfie`). | POST `/addImage` |
+| `documentVerification.verify({ journeyId })` | Verify the images in the journey. | POST `/verify` |
+| `documentVerification.verifyAge(dto)` | Optional post-verification age/disability check. | POST `/verify/age` |
+| `documentVerification.verifySingle({ images })` | Upload all images at once and verify. | POST `/verifySingle` |
+
+> **Reference:** Full wire contracts live in [Document Verification API](/essentials/documentVerification) (`/openJourney`, `/addImage`, `/verify`, `/verify/age`, `/verifySingle`).
+
+---
+
+## Quick examples
+
+<Tabs>
+  <Tab title="Multi-step (open → addImage → verify)">
+
+```ts
+// 1) Open a journey
+const { journeyId } = await canopy.documentVerification.openJourney();
+
+// 2) Add images
+await canopy.documentVerification.addImage({
+  journeyId,
+  imageName: "front.jpg",
+  imageSide: "front",
+  imageData: await fileToBase64(frontFile),   // or pass a Blob/File in browser
+});
+
+await canopy.documentVerification.addImage({
+  journeyId,
+  imageName: "back.jpg",
+  imageSide: "back",
+  imageData: await fileToBase64(backFile),
+});
+
+// 3) Verify
+const result = await canopy.documentVerification.verify({ journeyId });
+// Result shape mirrors API Reference and will also arrive via your webhook.
+```
+</Tab> </Tabs>
+
+<a id="openjourney"></a>
+## openJourney
+Start a document verification journey.
+
+```ts
+const { journeyId, passThroughData } = await canopy.documentVerification.openJourney(
+  // optional metadata may be supported in future
+);
+```
+### Response 
+| Field             | Type    | Description                                     |
+| ----------------- | ------- | ----------------------------------------------- |
+| `journeyId`       | string  | Unique identifier for the verification journey. |
+| `passThroughData` | object? | Optional metadata echoed back (if supplied).    |
+
+<Note> **Under the hood:** POST `/openJourney`. See [Document Verification API](/essentials/documentVerification#openjourney) for exact response shape. </Note>
+
+<a id="addimage"></a>
+## addImage
+Upload one image to an open journey. Call this per **front**, **back**, and optionally **selfie**.
+
+### Request
+| Field             | Type                                | Required | Notes                                             |
+| ----------------- | ----------------------------------- | -------- | ------------------------------------------------- |
+| `journeyId`       | string                              | Yes | From `openJourney`.                               |
+| `imageName`       | string                              | Yes | Original filename or a generated name.            |
+| `imageSide`       | `"front"` \| `"back"` \| `"selfie"` | Yes  | Which side/selfie you’re uploading.               |
+| `storeOnly`       | boolean                             | No       | Store without classification (provider-specific). |
+| `imageData`       | string \| Blob \| File              | Yes  | Base64 (server-to-server) or Blob/File (browser). |
+| `passThroughData` | object                              | No       | Custom metadata echoed back.                      |
+
+```ts
+await canopy.documentVerification.addImage({
+  journeyId,
+  imageName: "selfie.jpg",
+  imageSide: "selfie",
+  imageData: await fileToBase64(selfieFile)
+});
+```
+
+<Note> **Under the hood:** POST `/addImage`. See [Document Verification API](/essentials/documentVerification#addimage) for HTTP details and constraints. </Note>
+
+<a id="verify"></a>
+## verify
+Trigger verification for all images attached to a journey.
+
+```ts
+const result = await canopy.documentVerification.verify({ journeyId });
+```
+
+### Response 
+| Field                                | Type   | Description                                                                                                                                                                                                |
+| ------------------------------------ | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `status`                             | string | Overall verification state (e.g., `verificationComplete`).                                                                                                                                                 |
+| `identitySubject`                    | object | Extracted subject details. May include: `type`, `fullName`, `nameStructure` (`firstName`, `lastName`, `nativeFullName?`), `gender`, `nationality`, `dob`, `addressSingleLine?`, `email?`, `mobileNumber?`. |
+| `authoritativeData.identityDocument` | object | Verified document data: `type` (`passport`, `IDCard`, `drivers_license`, …), `idNumber`, `issuingCountry`, `expeditor`, `expirationDate`, `verificationChannel` (`optical`, `manual`, …).                  |
+| `proofOfWork`                        | object | Proof metadata: `type` (e.g., `image`), `titleOfProof` (e.g., `IDFront`), `timestampOfProof` (ISO 8601).                                                                                                   |
+| `auditTrail`                         | object | Processing log: `workId`, `workStatus` (`PASS`, `FAIL`), `workStartTst`, `workEndTst`, `workResult`.                                                                                                       |
+| `fraudAlerts`                        | object | Fraud signals: `fraudAlertDetail[]` (list of alerts), `aggregateFraudAlertScore` (number).                                                                                                                 |
+| `croppedImages`                      | object | Base64 crops when available: `front`, `back`, `portrait`, `signature`, `selfie`.                                                                                                                           |
+
+<Note> **Under the hood:** POST `/verify`. Full schema and examples in [Document Verification API](/essentials/documentVerification#verify). Authoritative results will also be pushed to your **Webhook**. </Note>
+
+<a id="verifyage"></a>
+## verifyAge
+Optional age/disability check after **verify**.
+
+### Request
+| Field                     | Type   | Required | Notes                              |
+| ------------------------- | ------ | -------- | ---------------------------------- |
+| `journeyId`               | string | **Yes**  | Journey to evaluate.               |
+| `ageFrom`                 | number | No       | Mutually exclusive with `ageTo`.   |
+| `ageTo`                   | number | No       | Mutually exclusive with `ageFrom`. |
+| `minDisabilityPercentage` | number | No       | Optional threshold.                |
+
+```ts
+const ageDecision = await canopy.documentVerification.verifyAge({
+  journeyId,
+  ageFrom: 21,
+  minDisabilityPercentage: 50
+});
+```
+### Response
+| Field              | Type                             | Description                                                                   |
+| ------------------ | -------------------------------- | ----------------------------------------------------------------------------- |
+| `status`           | string                           | Always `ageAndDisabilityVerificationComplete` on success.                     |
+| `ageResult`        | `"yes"` \| `"no"`                | Whether the individual meets the configured age requirement.                  |
+| `disabilityResult` | `"eligible"` \| `"not eligible"` | Whether the individual meets the minimum disability percentage (if provided). |
+
+<Note> **Under the hood:** POST `/verify/age`. See [Document Verification API](/essentials/documentVerification#verifyage) for full details. </Note>
+
+<a id="verifysingle"></a>
+## verifySingle
+Bypass journey build-up and verify in one call. **All required images must be provided at once**; no intermediate feedback.
+
+### Request
+| Field                | Type                                | Required | Notes                                   |
+| -------------------- | ----------------------------------- | -------- | --------------------------------------- |
+| `images[]`           | array                               |   Yes    | Each item is one image object.          |
+| `images[].imageName` | string                              |   Yes    | File name/identifier.                   |
+| `images[].imageSide` | `"front"` \| `"back"` \| `"selfie"` |   Yes    | Side/selfie.                            |
+| `images[].imageData` | string \| Blob \| File              |   Yes    | Base64 (server) or Blob/File (browser). |
+
+```ts
+const result = await canopy.documentVerification.verifySingle({
+  images: [
+    { imageName: "front.jpg", imageSide: "front", imageData: await fileToBase64(frontFile) },
+    { imageName: "back.jpg",  imageSide: "back",  imageData: await fileToBase64(backFile)  }
+  ]
+});
+```
+### Response
+
+<Note> **Under the hood:** POST `/verifySingle`. See [Document Verification API](/essentials/documentVerification#verifysingle). </Note>
+
+## Errors 
+Refer to your Error Handling & Codes table in [Document Verification API](/essentials/documentVerification#error). The SDK surfaces:
+
+| HTTP      | Meaning                | Common causes                                                |
+| --------- | ---------------------- | ------------------------------------------------------------ |
+| `400`     | Bad Request            | Missing/invalid parameters (e.g., both `ageFrom` & `ageTo`). |
+| `401/403` | Unauthorized/Forbidden | Token invalid/expired or insufficient permissions.           |
+| `404`     | Not Found              | `journeyId` not found/closed.                                |
+| `422`     | Unprocessable Entity   | Required images missing or malformed base64.                 |
+| `429`     | Too Many Requests      | Rate limit exceeded.                                         |
+| `5xx`     | Server Error           | Transient provider issue; retry with backoff.                |
+
+## Notes & best practices
+
+- **Images:** Use clear, glare-free photos; the SDK may downscale large images for performance while preserving OCR quality.
+- **Security:** Don’t expose API keys in browser code; rely on SDK initialization patterns and your backend to provision credentials.
+- **Results:** Treat verification responses as preliminary UI feedback; the Webhook remains the authoritative channel in production flows.
+- **Anchors:** This page exposes method anchors (#openjourney, #addimage, #verify, #verifyage, #verifysingle) for deep linking from UI docs.

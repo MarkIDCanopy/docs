@@ -1,0 +1,77 @@
+---
+title: "SDK Introduction"
+description: "Embed verification journeys with a few lines of code"
+icon: 'code'
+tag: "NEW"
+---
+
+# IdCanopy SDK
+
+The **IdCanopy SDK** wraps the platform APIs and hosted UI into easy building blocks so you can ship KYC/KYB flows fast.  
+It handles **authentication**, **journey creation (handshake)**, **UI initialization**, **events**, and **webhooks**.
+
+### What you can build
+- **Hosted UI** via a single `uiHandle` (iframe or redirect)
+- **Inline UI modules**: **FaceMatch** and **Document Capture**
+- **API-only** integrations using thin **service clients** (AML, Phone, Payments, QES, KYB*)
+
+### Integration in a nutshell
+1. **Authenticate**:
+   - SDK obtains and manages the bearer token for you.
+2. **Handshake**: 
+   - create a journey and receive "transactionId", "uiHandle".
+3. **Run the flow**: 
+   - either embed the Hosted UI (iframe/redirect) or mount UI modules (FaceMatch / Document Capture).
+4. **Listen to events & webhooks**: 
+   - update your UI in real time and consume final results from your webhook.
+5. **Retrieve results**: 
+   - via webhook payloads (recommended) or service APIs.
+
+## Prerequisites
+<Note>
+- **API Key** and **Customer ID** (from your IdCanopy account)
+- **Environment**: Sandbox or Production  
+  - Base API (prod): `https://api-umbrella.io/api/services`  
+  - Auth (prod): `https://api-umbrella.io/api/services/auth`  
+  - Auth (sandbox): `https://sandbox-umbrella-api.azurewebsites.net/api/services/auth`
+- **Webhook URL** reachable over HTTPS **+ Webhook Secret** (for HMAC verification)
+</Note>
+
+## Install
+
+<Tabs>
+  <Tab title="Node (npm)">
+  
+```bash
+npm install idcanopy-sdk
+```
+</Tab> <Tab title="Python (pip)">
+```python
+pip install idcanopy-sdk
+```
+</Tab> </Tabs>
+
+## Basics
+- **Error Handling:** The IdCanopy API responds with clear error codes and messages in case of any issues during the journey. You can integrate these error responses into your application logic for appropriate user handling.
+- **Scalability and Performance:** IdCanopy's infrastructure is designed to handle high volumes of verification requests while maintaining performance and reliability.
+- **Security Considerations:**
+>- Secure communication protocols (JWT, OAuth2) ensure data confidentiality and integrity.
+>- Data encryption protects sensitive user information both at rest and in transit.
+>- Regular security audits and penetration testing guarantee a secure platform.
+
+### Authentication
+IdCanopy supports secure communication through industry-standard authentication protocols:
+
+- **JWT (JSON Web Token):** A self-contained token containing encoded information for user verification.
+- **OAuth2:** An authorization framework enabling secure delegation of user authentication.
+- **Basic Authentication**
+
+### Customer Journeys
+Customer journeys represent multi-step verification processes a user undergoes. Each journey can encompass various steps like photo identification (KYC), address verification, and sanction checks.
+
+**Benefits:**
+- **Streamlined user experience:** users interact with a single experience for the entire verification process.
+- **Customization:** Tailor behavior for individual journeys through handshake parameters.
+- **Flexibility:** Pass-through data allows for custom information exchange.
+- **Reduced Costs:** Efficient automation saves time and resources compared to manual verification.
+- **Increased Compliance:** Adherence to KYC and AML regulations ensures regulatory compliance.

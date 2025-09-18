@@ -1,0 +1,52 @@
+---
+title: "Authentication"
+description: "How the SDK obtains and refreshes tokens"
+icon: 'code'
+tag: "NEW"
+---
+
+# SDK Authentication
+The SDK manages API tokens for you. Provide credentials once during initialization; the SDK requests and attaches the bearer token to all calls. It also refreshes the token when needed.
+
+## Configure
+<Tabs>
+  <Tab title="Node (JS/TS)">
+  
+```ts
+import { IdCanopy } from "idcanopy-sdk";
+
+const canopy = new IdCanopy({
+  apiKey: process.env.IDCANOPY_API_KEY!,
+  customerId: process.env.IDCANOPY_CUSTOMER_ID!,
+  environment: "sandbox" // or "production"
+});
+
+// Optional: prefetch on startup
+await canopy.auth.getToken();
+```
+</Tab> <Tab title="Python">
+```python
+from idcanopy_sdk import IdCanopy
+
+canopy = IdCanopy(
+    api_key=os.environ["IDCANOPY_API_KEY"],
+    customer_id=os.environ["IDCANOPY_CUSTOMER_ID"],
+    environment="sandbox"  # or "production"
+)
+
+// Optional Prefetch on startup
+canopy.auth.get_token()
+```
+</Tab> </Tabs>
+
+## Manual control (optional)
+```ts
+// Provide an existing token if you manage it externally
+canopy.auth.setToken({ accessToken: "…", expiresIn: 3600 });
+
+// Read current token
+const tok = canopy.auth.getCurrent();
+
+```
+<Note> Under the hood, the SDK calls the same `/auth` endpoint documented in [API Authentication](/authentication) and caches the token until it expires. </Note>
+

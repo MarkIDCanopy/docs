@@ -20,7 +20,7 @@
   "navigation": {
     "tabs": [
       {
-        "tab": "Guides",
+        "tab": "API Guides",
         "groups": [
           {
             "group": "Getting Started",
@@ -46,6 +46,33 @@
                   "essentials/paymentServices_credentials"
                 ]
               }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "SDK",
+        "groups": [
+          {
+            "group": "Getting Started",
+            "pages": [
+              "sdk/introduction",
+              "sdk/authentication",
+              "sdk/handshake",
+              "sdk/webhooks"
+            ]
+          },
+          {
+            "group": "UI Widgets",
+            "pages": [
+              "sdk/ui_widgets/hosted_ui",
+              "sdk/ui_widgets/document"
+            ]
+          },
+          {
+            "group": "Services",
+            "pages": [
+              "sdk/services/document_verification"
             ]
           }
         ]

@@ -1,0 +1,53 @@
+---
+title: "Hosted UI"
+description: "Initialize the IdCanopy hosted UI with the uiHandle."
+icon: 'code'
+tag: "NEW"
+---
+
+# Hosted UI
+Use the `uiHandle` from the **Handshake** to run the full verification flow via **iframe** or **redirect**.
+
+## Frontend initialization
+
+### Iframe
+- Create an `<iframe>` and set `src` to `uiHandle`.
+- Restrict embedding to your domains (CSP `frame-ancestors` or `X-Frame-Options`).
+
+### Redirect
+- `window.location.href = uiHandle`.
+- Optionally serve a short-lived 302 to reduce URL exposure.
+
+### Events
+The SDK emits:
+- `journey.started`
+- `journey.step.completed`
+- `journey.completed`
+- `journey.fraud.alert`
+- `ui.closed`
+- `ui.timeout`
+
+### Example
+```ts
+// after Handshake → you have { uiHandle }
+canopy.ui.init({ url: uiHandle });
+
+let lastActiveTime = Date.now();
+const bump = () => (lastActiveTime = Date.now());
+document.addEventListener('mousemove', bump);
+document.addEventListener('keypress', bump);
+
+window.onbeforeunload = (e) => {
+  const msg = 'Are you sure you want to leave the verification process?';
+  e.returnValue = msg; return msg;
+};
+
+canopy.ui.on('journey.completed', (data) => console.log('done', data));
+canopy.ui.on('journey.step.completed', (d) => console.log('step', d));
+canopy.ui.on('journey.fraud.alert', (d) => console.warn('fraud', d));
+
+// optional inactivity warning
+setInterval(() => {
+  if (Date.now() - lastActiveTime > 5 * 60 * 1000) console.warn('inactive 5m');
+}, 60 * 1000);
+```

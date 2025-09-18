@@ -1,0 +1,165 @@
+---
+title: "Webhooks"
+description: "Receive journey updates, verify signatures, and understand the payload"
+icon: 'code'
+tag: "NEW"
+---
+
+# Webhooks
+IdCanopy sends real-time updates about customer journeys to your webhook endpoint. This page covers **how delivery works** (configuration, security, retries) and the **payload schema** you’ll receive.
+
+## Configure
+- **Webhook URL** — Your HTTPS endpoint that accepts `POST`.
+- **Events** — Choose which journey events you want (e.g., _journey completed_, _fraud alert_).
+- **Secret** — We sign each request body with a shared secret so you can verify integrity.
+
+## Endpoint requirements
+- **TLS**: 1.2+
+- **HTTP**: `POST`
+- **Body**: `application/json` (default) or `text/plain` when an encrypted payload is used
+- **Timeout/Response**: Return **HTTP 2xx** within **10 seconds**
+
+## Delivery & retries
+
+If we don’t receive 2xx (or your endpoint times out), we retry for ~24 hours:
+- Up to **6** additional attempts
+- Increasing backoff (≈**10s**, **100s**, **1000s**, **10000s**)
+
+## Security
+
+We add a **`Signature`** header containing an HMAC-SHA256 of the **raw request body**, keyed with your **Webhook Secret**.  
+User-Agent: **`signteq.io API`**.
+
+<Note>
+Use a constant-time comparison to prevent timing attacks.
+</Note>
+
+### Verify (PHP example)
+
+```php
+<?php
+$raw = file_get_contents('php://input');
+$signature = $_SERVER['HTTP_SIGNATURE'] ?? '';
+$secret = 'YOUR_WEBHOOK_SECRET';
+
+$expected = hash_hmac('sha256', $raw, $secret);
+
+if (!hash_equals($expected, $signature)) {
+  http_response_code(401);
+  exit('invalid signature');
+}
+
+http_response_code(200);
+```
+
+### Testing
+- Use **webhook.site** to inspect incoming requests.
+- Use **ngrok** (or similar) to forward callbacks to a local environment.
+
+### Example payload
+<Accordion title="Example payload">  
+```json
+{
+  "transactionId": "e5c81c78-272b-4307-9197-3ace19109fd3",
+  "customerId": "g5481c79-ag2b-5313-9z95-3ape19779fuc",
+  "timestamp": "2024-06-13T16:49:00+02:00",
+  "status": "complete",
+  "success": "PASS",
+  "generalTransactionData": {
+    "timestamp": "2022-02-14T10:04:32+01:00",
+    "status": "complete",
+    "success": "PASS"
+  },
+  "journeySummary": {
+    "journeyStats": {
+      "completedSteps": "2",
+      "startTime": "2022-02-14T10:04:32+01:00",
+      "endTime": "2022-02-14T10:06:38+01:00"
+    },
+    "identitySubject": {
+      "type": "person",
+      "fullName": "John Doe",
+      "nameStructure": { "firstName": "John", "lastName": "Doe" },
+      "gender": "M",
+      "nationality": "AT",
+      "dob": "1981/12/24",
+      "mobileNumber": "+4312345678"
+    },
+    "authoritativeData": [
+      {
+        "type": "driversLicense",
+        "idNumber": "1234567",
+        "issuingDate": "2015/06/18",
+        "expirationDate": "2030/06/17",
+        "expeditor": "LPD Wien/VA",
+        "issuingCountry": "AT"
+      }
+    ],
+    "proofOfWork": [
+      { "type": "image", "title": "selfie", "contentOfProof": "https://...", "timestampOfProof": "2024-06-13T16:49:00+02:00", "workstepVerificationSource": "camera" },
+      { "type": "image", "title": "document_front", "contentOfProof": "https://...", "timestampOfProof": "2024-06-13T16:49:00+02:00", "workstepVerificationSource": "camera" }
+    ],
+    "steps": [ /* ... */ ],
+    "fraudAlerts": [ /* ... */ ],
+    "auditTrail": [ /* ... */ ],
+    "journeyDocumentation": { /* ... */ }
+  },
+  "passThroughData": { /* ... */ }
+}
+```
+</Accordion>  
+
+### Payload reference
+<Accordion title="Payload reference">  
+| Field                                                     | Type                | Description                                                                      |
+| --------------------------------------------------------- | ------------------- | -------------------------------------------------------------------------------- |
+| `transactionId`                                           | string              | Journey identifier (treat as sensitive; use for correlation).                    |
+| `customerId`                                              | string              | Your customer identifier.                                                        |
+| `timestamp`                                               | string (ISO 8601)   | Event timestamp.                                                                 |
+| `status`                                                  | string              | Technical state, e.g. `complete`, `processing`, `aborted`, `closed`, `error`.    |
+| `success`                                                 | string              | Business outcome, e.g. `PASS`, `DECLINE`, `REVIEW`, `FLAG`.                      |
+| `generalTransactionData`                                  | object              | Summary block for the overall journey.                                           |
+| `generalTransactionData.timestamp`                        | string (ISO 8601)   | Journey timestamp in the summary.                                                |
+| `generalTransactionData.status`                           | string              | Technical state in the summary.                                                  |
+| `generalTransactionData.success`                          | string              | Business outcome in the summary.                                                 |
+| `journeySummary`                                          | object              | Aggregated results and artifacts for the journey.                                |
+| `journeySummary.journeyStats`                             | object              | High-level timings and counts.                                                   |
+| `journeySummary.journeyStats.completedSteps`              | integer \*          | Number of completed steps (*sample shows string `"2"`; recommended as integer*). |
+| `journeySummary.journeyStats.startTime`                   | string (ISO 8601)   | Journey start time.                                                              |
+| `journeySummary.journeyStats.endTime`                     | string (ISO 8601)   | Journey end time.                                                                |
+| `journeySummary.identitySubject`                          | object              | Subject details (person/company/government).                                     |
+| `journeySummary.identitySubject.type`                     | string              | Subject type, e.g. `person`.                                                     |
+| `journeySummary.identitySubject.fullName`                 | string              | Full name.                                                                       |
+| `journeySummary.identitySubject.nameStructure`            | object              | Structured name breakdown.                                                       |
+| `journeySummary.identitySubject.nameStructure.firstName`  | string              | Given name.                                                                      |
+| `journeySummary.identitySubject.nameStructure.lastName`   | string              | Family name.                                                                     |
+| `journeySummary.identitySubject.gender`                   | string              | `M`, `F`, `D` (as applicable).                                                   |
+| `journeySummary.identitySubject.nationality`              | string              | ISO 3166-1 alpha-2 nationality (e.g., `AT`).                                     |
+| `journeySummary.identitySubject.dob`                      | string (date)       | Date of birth (format `YYYY/MM/DD`).                      |
+| `journeySummary.identitySubject.mobileNumber`             | string              | Phone number (e.g., E.164 format).                                               |
+| `journeySummary.authoritativeData`                        | array       | Identity document data extracted/verified.                                       |
+| `journeySummary.authoritativeData[].type`                 | string              | Document type (e.g., `drivers_license`, `passport`).                             |
+| `journeySummary.authoritativeData[].idNumber`             | string              | Document number.                                                                 |
+| `journeySummary.authoritativeData[].issuingDate`          | string (date)       | Issue date (e.g., `YYYY/MM/DD`).                                                 |
+| `journeySummary.authoritativeData[].expirationDate`       | string (date)       | Expiry date (e.g., `YYYY/MM/DD`).                                                |
+| `journeySummary.authoritativeData[].expeditor`            | string              | Issuing authority.                                                               |
+| `journeySummary.authoritativeData[].issuingCountry`       | string              | ISO country code of issuance (e.g., `AT`).                                       |
+| `journeySummary.proofOfWork`                              | array               | Captured artifacts (images, excerpts, etc.).                                     |
+| `journeySummary.proofOfWork[].type`                       | string              | Artifact type (e.g., `image`).                                                   |
+| `journeySummary.proofOfWork[].title`                      | string              | Artifact label (e.g., `selfie`, `documentFront`).                               |
+| `journeySummary.proofOfWork[].contentOfProof`             | string (URL/handle) | Secure link or opaque handle to the artifact.                                    |
+| `journeySummary.proofOfWork[].timestampOfProof`           | string (ISO 8601)   | Artifact capture timestamp.                                                      |
+| `journeySummary.proofOfWork[].workstepVerificationSource` | string              | Source (e.g., `camera`).                                                         |
+| `journeySummary.steps`                                    | array               | Per-step breakdown (work status, scores, data).                                  |
+| `journeySummary.fraudAlerts`                              | array               | Fraud events, details, evidence, and scores.                                     |
+| `journeySummary.auditTrail`                               | array               | Chronological work records (start/end/status/result).                            |
+| `journeySummary.journeyDocumentation`                     | object              | Additional documentation for the journey.                                        |
+| `passThroughData`                                         | object              | Your metadata echoed back (keys/values as provided).                             |
+</Accordion>
+
+<Note>
+**Tips**
+- Treat "transactionId" and "artifact" links as **sensitive**; avoid logging them on the client.
+- Consider adding your own idempotency handling on receipt to avoid double-processing retries.
+- If you consume payloads in multiple systems, keep a small **payload changelog** in this page to track field additions.
+</Note>

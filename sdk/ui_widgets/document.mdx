@@ -1,0 +1,172 @@
+---
+title: "Document Verification (UI)"
+description: "Embed responsive document capture & verification in your app."
+icon: 'code'
+tag: "NEW"
+---
+
+# Document Verification (UI) — Preview
+Embed an in-app, responsive document capture experience. The component guides users to capture **front/back** of their ID and an optional **selfie**, and then triggers verification. It’s designed to mirror our Document Verification API.
+
+## When to use this
+- You want to **keep users inside your app** instead of sending them to the Hosted UI.
+- You need fine-grained **layout and UX control**.
+- You plan to combine steps (e.g., document first, FaceMatch later).
+
+## How it works
+Two modes are supported:
+
+- **Multi-step (recommended)**  
+  1) **Open** a verification journey → `/openJourney`  
+  2) **Add images** as they are captured → `/addImage` (front/back/selfie)  
+  3) **Verify** the collected images → `/verify`  
+  4) *(Optional)* **Age/Disability check** → `/verify/age`
+
+- **Single-step**  
+  Submit all images at once → `/verifySingle` (no intermediate feedback for missing pages).
+
+## Prerequisites
+- SDK Authentication configured (see **SDK → Authentication**).
+- A **webhook URL + secret** (recommended) to receive final results.
+
+---
+
+## Quick start (mount the widget)
+
+<Tabs>
+  <Tab title="Vanilla JS">
+  
+```html
+<div id="doc-root"></div>
+<script type="module">
+  import { IdCanopy } from "idcanopy-sdk";
+
+  const canopy = new IdCanopy({
+    apiKey: "...",
+    customerId: "...",
+    environment: "sandbox"
+  });
+
+  await canopy.auth.getToken();
+
+  // 1) Open a doc verification journey (provider)
+  const { journeyId } = await canopy.documentVerification.openJourney();
+
+  // 2) Mount the UI component
+  const unmount = canopy.ui.documentVerification.mount(
+    document.getElementById("doc-root"),
+    {
+      journeyId,                // required
+      allowUpload: false,       // camera-first UX
+      sides: ["front", "back"], // widget will prompt in order
+      selfieRequired: true,     // include a selfie step if your flow needs it
+      locale: "en",
+      theme: "light"
+    }
+  );
+
+  // 3) Listen for lifecycle events (optional)
+  const off = canopy.ui.on("document.verification.completed", (e) => {
+    console.log("Verification completed", e);
+    // Typically you'll wait for the webhook for authoritative results.
+  });
+</script>
+```
+</Tab> <Tab title="React">
+```js
+import { useEffect, useRef } from "react";
+import { IdCanopy } from "idcanopy-sdk";
+
+export default function DocumentVerification() {
+  const rootRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const canopy = new IdCanopy({ apiKey: "...", customerId: "...", environment: "sandbox" });
+
+    (async () => {
+      await canopy.auth.getToken();
+      const { journeyId } = await canopy.documentVerification.openJourney();
+
+      const unmount = canopy.ui.documentVerification.mount(rootRef.current!, {
+        journeyId,
+        sides: ["front", "back"],
+        selfieRequired: true,
+        allowUpload: false,
+        locale: "en"
+      });
+
+      return () => unmount?.();
+    })();
+  }, []);
+
+  return <div ref={rootRef} style={{ width: "100%", maxWidth: 560, margin: "0 auto" }} />;
+}
+```
+</Tab> </Tabs>
+
+<Accordion title="Configuration">  
+| Option                             | Type                         | Required  | Description                                                                                             |
+| ---------------------------------- | ---------------------------- | --------- | ------------------------------------------------------------------------------------------------------- |
+| `journeyId`                        | string                       | **Yes**\* | Journey from `/openJourney`. *If omitted, the widget can call `openJourney()` internally when allowed.* |
+| `sides`                            | array                        | No        | Which sides to capture and in what order. Default inferred by document type.                            |
+| `selfieRequired`                   | boolean                      | No        | Include a selfie step. Default: `false`.                                                                |
+| `allowUpload`                      | boolean                      | No        | Permit gallery upload fallback. Default: `false` (camera-first).                                        |
+| `locale`                           | string                       | No        | UI language (e.g., `en`, `de`).                                                                         |
+| `theme`                            | string                       | No        | `light` \| `dark`.                                                                                      |
+| `ageCheck`                         | object                       | No        | If provided, widget will call `/verify/age` after `/verify`.                                            |
+| `ageCheck.ageFrom`                 | number                       | No        | Minimum age (mutually exclusive with `ageTo`).                                                          |
+| `ageCheck.ageTo`                   | number                       | No        | Maximum age (mutually exclusive with `ageFrom`).                                                        |
+| `ageCheck.minDisabilityPercentage` | number                       | No        | Minimum disability percentage.                                                                          |
+</Accordion>
+
+### Events
+The component emits namespaced events you can subscribe to via **canopy.ui.on**(event, handler):
+- **document.ready** — widget mounted and camera ready.
+- **document.capture.started** — user starts capturing a side.
+- **document.image.added** — /addImage succeeded for a side.
+- **document.verification.started** — /verify called.
+- **document.verification.completed** — verify finished (you’ll still get the webhook for authoritative results).
+- **document.error** — fatal error (e.g., camera block, invalid image).
+
+```ts
+const off = canopy.ui.on("document.image.added", (e) => {
+  // e: { journeyId, imageSide: "front"|"back"|"selfie", imageName }
+});
+```
+
+### Using the SDK without the widget (service methods)
+Prefer to build your own UI? Call the service methods directly:
+
+| SDK Method | Purpose |
+|---|---|
+| [`documentVerification.openJourney()`](/sdk/services/document_verification#openjourney) | Start a document verification journey. |
+| [`documentVerification.addImage(dto)`](/sdk/services/document_verification#addimage) | Upload one image (front/back/selfie). |
+| [`documentVerification.verify({ journeyId })`](/sdk/services/document_verification#verify) | Trigger verification of uploaded images. |
+| [`documentVerification.verifyAge(dto)`](/sdk/services/document_verification#verifyage) | Optional age/disability check. |
+| [`documentVerification.verifySingle({ images })`](/sdk/services/document_verification#verifysingle) | Single-shot verification with all images in one call. |
+
+<Note>
+**Under the hood:** The SDK attaches your bearer token, targets the selected environment, and normalizes errors. See [Document Verification API](/essentials/documentVerification) for the full wire schema and error codes.
+</Note>
+
+## Results
+
+For **multi-step**, a successful run will populate your webhook payload with:
+- **proofOfWork** entries for **documentFront**, **documentBack**, **selfie** (if used)
+- **authoritativeData.identityDocument** (type, idNumber, issuingCountry, expirationDate, verificationChannel, etc.)
+- A **steps[]** item for the document step with its status
+
+For **single-step**, expect the same fields in the response body and then mirrored in your webhook.
+See [Webhooks](/webhooks) for the full payload schema.
+
+## Errors 
+Refer to your Error Handling & Codes table in [Document Verification API](/essentials/documentVerification#error). The SDK surfaces:
+
+| HTTP      | Meaning                | Common causes                                                |
+| --------- | ---------------------- | ------------------------------------------------------------ |
+| `400`     | Bad Request            | Missing/invalid parameters (e.g., both `ageFrom` & `ageTo`). |
+| `401/403` | Unauthorized/Forbidden | Token invalid/expired or insufficient permissions.           |
+| `404`     | Not Found              | `journeyId` not found/closed.                                |
+| `422`     | Unprocessable Entity   | Required images missing or malformed base64.                 |
+| `429`     | Too Many Requests      | Rate limit exceeded.                                         |
+| `5xx`     | Server Error           | Transient provider issue; retry with backoff.                |

@@ -1,0 +1,190 @@
+---
+title: "Handshake (Create Journey)"
+description: "Start a verification journey and receive a UI handle"
+icon: 'code'
+tag: "NEW"
+---
+
+# Handshake (Create Journey)
+This section explains how the UI based SDKs can be accessed once authentication is completed and a token has been created.
+
+Create a journey and receive:
+- `transactionId` — internal identifier for the journey
+- `uiHandle` — URL used to start the hosted verification UI
+
+## Handshake Request
+The handshake request initiates a customer journey. Please note that:
+
+- You define which components of the IDCanopy product offering you would like to consume with this request.
+- You can configure each component as well as validation data.
+- Define the process name, which will appear on the invoice as billing item.
+- You can enable a developer mode by switching on “magic_flow” in the handshake.
+
+### Request Structure
+<Accordion title="Request Structure">  
+```json
+{
+  "journey": {
+    "customerId": "string",
+    "processName": "string"
+  },
+  "validationData": {
+    "fullName": "John Doe",
+    "DOB": "1980/01/31",
+    "Address": {
+      "streetAddress": "123 Main Street",
+      "locality": "Anytown",
+      "region": "CA",
+      "postalCode": "90210",
+      "country": "US"
+    },
+    "IBAN": "DE11XXXX3245664",
+    "phoneNumber": "+4915738901234",
+    "unstructuredInput": "This is some free unstructured text input for AI, OSINT and other analysis. John@doe.com aged 44, NHL player at Detroit RedWings; He might be in debt and has a Chinese Crested as dog."
+  },
+  "passThroughData": {
+    "userId": "12345"
+  },
+  "steps": [
+    {
+      "interface": "Umbrella Canopy",
+      "step": "Self KYC",
+      "configuration": {
+        "documentVerification": {
+          "extraForensics": false,
+          "biometricMatching": true,
+          "liveness": true,
+          "photoIdentPlus": false,
+          "permittedDocuments": {
+            "allowed": [
+              {
+                "idType": "passport"
+              },
+              {
+                "idType": "nationalId",
+                "bloc": "EEA",
+                "excluded": [
+                  {
+                    "country": "DK"
+                  }
+                ]
+              },
+              {
+                "idType": "driversLicense",
+                "country": ["BG"]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "interface": "Umbrella Toolbox",
+      "step": "AML",
+      "configuration": {
+        "SanctionPepAdverseMedia": {
+          "monitoring": false,
+          "dossier": true
+        }
+      }
+    },
+    {
+      "interface": "Umbrella Toolbox",
+      "step": "Phone Services",
+      "configuration": {
+        "Mobile Ident": {}
+      }
+    },
+    {
+      "interface": "Umbrella Toolbox",
+      "step": "General",
+      "configuration": {
+        "IDV Protocol": {}
+      }
+    }
+  ],
+  "matchName": "strict",
+  "matchDob": true,
+  "magicflow": false,
+  "validitySuperpower": false,
+  "journeyDuration": "standard"
+}
+```
+</Accordion>
+
+### Request DTO
+<Accordion title="Request DTO">  
+| Field                                                                                         | Type          | Required | Description                                                                                  |
+| --------------------------------------------------------------------------------------------- | ------------- | -------- | -------------------------------------------------------------------------------------------- |
+| `journey`                                                                                     | object        | Yes      | Verification journey configuration root.                                                     |
+| `journey.customerId`                                                                          | string        | Yes      | Unique identifier for the customer journey.                                                  |
+| `journey.processName`                                                                         | string        | Yes      | Human-readable process name (appears on invoices/billing).                                   |
+| `validationData`                                                                              | object        | No       | The validation_data object houses various fields for different user data types, along with sample values for demonstration purposes.   |
+| `validationData.fullName`                                                                     | string        | No       | Full name (e.g., `John Doe`).                                                                |
+| `validationData.DOB`                                                                          | string        | No       | Date of birth, format `YYYY/MM/DD`.                                                          |
+| `validationData.Address`                                                                      | object        | No       | **Provide as:** structured object (fields below) or single-line string or Google Places short address (locality/region/postal code). |
+| `Address.streetAddress`                                                                       | string        | No       | Street and number.                                                                           |
+| `Address.locality`                                                                            | string        | No       | City / town.                                                                                 |
+| `Address.region`                                                                              | string        | No       | State / province / region.                                                                   |
+| `Address.postalCode`                                                                          | string        | No       | Postal / ZIP code.                                                                           |
+| `Address.country`                                                                             | string        | No       | Country code (ISO 3166-1 alpha-2, e.g., `US`).                                               |
+| `validationData.IBAN`                                                                         | string        | No       | International Bank Account Number.                                                           |
+| `validationData.phoneNumber`                                                                  | string        | No       | Phone in E.164 format (e.g., `+4915738901234`).                                              |
+| `validationData.unstructuredInput`                                                            | string        | No       | A string containing any additional user input you want to send for potential AI analysis by IdCanopy (e.g., email address, profession, etc.). |
+| `passThroughData`                                                                             | object        | No       | Additional data relevant to the entire journey (e.g., user ID, reference number).            |
+| `passThroughData.userId`                                                                      | string        | No       | Your internal user reference (example key).                                                  |
+| `steps`                                                                                       | array         | No       | Define/override the journey by listing all steps in order. If you use a pre-defined process from us, omit this; with manual config you must provide the full sequence (e.g., Self KYC, Address Verification, AML, SMS, IDV Protocol, IBAN Check).|
+| `steps[].interface`                                                                           | string        | No       | Represents a high-level verification journey category (e.g., KYC, Identity Proofing).                                |
+| `steps[].step`                                                                                | string        | Yes      | Specific verification step within the journey (e.g., "Self KYC," "Address Verification").                             |
+| `steps[].configuration`                                                                       | object        | No       | Step-specific configuration. Each key is a verification module (e.g., documentVerification, SanctionPepAdverseMedia) and its value is that module’s options object.  |
+| `configuration.documentVerification`                                                          | object        | No       | (When `step = "Self KYC"`) Document capture/verification settings.                           |
+| `documentVerification.extraForensics`                                                         | boolean       | No       | Enable extra forensic checks.                                                                |
+| `documentVerification.biometricMatching`                                                      | boolean       | No       | Enable face ↔ document photo matching.                                                       |
+| `documentVerification.liveness`                                                               | boolean       | No       | Enable liveness checks during selfie capture.                                                |
+| `documentVerification.photoIdentPlus`                                                         | boolean       | No       | Enable additional assisted checks (if available).                                            |
+| `documentVerification.permittedDocuments`                                                     | object        | No       | Allowed/blocked document types and regions.                                                  |
+| `permittedDocuments.allowed`                                                                  | array         | No       | Whitelist of permitted documents with optional region filters.                               |
+| `allowed[].idType`                                                                            | string        | Yes      | `passport` \| `national_id` \| `drivers_license`.                                            |
+| `allowed[].bloc`                                                                              | string        | No       | Geo/economic bloc (e.g., `EEA`) for bulk allow.                                              |
+| `allowed[].country`                                                                           | array         | No       | Allowed country codes (e.g., `["BG"]`).                                                      |
+| `allowed[].excluded`                                                                          | array         | No       | Exceptions when using `bloc`.                                                                |
+| `excluded[].country`                                                                          | string        | Yes      | Country code to exclude (e.g., `DK`).                                                        |
+| `configuration.SanctionPepAdverseMedia`                                                       | object        | No       | (When `step = "AML"`) Screening settings.                                                    |
+| `SanctionPepAdverseMedia.monitoring`                                                          | boolean       | No       | Enable ongoing monitoring registration.                                                      |
+| `SanctionPepAdverseMedia.dossier`                                                             | boolean       | No       | Return enriched dossier details (if available).                                              |
+| `configuration["Mobile Ident"]`                                                               | object        | No       | (When `step = "Phone Services"`) Mobile identity options (empty in example).                 |
+| `configuration["IDV Protocol"]`                                                               | object        | No       | (When `step = "General"`) General IDV protocol toggles (empty in example).                   |
+| `matchName`                                                                                   | string        | No       | Name matching mode. "strict" (requires validation data), "fuzzy" (allows minor typos), "none" (skip matching).                                             |
+| `matchDob`                                                                                    | boolean       | No       | Enables DoB (date of birth) matching (requires validation data to be passed).                |
+| `magicflow`                                                                                   | boolean       | No       | Enables or disables a special verification flow (details might be specific to your IdCanopy integration).  |
+| `validitySuperpower`                                                                          | boolean       | No       | Extends uiHandle validity from 5 → 60 minutes; once the UI is opened, a separate session timeout still applies. |
+| `journeyDuration`                                                                             | string        | No       | Controls auto-close timeout for the journey. Options: short ≈150s, standard (default) ≈300s, long ≈600s, eternity disables auto-close (use with caution). You may offer a “continue later” option. |
+</Accordion>
+
+
+### Handshake Response
+<Accordion title="Handshake Response">  
+```json
+{
+  "transactionId": "string",
+  "uiHandle": "https://verification.idcanopy.com/init?verificationToken=VERIFICATION_TOKEN",
+  "initTimestamp": "string"
+}
+```
+</Accordion>
+
+### Handshake Response Structure
+<Accordion title="Handshake Response Structure">  
+| Field            | Type         | Description                                                                                                                  |
+| ---------------- | ------------ | ---------------------------------------------------------------------------------------------------------------------------- |
+| `transactionId`  | string       | **Sensitive** journey identifier for tracking/correlation. Do **not** expose to end-users.                                   |
+| `uiHandle`       | string (URL) | Short-lived URL to launch the hosted UI (≈5 min by default; extend via `validity_superpower`). Use in an iframe or redirect. |
+| `initTimestamp`  | string       | Timestamp when the journey was initialized.  |
+
+</Accordion>
+
+### Using the SDK
+```ts
+const { transactionId, uiHandle } = await canopy.journeys.handshake(/* dto above */);
+canopy.ui.init({ url: uiHandle }); // iframe or redirect
+```
