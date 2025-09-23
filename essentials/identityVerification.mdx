@@ -43,11 +43,11 @@ This endpoint verifies identity information by matching it against external and 
 | `identity` | object | Yes | Contains the personal identification details. |
 | `identity.firstName` | string | Yes | First name of the individual. |
 | `identity.lastName` | string | Yes | Last name of the individual. |
-| `identity.nationalId` | string | Yes | National identification number. |
+| `identity.nationalId` | string | No | National identification number. |
 | `identity.birthDate` | string | Yes | Birthdate of the individual (format: `YYYY/MM/DD`). |
 | `address` | object | Yes | Contains address details. |
 | `address.street` | string | Yes | Street name of the address. |
-| `address.houseNumber` | string | Yes | House or building number. |
+| `address.houseNumber` | string | No | House or building number. |
 | `address.building` | string | No | Building name or description. |
 | `address.postalCode` | string | Yes | Postal or ZIP code of the address. |
 | `address.city` | string | Yes | City of the address. |
@@ -95,12 +95,12 @@ This endpoint verifies identity information by matching it against external and 
 "identity": {
   "firstName": "John", // Required: First name of the individual.
   "lastName": "Doe",   // Required: Last name of the individual.
-  "nationalId": "123456789", // Required: National identification number.
+  "nationalId": "123456789", // Optional: National identification number.
   "birthDate": "1985/05/15"  // Required: Birthdate of the individual (format: yyyy/mm/dd).
 },
 "address": {
   "street": "Main Street", // Required: Street name of the address.
-  "houseNumber": "123",    // Required: House or building number.
+  "houseNumber": "123",    // Optional: House or building number.
   "building": "Apt 4B",   // Optional: Building name or description.
   "postalCode": "10001",  // Required: Postal or ZIP code of the address.
   "city": "New York",     // Required: City of the address.
