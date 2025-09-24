@@ -117,12 +117,8 @@
               {
                 "group": "KYB",
                 "pages": [
-                  "api-reference/endpoint/kyb_countries",
                   "api-reference/endpoint/kyb_search",
-                  "api-reference/endpoint/kyb_companyProfile",
-                  "api-reference/endpoint/kyb_companies_read",
-                  "api-reference/endpoint/kyb_companyAML",
-                  "api-reference/endpoint/kyb_personal"
+                  "api-reference/endpoint/kyb_company_details"
                 ]
               },
               {

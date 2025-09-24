@@ -1,0 +1,602 @@
+{
+  "KYBCountriesResponse": {
+        "type": "object",
+        "properties": {
+          "error": { "type": "boolean" },
+          "message": { "type": "string" },
+          "version": { "type": ["string", "null"] },
+          "data": {
+            "type": "object",
+            "properties": {
+              "countries": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "countryName": { "type": "string" },
+                    "states": { "type": "array", "items": { "type": "string" } },
+                    "countryCode": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "KYBSearchRequest": {
+        "type": "object",
+        "required": ["search", "countryNames", "searchType"],
+        "properties": {
+          "search": { "type": "string", "description": "Company name or partial name." },
+          "registrationNumber": { "type": "string", "description": "Registration number (optional)." },
+          "countryNames": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "List of country names to search within."
+          },
+          "searchType": { "type": "string", "description": "Type of search (e.g., start_with)." },
+          "webhookUrl": { "type": "string", "format": "uri" }
+        }
+      },
+      "KYBSearchResponse": {
+        "type": "object",
+        "properties": {
+          "requestId": { "type": "string" },
+          "companyId": { "type": "string" },
+          "serviceId": { "type": "string" }
+        }
+      },
+      "KYBCompanyProfileResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "boolean",
+            "description": "Indicates whether an error occurred."
+          },
+          "message": {
+            "type": "string",
+            "description": "A message describing the result of the request."
+          },
+          "version": {
+            "type": "string",
+            "nullable": true,
+            "description": "Reserved for future use."
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "resolvedPercentage": {
+                "type": "number",
+                "description": "Percentage of the request that has been resolved."
+              },
+              "resolvedCount": {
+                "type": "number",
+                "description": "Number of resolved items."
+              },
+              "fetchedCountriesWithStates": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "countryName": {
+                      "type": "string"
+                    },
+                    "states": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              },
+              "fetchedCountries": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "secondarySource": {
+                "type": "boolean"
+              },
+              "requestStatus": {
+                "type": "string"
+              },
+              "kybRequestData": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "type": "string"
+                    },
+                    "searchText": {
+                      "type": "string"
+                    },
+                    "countryName": {
+                      "type": "string"
+                    },
+                    "countryFlag": {
+                      "type": "string"
+                    },
+                    "extensiveData": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "registrationNumber": {
+                      "type": "string"
+                    },
+                    "registrationDate": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "primarySource": {
+                      "type": "boolean"
+                    },
+                    "secondarySource": {
+                      "type": "boolean"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "metaDetail": {
+                      "type": "object"
+                    },
+                    "riskLevel": {
+                      "type": "string"
+                    },
+                    "verificationStatus": {
+                      "type": "string"
+                    },
+                    "companyFetchedDataStatus": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "pagination": {
+                "type": "object",
+                "properties": {
+                  "total": {
+                    "type": "number"
+                  },
+                  "perPage": {
+                    "type": "number"
+                  },
+                  "currentPage": {
+                    "type": "number"
+                  },
+                  "lastPage": {
+                    "type": "number"
+                  },
+                  "from": {
+                    "type": "number"
+                  },
+                  "to": {
+                    "type": "number"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "KYBEnhancedCompanyProfileResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "registrationNumber": {
+            "type": "string"
+          },
+          "registrationDate": {
+            "type": "string"
+          },
+          "companyRegistrationPeriod": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "countryName": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "countryFlag": {
+            "type": "string"
+          },
+          "jurisdictionCode": {
+            "type": "string"
+          },
+          "incorporationDate": {
+            "type": "string"
+          },
+          "companyIncorporationPeriod": {
+            "type": "string"
+          },
+          "industries": {
+            "type": "string"
+          },
+          "taxNumber": {
+            "type": "string"
+          },
+          "dissolutionDate": {
+            "type": "string"
+          },
+          "yearsSinceDissolution": {
+            "type": "string"
+          },
+          "inactiveDate": {
+            "type": "string"
+          },
+          "jurisdiction": {
+            "type": "string"
+          },
+          "primarySource": {
+            "type": "boolean"
+          },
+          "secondarySource": {
+            "type": "boolean"
+          },
+          "companyFetchedDataStatus": {
+            "type": "string"
+          },
+          "metaDetail": {
+            "type": "object"
+          },
+          "companyAmlRequestId": {
+            "type": "string"
+          },
+          "companyAmlRequestStatus": {
+            "type": "string"
+          },
+          "companyAmlStatus": {
+            "type": "string"
+          }
+        }
+      },
+      "KYBCompanyAMLRequest": {
+        "type": "object",
+        "required": ["companyId", "requestId"],
+        "properties": {
+          "companyId": {
+            "type": "string",
+            "description": "Unique identifier for the company."
+          },
+          "requestId": {
+            "type": "string",
+            "description": "Unique identifier for the request."
+          }
+        }
+      },
+      "KYBCompanyAMLResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "boolean",
+            "description": "Indicates whether an error occurred."
+          },
+          "message": {
+            "type": "string",
+            "description": "Status message describing the operation result."
+          },
+          "version": {
+            "type": "string",
+            "nullable": true,
+            "description": "API version."
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "amlRequestId": {
+                "type": "string",
+                "description": "Unique identifier for the AML request."
+              }
+            }
+          }
+        }
+      },
+      "KYBPersonalAMLRequest": {
+        "type": "object",
+        "required": ["companyId", "requestId"],
+        "properties": {
+          "companyId": {
+            "type": "string",
+            "description": "Unique identifier for the company."
+          },
+          "requestId": {
+            "type": "string",
+            "description": "Unique identifier for the request."
+          }
+        }
+      },
+      "KYBPersonalAMLResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "boolean",
+            "description": "Indicates whether an error occurred."
+          },
+          "message": {
+            "type": "string",
+            "description": "Status message describing the operation result."
+          },
+          "version": {
+            "type": "string",
+            "nullable": true,
+            "description": "API version."
+          },
+          "data": {
+            "type": "object",
+            "description": "Empty object in this case."
+          }
+        }
+      },
+      "/KYB/countries": {
+      "get": {
+        "summary": "List Available Countries",
+        "description": "Provides a comprehensive list of countries covered by the KYB service, including available states for each country.",
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved list of countries.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KYBCountriesResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error401"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/KYB/search": {
+      "post": {
+        "summary": "Search Companies",
+        "description": "Enables users to search for companies using a company name or registration number as search parameters.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/KYBSearchRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully initiated company search.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KYBSearchResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request payload.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error400"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error401"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/KYB/companyProfile": {
+      "get": {
+        "summary": "Get Company Profiles",
+        "description": "Retrieves a list of companies from the official registries that match the provided search criteria.",
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved company profiles.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KYBCompanyProfileResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error401"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/KYB/companies/read": {
+      "get": {
+        "summary": "Get Enhanced Company Profile",
+        "description": "Retrieves detailed information about a specific company, including registration details.",
+        "parameters": [
+          {
+            "name": "companyId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Unique identifier for the company."
+          },
+          {
+            "name": "requestId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Unique identifier for the request."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved company details.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KYBEnhancedCompanyProfileResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error401"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/KYB/companyAML": {
+      "post": {
+        "summary": "Initiate Company AML Check",
+        "description": "Initiates an AML (Anti-Money Laundering) check for a company.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/KYBCompanyAMLRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully initiated company AML check.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KYBCompanyAMLResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request payload.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error400"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error401"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/KYB/personal": {
+      "post": {
+        "summary": "Initiate Personal AML Check",
+        "description": "Initiates an AML check for an individual or company officers.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/KYBPersonalAMLRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully initiated personal AML check.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KYBPersonalAMLResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request payload.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error400"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error401"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    }

@@ -872,248 +872,80 @@
       }
     },
     
-    "/KYB/countries": {
-      "get": {
-        "summary": "List Available Countries",
-        "description": "Provides a comprehensive list of countries covered by the KYB service, including available states for each country.",
-        "responses": {
-          "200": {
-            "description": "Successfully retrieved list of countries.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/KYBCountriesResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized request.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error401"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/KYB/search": {
+    "/kyb/search": {
       "post": {
-        "summary": "Search Companies",
-        "description": "Enables users to search for companies using a company name or registration number as search parameters.",
+        "summary": "Simple Search",
+        "description": "Cached-first search for a company profile. Uses Umbrella’s canonical dataset. On cache miss, queries providers and persists identity-only rows. Returns decision-ready attributes: name, type, status, identifiers, addresses, industry codes.",
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/KYBSearchRequest"
-              }
+              "schema": { "$ref": "#/components/schemas/KYBSearchRequest" }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Successfully initiated company search.",
+            "description": "Successfully retrieved search results.",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/KYBSearchResponse"
-                }
+                "schema": { "$ref": "#/components/schemas/KYBSearchResponse" }
               }
             }
           },
           "400": {
-            "description": "Invalid request payload.",
+            "description": "Invalid request provided.",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error400"
-                }
+                "schema": { "$ref": "#/components/schemas/Error400" }
               }
             }
           },
           "401": {
-            "description": "Unauthorized request.",
+            "description": "Authorization information is missing or invalid.",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error401"
-                }
+                "schema": { "$ref": "#/components/schemas/Error401" }
               }
             }
           }
         }
       }
     },
-    "/KYB/companyProfile": {
-      "get": {
-        "summary": "Get Company Profiles",
-        "description": "Retrieves a list of companies from the official registries that match the provided search criteria.",
-        "responses": {
-          "200": {
-            "description": "Successfully retrieved company profiles.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/KYBCompanyProfileResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized request.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error401"
-                }
-              }
+    "/kyb/company/details": {
+      "post": {
+        "summary": "Advanced Company Details",
+        "description": "Enrich a selected company by companyId. Returns a full register-style record including officers, ownership, relationships, signatory rules, contacts, and company resources. Completeness and provenance behave as specified (field-level provenance only in extended mode).",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/KYBCompanyDetailsRequest" }
             }
           }
-        }
-      }
-    },
-    "/KYB/companies/read": {
-      "get": {
-        "summary": "Get Enhanced Company Profile",
-        "description": "Retrieves detailed information about a specific company, including registration details.",
-        "parameters": [
-          {
-            "name": "companyId",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Unique identifier for the company."
-          },
-          {
-            "name": "requestId",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Unique identifier for the request."
-          }
-        ],
+        },
         "responses": {
           "200": {
             "description": "Successfully retrieved company details.",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/KYBEnhancedCompanyProfileResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized request.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error401"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/KYB/companyAML": {
-      "post": {
-        "summary": "Initiate Company AML Check",
-        "description": "Initiates an AML (Anti-Money Laundering) check for a company.",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/KYBCompanyAMLRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successfully initiated company AML check.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/KYBCompanyAMLResponse"
-                }
+                "schema": { "$ref": "#/components/schemas/KYBCompanyDetailsResponse" }
               }
             }
           },
           "400": {
-            "description": "Invalid request payload.",
+            "description": "Invalid request provided.",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error400"
-                }
+                "schema": { "$ref": "#/components/schemas/Error400" }
               }
             }
           },
           "401": {
-            "description": "Unauthorized request.",
+            "description": "Authorization information is missing or invalid.",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error401"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/KYB/personal": {
-      "post": {
-        "summary": "Initiate Personal AML Check",
-        "description": "Initiates an AML check for an individual or company officers.",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/KYBPersonalAMLRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successfully initiated personal AML check.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/KYBPersonalAMLResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid request payload.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error400"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized request.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error401"
-                }
+                "schema": { "$ref": "#/components/schemas/Error401" }
               }
             }
           }
@@ -3054,355 +2886,581 @@
         }
       },
 
-      "KYBCountriesResponse": {
-        "type": "object",
-        "properties": {
-          "error": { "type": "boolean" },
-          "message": { "type": "string" },
-          "version": { "type": ["string", "null"] },
-          "data": {
-            "type": "object",
-            "properties": {
-              "countries": {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "properties": {
-                    "countryName": { "type": "string" },
-                    "states": { "type": "array", "items": { "type": "string" } },
-                    "countryCode": { "type": "string" }
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
       "KYBSearchRequest": {
         "type": "object",
-        "required": ["search", "countryNames", "searchType"],
+        "required": ["name", "country", "locality"],
         "properties": {
-          "search": { "type": "string", "description": "Company name or partial name." },
-          "registrationNumber": { "type": "string", "description": "Registration number (optional)." },
-          "countryNames": {
-            "type": "array",
-            "items": { "type": "string" },
-            "description": "List of country names to search within."
+          "name": {
+            "type": "string",
+            "description": "Registered name of the company.",
+            "example": "IDCANOPY GROUP LTD"
           },
-          "searchType": { "type": "string", "description": "Type of search (e.g., start_with)." },
-          "webhookUrl": { "type": "string", "format": "uri" }
+          "country": {
+            "type": "string",
+            "description": "Two-letter ISO country code of company registration.",
+            "pattern": "^[A-Z]{2}$",
+            "example": "GB"
+          },
+          "registrationNumber": {
+            "type": "string",
+            "description": "Official company registration number (may be empty).",
+            "example": ""
+          },
+          "locality": {
+            "type": "string",
+            "description": "City or locality where the company is registered.",
+            "example": "London"
+          }
         }
       },
       "KYBSearchResponse": {
         "type": "object",
+        "required": ["status", "requestId", "companyId", "timestamp", "data"],
         "properties": {
-          "requestId": { "type": "string" },
-          "companyId": { "type": "string" },
-          "serviceId": { "type": "string" }
-        }
-      },
-      "KYBCompanyProfileResponse": {
-        "type": "object",
-        "properties": {
-          "error": {
-            "type": "boolean",
-            "description": "Indicates whether an error occurred."
-          },
-          "message": {
+          "status": {
             "type": "string",
-            "description": "A message describing the result of the request."
+            "description": "Status of the request (e.g., success).",
+            "example": "success"
           },
-          "version": {
+          "requestId": {
             "type": "string",
-            "nullable": true,
-            "description": "Reserved for future use."
+            "description": "Client-provided request identifier for traceability.",
+            "example": "client-req-987"
+          },
+          "companyId": {
+            "type": "string",
+            "description": "Unique company identifier assigned by the platform.",
+            "example": "umb-7c9a-..."
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "RFC 3339 timestamp when the response was generated.",
+            "example": "2025-08-25T08:00:00Z"
           },
           "data": {
             "type": "object",
             "properties": {
-              "resolvedPercentage": {
-                "type": "number",
-                "description": "Percentage of the request that has been resolved."
-              },
-              "resolvedCount": {
-                "type": "number",
-                "description": "Number of resolved items."
-              },
-              "fetchedCountriesWithStates": {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "properties": {
-                    "countryName": {
-                      "type": "string"
-                    },
-                    "states": {
-                      "type": "array",
-                      "items": {
-                        "type": "string"
-                      }
-                    }
-                  }
-                }
-              },
-              "fetchedCountries": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
-              },
-              "secondarySource": {
-                "type": "boolean"
-              },
-              "requestStatus": {
-                "type": "string"
-              },
-              "kybRequestData": {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "properties": {
-                    "id": {
-                      "type": "string"
-                    },
-                    "requestId": {
-                      "type": "string"
-                    },
-                    "searchText": {
-                      "type": "string"
-                    },
-                    "countryName": {
-                      "type": "string"
-                    },
-                    "countryFlag": {
-                      "type": "string"
-                    },
-                    "extensiveData": {
-                      "type": "array",
-                      "items": {
-                        "type": "string"
-                      }
-                    },
-                    "name": {
-                      "type": "string"
-                    },
-                    "registrationNumber": {
-                      "type": "string"
-                    },
-                    "registrationDate": {
-                      "type": "string"
-                    },
-                    "type": {
-                      "type": "string"
-                    },
-                    "primarySource": {
-                      "type": "boolean"
-                    },
-                    "secondarySource": {
-                      "type": "boolean"
-                    },
-                    "status": {
-                      "type": "string"
-                    },
-                    "metaDetail": {
-                      "type": "object"
-                    },
-                    "riskLevel": {
-                      "type": "string"
-                    },
-                    "verificationStatus": {
-                      "type": "string"
-                    },
-                    "companyFetchedDataStatus": {
-                      "type": "string"
-                    }
-                  }
-                }
-              },
-              "pagination": {
+              "company": {
                 "type": "object",
                 "properties": {
-                  "total": {
-                    "type": "number"
+                  "legalName": {
+                    "type": "string",
+                    "description": "Official registered legal name of the company.",
+                    "example": "ACME GmbH"
                   },
-                  "perPage": {
-                    "type": "number"
+                  "tradingNames": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "description": "List of trading or alternative names.",
+                    "example": ["ACME"]
                   },
-                  "currentPage": {
-                    "type": "number"
+                  "status": {
+                    "type": "string",
+                    "description": "Current company status.",
+                    "example": "active"
                   },
-                  "lastPage": {
-                    "type": "number"
+                  "companyType": {
+                    "type": "object",
+                    "properties": {
+                      "native": {
+                        "type": "object",
+                        "properties": {
+                          "value": { "type": "string", "example": "Gesellschaft mit beschränkter Haftung" },
+                          "language": { "type": "string", "example": "de" },
+                          "source": { "type": "string", "example": "register" }
+                        }
+                      },
+                      "modeled": {
+                        "type": "object",
+                        "properties": {
+                          "value": { "type": "string", "example": "Limited Liability Company" },
+                          "scheme": { "type": "string", "example": "idcanopy" },
+                          "source": { "type": "string", "example": "modeled" }
+                        }
+                      }
+                    }
                   },
-                  "from": {
-                    "type": "number"
+                  "incorporationDate": {
+                    "type": "string",
+                    "format": "date",
+                    "description": "Official incorporation date (YYYY-MM-DD).",
+                    "example": "2019-07-01"
                   },
-                  "to": {
-                    "type": "number"
+                  "registrationDate": {
+                    "type": "string",
+                    "format": "date",
+                    "description": "Date of registration (YYYY-MM-DD).",
+                    "example": "2019-06-15"
+                  },
+                  "country": {
+                    "type": "string",
+                    "description": "Two-letter ISO country code of incorporation.",
+                    "pattern": "^[A-Z]{2}$",
+                    "example": "AT"
+                  },
+                  "registeredAddress": {
+                    "type": "object",
+                    "properties": {
+                      "singleLine": {
+                        "type": "string",
+                        "description": "Full formatted address string.",
+                        "example": "Musterstraße 1, 1010 Wien, AT"
+                      },
+                      "structured": {
+                        "type": "object",
+                        "properties": {
+                          "line1": { "type": "string", "example": "Musterstraße 1" },
+                          "city": { "type": "string", "example": "Wien" },
+                          "postalCode": { "type": "string", "example": "1010" },
+                          "country": { "type": "string", "pattern": "^[A-Z]{2}$", "example": "AT" }
+                        }
+                      }
+                    }
+                  },
+                  "businessAddress": {
+                    "type": "object",
+                    "properties": {
+                      "singleLine": {
+                        "type": "string",
+                        "description": "Full business/trading address string.",
+                        "example": "Musterstraße 1, 1010 Wien, AT"
+                      },
+                      "structured": {
+                        "type": "object",
+                        "properties": {
+                          "line1": { "type": "string", "example": "Musterstraße 1" },
+                          "city": { "type": "string", "example": "Wien" },
+                          "postalCode": { "type": "string", "example": "1010" },
+                          "country": { "type": "string", "pattern": "^[A-Z]{2}$", "example": "AT" }
+                        }
+                      }
+                    }
+                  },
+                  "identifiers": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "scheme": {
+                          "type": "string",
+                          "description": "Identifier scheme (e.g., REGISTRATION_NUMBER, VAT, LEI).",
+                          "example": "REGISTRATION_NUMBER"
+                        },
+                        "value": { "type": "string", "example": "FN 123456x" },
+                        "country": {
+                          "type": "string",
+                          "nullable": true,
+                          "description": "Country associated with the identifier.",
+                          "example": "AT"
+                        }
+                      }
+                    }
+                  },
+                  "industryCodes": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "scheme": { "type": "string", "example": "NACE" },
+                        "code": { "type": "string", "example": "62.01" },
+                        "label": { "type": "string", "example": "Computer programming activities" }
+                      }
+                    }
+                  },
+                  "website": {
+                    "type": "string",
+                    "format": "uri",
+                    "example": "https://acme.example"
                   }
                 }
               }
             }
-          }
-        }
-      },
-      "KYBEnhancedCompanyProfileResponse": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
           },
-          "name": {
-            "type": "string"
-          },
-          "registrationNumber": {
-            "type": "string"
-          },
-          "registrationDate": {
-            "type": "string"
-          },
-          "companyRegistrationPeriod": {
-            "type": "string"
-          },
-          "status": {
-            "type": "string"
-          },
-          "type": {
-            "type": "string"
-          },
-          "countryName": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string"
-          },
-          "countryFlag": {
-            "type": "string"
-          },
-          "jurisdictionCode": {
-            "type": "string"
-          },
-          "incorporationDate": {
-            "type": "string"
-          },
-          "companyIncorporationPeriod": {
-            "type": "string"
-          },
-          "industries": {
-            "type": "string"
-          },
-          "taxNumber": {
-            "type": "string"
-          },
-          "dissolutionDate": {
-            "type": "string"
-          },
-          "yearsSinceDissolution": {
-            "type": "string"
-          },
-          "inactiveDate": {
-            "type": "string"
-          },
-          "jurisdiction": {
-            "type": "string"
-          },
-          "primarySource": {
-            "type": "boolean"
-          },
-          "secondarySource": {
-            "type": "boolean"
-          },
-          "companyFetchedDataStatus": {
-            "type": "string"
-          },
-          "metaDetail": {
-            "type": "object"
-          },
-          "companyAmlRequestId": {
-            "type": "string"
-          },
-          "companyAmlRequestStatus": {
-            "type": "string"
-          },
-          "companyAmlStatus": {
-            "type": "string"
-          }
-        }
-      },
-      "KYBCompanyAMLRequest": {
-        "type": "object",
-        "required": ["companyId", "requestId"],
-        "properties": {
-          "companyId": {
-            "type": "string",
-            "description": "Unique identifier for the company."
-          },
-          "requestId": {
-            "type": "string",
-            "description": "Unique identifier for the request."
-          }
-        }
-      },
-      "KYBCompanyAMLResponse": {
-        "type": "object",
-        "properties": {
-          "error": {
-            "type": "boolean",
-            "description": "Indicates whether an error occurred."
-          },
-          "message": {
-            "type": "string",
-            "description": "Status message describing the operation result."
-          },
-          "version": {
-            "type": "string",
-            "nullable": true,
-            "description": "API version."
-          },
-          "data": {
+          "metadata": {
             "type": "object",
             "properties": {
-              "amlRequestId": {
+              "confidence": {
+                "type": "number",
+                "format": "double",
+                "description": "Confidence score for the company match (0–1).",
+                "example": 0.93
+              },
+              "completeness": {
+                "type": "number",
+                "format": "double",
+                "description": "Completeness score for available company data (0–1).",
+                "example": 0.92
+              },
+              "cacheAge": {
                 "type": "string",
-                "description": "Unique identifier for the AML request."
+                "description": "Age of cached response.",
+                "example": "3h"
               }
             }
           }
         }
       },
-      "KYBPersonalAMLRequest": {
+      "KYBCompanyDetailsRequest": {
         "type": "object",
-        "required": ["companyId", "requestId"],
+        "required": ["companyId"],
         "properties": {
           "companyId": {
             "type": "string",
-            "description": "Unique identifier for the company."
-          },
-          "requestId": {
-            "type": "string",
-            "description": "Unique identifier for the request."
+            "description": "Unique identifier assigned to the company.",
+            "example": "123xyz"
           }
         }
       },
-      "KYBPersonalAMLResponse": {
+      "KYBCompanyDetailsResponse": {
         "type": "object",
+        "required": ["status", "requestId", "companyId", "timestamp", "data"],
         "properties": {
-          "error": {
-            "type": "boolean",
-            "description": "Indicates whether an error occurred."
-          },
-          "message": {
+          "status": {
             "type": "string",
-            "description": "Status message describing the operation result."
+            "description": "Status of the request (e.g., success).",
+            "example": "success"
           },
-          "version": {
+          "requestId": {
             "type": "string",
-            "nullable": true,
-            "description": "API version."
+            "description": "Client-provided request identifier.",
+            "example": "client-req-987"
+          },
+          "companyId": {
+            "type": "string",
+            "description": "Unique company identifier assigned by the platform.",
+            "example": "umb-7c9a-..."
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "RFC 3339 timestamp when the response was generated.",
+            "example": "2025-08-25T08:00:00Z"
           },
           "data": {
             "type": "object",
-            "description": "Empty object in this case."
+            "properties": {
+              "company": {
+                "type": "object",
+                "properties": {
+                  "legalName": { "type": "string", "example": "ACME GmbH" },
+                  "tradingNames": { "type": "array", "items": { "type": "string" }, "example": ["ACME"] },
+                  "status": { "type": "string", "example": "active" },
+
+                  "companyType": {
+                    "type": "object",
+                    "properties": {
+                      "native": {
+                        "type": "object",
+                        "properties": {
+                          "value": { "type": "string", "example": "Gesellschaft mit beschränkter Haftung" },
+                          "language": { "type": "string", "example": "de" },
+                          "source": { "type": "string", "example": "register" }
+                        }
+                      },
+                      "modeled": {
+                        "type": "object",
+                        "properties": {
+                          "value": { "type": "string", "example": "Limited Liability Company" },
+                          "scheme": { "type": "string", "example": "idcanopy" },
+                          "source": { "type": "string", "example": "modeled" }
+                        }
+                      }
+                    }
+                  },
+
+                  "incorporationDate": { "type": "string", "format": "date", "example": "2019-07-01" },
+                  "registrationDate":  { "type": "string", "format": "date", "example": "2019-06-15" },
+                  "country": { "type": "string", "pattern": "^[A-Z]{2}$", "example": "AT" },
+
+                  "registeredAddress": {
+                    "type": "object",
+                    "properties": {
+                      "singleLine": { "type": "string", "example": "Musterstraße 1, 1010 Wien, AT" },
+                      "structured": {
+                        "type": "object",
+                        "properties": {
+                          "line1": { "type": "string", "example": "Musterstraße 1" },
+                          "city": { "type": "string", "example": "Wien" },
+                          "postalCode": { "type": "string", "example": "1010" },
+                          "country": { "type": "string", "pattern": "^[A-Z]{2}$", "example": "AT" }
+                        }
+                      }
+                    }
+                  },
+
+                  "businessAddress": {
+                    "type": "object",
+                    "properties": {
+                      "singleLine": { "type": "string", "example": "Musterstraße 1, 1010 Wien, AT" },
+                      "structured": {
+                        "type": "object",
+                        "properties": {
+                          "line1": { "type": "string", "example": "Musterstraße 1" },
+                          "city": { "type": "string", "example": "Wien" },
+                          "postalCode": { "type": "string", "example": "1010" },
+                          "country": { "type": "string", "pattern": "^[A-Z]{2}$", "example": "AT" }
+                        }
+                      }
+                    }
+                  },
+
+                  "identifiers": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "scheme":  { "type": "string", "example": "REGISTRATION_NUMBER" },
+                        "value":   { "type": "string", "example": "FN 123456x" },
+                        "country": { "type": "string", "nullable": true, "example": "AT" }
+                      }
+                    }
+                  },
+
+                  "industryCodes": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "scheme": { "type": "string", "example": "NACE" },
+                        "code":   { "type": "string", "example": "62.01" },
+                        "label":  { "type": "string", "example": "Computer programming activities" }
+                      }
+                    }
+                  },
+
+                  "companyContacts": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "website":  { "type": "string", "format": "uri", "example": "https://acme.example" },
+                        "phone":    { "type": "string", "example": "0049123455" },
+                        "fax":      { "type": "string", "example": "0049123456789" },
+                        "email":    { "type": "string", "format": "email", "example": "office@acme.com" },
+                        "linkedin": { "type": "string", "format": "uri", "example": "https://linkedin.com/acme" },
+                        "scheme":   { "type": "string", "example": "homepage" }
+                      }
+                    }
+                  },
+
+                  "GlobalsignatoryRules": {
+                    "type": "object",
+                    "properties": {
+                      "native": {
+                        "type": "object",
+                        "properties": {
+                          "value":    { "type": "string", "example": "Jeder Partner vertritt die Gesellschaft allein." },
+                          "language": { "type": "string", "example": "de" },
+                          "source":   { "type": "string", "example": "register" }
+                        }
+                      },
+                      "modeled": {
+                        "type": "object",
+                        "properties": {
+                          "value":  { "type": "string", "example": "Every partner has sole representation rights" },
+                          "scheme": { "type": "string", "example": "idcanopy" },
+                          "source": { "type": "string", "example": "modeled" }
+                        }
+                      }
+                    }
+                  },
+
+                  "companyResources": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "financials":  { "type": "string", "example": "umbrelladetailuuid" },
+                        "compliance":  { "type": "string", "example": "umbrelladetailuuid" },
+                        "ubo":         { "type": "string", "example": "umbrelladetailuuid" },
+                        "sanctionPeP": { "type": "string", "example": "umbrelladetailuuid" },
+                        "description": { "type": "string", "example": "financials reference" }
+                      }
+                    }
+                  },
+
+                  "officers": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "type": { "type": "string", "example": "individual" },
+                        "officerID": { "type": "string", "example": "uuid" },
+                        "officerData": {
+                          "type": "object",
+                          "properties": {
+                            "firstName": { "type": "string", "example": "John" },
+                            "lastName":  { "type": "string", "example": "Doe" },
+                            "DOB":       { "type": "string", "format": "date", "example": "2000-01-01" },
+                            "birthplace": { "type": "string", "example": "Berlin" },
+                            "countryOfBirth": { "type": "string", "example": "DE" },
+                            "nationality":    { "type": "string", "example": "DE" },
+                            "address": {
+                              "type": "object",
+                              "properties": {
+                                "singleLine": { "type": "string", "example": "Musterstraße 1, 1010 Wien, AT" }
+                              }
+                            },
+                            "identityData": {
+                              "type": "object",
+                              "properties": {
+                                "PersonalNumber": {
+                                  "type": "object",
+                                  "properties": {
+                                    "identifier": { "type": "string", "example": "asdfghj" },
+                                    "country":    { "type": "string", "example": "PL" },
+                                    "scheme":     { "type": "string", "example": "PESEL" }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "activity": {
+                          "type": "object",
+                          "properties": {
+                            "role": {
+                              "type": "object",
+                              "properties": {
+                                "native": {
+                                  "type": "object",
+                                  "properties": {
+                                    "value":    { "type": "string", "example": "Geschäftsführer" },
+                                    "language": { "type": "string", "example": "de" },
+                                    "source":   { "type": "string", "example": "register" }
+                                  }
+                                },
+                                "modeled": {
+                                  "type": "object",
+                                  "properties": {
+                                    "value":  { "type": "string", "example": "Managing Director" },
+                                    "scheme": { "type": "string", "example": "idcanopy" },
+                                    "source": { "type": "string", "example": "modeled" }
+                                  }
+                                }
+                              }
+                            },
+                            "status": { "type": "string", "example": "active" },
+                            "from":   { "type": "string", "format": "date", "example": "2000-01-01" },
+                            "to":     { "type": "string", "format": "date", "example": "2000-01-01" },
+                            "signatureRights": {
+                              "type": "object",
+                              "properties": {
+                                "native": {
+                                  "type": "object",
+                                  "properties": {
+                                    "value":    { "type": "string", "example": "Einzelvertretungsberechtigt" },
+                                    "language": { "type": "string", "example": "de" },
+                                    "source":   { "type": "string", "example": "register" }
+                                  }
+                                },
+                                "modeled": {
+                                  "type": "object",
+                                  "properties": {
+                                    "value":  { "type": "string", "example": "Individual Representation" },
+                                    "scheme": { "type": "string", "example": "idcanopy" },
+                                    "source": { "type": "string", "example": "modeled" }
+                                  }
+                                },
+                                "signatureQuality": { "type": "string", "example": "individual" }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+
+                  "ownership": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "type": { "type": "string", "example": "individual" },
+                        "ownerID": { "type": "string", "example": "uuid" },
+                        "ownerData": {
+                          "type": "object",
+                          "properties": {
+                            "firstName": { "type": "string", "example": "John" },
+                            "lastName":  { "type": "string", "example": "Doe" },
+                            "address": {
+                              "type": "object",
+                              "properties": {
+                                "singleLine": { "type": "string", "example": "Musterstraße 1, 1010 Wien, AT" }
+                              }
+                            },
+                            "shareholding": {
+                              "type": "object",
+                              "properties": {
+                                "holdingPct": {
+                                  "type": "object",
+                                  "properties": {
+                                    "shares":       { "type": "string", "example": "49.9%" },
+                                    "capital":      { "type": "string", "example": "EUR 12500" },
+                                    "votingRights": { "type": "string", "example": "99%" }
+                                  }
+                                },
+                                "verbalholding": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "object",
+                                    "properties": {
+                                      "type": { "type": "string", "example": "shares" },
+                                      "native": {
+                                        "type": "object",
+                                        "properties": {
+                                          "value":    { "type": "string", "example": "holds more than 25% but less than 50% of shares" },
+                                          "language": { "type": "string", "example": "en" },
+                                          "source":   { "type": "string", "example": "register" }
+                                        }
+                                      },
+                                      "modeled": {
+                                        "type": "object",
+                                        "properties": {
+                                          "value":  { "type": "string", "example": "SHARE 25-50" },
+                                          "scheme": { "type": "string", "example": "idcanopy" },
+                                          "source": { "type": "string", "example": "modeled" }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "isUBO": { "type": "string", "example": "yes" }
+                          }
+                        }
+                      }
+                    }
+                  },
+
+                  "relationships": {
+                    "type": "object",
+                    "properties": {
+                      "ultimateBeneficialOwners": { "type": "array", "items": { "type": "string" }, "example": ["loremIpsum"] },
+                      "transparencyRegister":     { "type": "array", "items": { "type": "string" }, "example": [] },
+                      "familyTree":               { "type": "array", "items": { "type": "string" }, "example": ["loremIpsum"] },
+                      "isHeadquarter":            { "type": "string", "example": "Yes" },
+                      "isGlobalUltimate":         { "type": "string", "example": "Yes" },
+                      "isDomesticUltimate":       { "type": "string", "example": "Yes" },
+                      "isSubsidiary":             { "type": "string", "example": "Yes" }
+                    }
+                  }
+                }
+              }
+            }
+          },
+
+          "metadata": {
+            "type": "object",
+            "properties": {
+              "confidence":   { "type": "number", "format": "double", "example": 0.93 },
+              "completeness": { "type": "number", "format": "double", "example": 0.92 },
+              "source":       { "type": "string", "example": "Deutsches Handelsregister" },
+              "sourceTst":    { "type": "string", "format": "date-time", "example": "2025-08-25T08:00:00Z" },
+              "cacheAge":     { "type": "string", "example": "3h" }
+            }
           }
         }
       },
