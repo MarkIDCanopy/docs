@@ -67,13 +67,15 @@
             "group": "UI Widgets",
             "pages": [
               "sdk/ui_widgets/hosted_ui",
-              "sdk/ui_widgets/document"
+              "sdk/ui_widgets/document",
+              "sdk/ui_widgets/facematch"
             ]
           },
           {
             "group": "Services",
             "pages": [
-              "sdk/services/document_verification"
+              "sdk/services/document_verification",
+              "sdk/services/face_match"
             ]
           }
         ]

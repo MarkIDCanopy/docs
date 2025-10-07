@@ -2,7 +2,7 @@
 title: "Authentication"
 description: "How the SDK obtains and refreshes tokens"
 icon: 'key'
-tag: "NEW"
+tag: "UPCOMING"
 ---
 
 # SDK Authentication
@@ -39,14 +39,5 @@ canopy.auth.get_token()
 ```
 </Tab> </Tabs>
 
-## Manual control (optional)
-```ts
-// Provide an existing token if you manage it externally
-canopy.auth.setToken({ accessToken: "…", expiresIn: 3600 });
-
-// Read current token
-const tok = canopy.auth.getCurrent();
-
-```
 <Note> Under the hood, the SDK calls the same `/auth` endpoint documented in [API Authentication](/authentication) and caches the token until it expires. </Note>
 

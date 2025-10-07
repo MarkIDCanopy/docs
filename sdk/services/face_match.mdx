@@ -1,0 +1,266 @@
+---
+title: Face Match (Service)
+description: Upcoming Service.
+icon: 'code'
+tag: "UPCOMING"
+---
+
+import Auth from '/snippets/auth.mdx';
+
+# Face Match (Service SDK)
+
+Use the IDCanopy SDK to perform **face-to-face comparison** from your own UI.  
+You control capture (camera/upload), we handle the request signing, routing to `/faceMatch`, and response normalization.
+
+- Compare:  
+  - Two images (Base64 JPEG/PNG)  
+  - Two biometric templates  
+  - Image ↔ template  
+  - ID document portrait token (`tokenFaceImage`) ↔ image/template
+- Optional **livenessMode** (`none` | `passive`) for selfie evaluation.
+- Threshold-based decisioning (`approve` | `decline` | `review`).
+
+> For the REST endpoint details, see the [Face Match API]](/essentials/faceMatch) page.
+
+---
+
+## Prerequisites
+
+- ✅ Completed **Authentication** with Access Key.  
+- ✅ (Optional) **Handshake** and **Webhooks** configured if you plan to use `callbackUrl` (async flow).
+
+<Auth/>
+
+---
+
+## Install & Import
+
+<Tabs>
+  <Tab title="npm">
+    <CodeBlock language="bash">{`npm install @idcanopy/sdk`}</CodeBlock>
+  </Tab>
+  <Tab title="yarn">
+    <CodeBlock language="bash">{`yarn add @idcanopy/sdk`}</CodeBlock>
+  </Tab>
+</Tabs>
+
+```ts
+import { IDCanopy } from '@idcanopy/sdk';
+```
+
+## Initialize
+
+Create a single SDK instance and reuse it across your app.
+```ts
+const idcanopy = new IDCanopy({
+  environment: 'sandbox',          // 'sandbox' | 'production'
+  apiKey: 'YOUR_ACCESS_KEY'        // same as used in Document Verification
+  // optional: region, timeouts, retry, logger...
+});
+```
+
+## Quick Start (sync)
+
+Pass two sources and get a similarity score + decision back.
+```ts
+const result = await idcanopy.faceMatch.compare({
+  comparisonMethod: 'openImages',
+  token1: base64Selfie1,
+  token2: base64Selfie2,
+  livenessMode: 'none',            // 'none' (default) | 'passive'
+  decisionThreshold: 0.85
+});
+
+// result.decision => 'approve' | 'decline' | 'review'
+// result.facialSimilarityScore => 0..1
+```
+### Parameters
+```ts
+type FaceMatchParams = {
+  comparisonMethod:
+    | 'openImages'
+    | 'biometricTemplates'
+    | 'imageToTemplate'
+    | 'docPhotoToImage'
+    | 'docPhotoToTemplate';
+
+  token1: string;                  // Base64 image | template raw | tokenFaceImage (per method)
+  token2: string;                  // Base64 image | template raw  (per method)
+  livenessMode?: 'none' | 'passive';
+  decisionThreshold?: number;      // default 0.85
+
+  // Optional async mode:
+  callbackUrl?: string;            // when set, SDK may return {status:'accepted'} and you'll receive a webhook
+  externalReferenceId?: string;
+  idempotencyKey?: string;
+
+  // Optional tracking (SDK/mobile/web capture metadata)
+  tracking?: {
+    extraData?: string;            // Base64
+    operationId?: string;
+  };
+};
+```
+
+### Allowed Inputs per Method
+| comparisonMethod     | token1           | token2       |
+| -------------------- | ---------------- | ------------ |
+| `openImages`         | Base64 image     | Base64 image |
+| `biometricTemplates` | Template raw     | Template raw |
+| `imageToTemplate`    | Base64 image     | Template raw |
+| `docPhotoToImage`    | `tokenFaceImage` | Base64 image |
+| `docPhotoToTemplate` | `tokenFaceImage` | Template raw |
+
+### Method
+```
+idcanopy.faceMatch.compare(params: FaceMatchParams): Promise<FaceMatchResult | FaceMatchAccepted>
+```
+- **Sync (default)**: Returns a FaceMatchResult with decision and scores.
+- **Async (when callbackUrl set)**: Returns FaceMatchAccepted and later posts a webhook.
+
+```ts
+const res = await idcanopy.faceMatch.compare({
+  comparisonMethod: 'docPhotoToImage',
+  token1: tokenFaceImage,          // from your document capture flow
+  token2: base64Selfie,            // from your selfie capture UI
+  livenessMode: 'passive',
+  decisionThreshold: 0.9,
+  externalReferenceId: 'kyc-42',
+  callbackUrl: 'https://example.com/webhooks/faceMatch',
+  idempotencyKey: crypto.randomUUID()
+});
+
+if (res.status === 'accepted') {
+  // handle async path - await webhook face.match.completed
+} else {
+  // sync result
+  console.log(res.decision, res.facialSimilarityScore);
+}
+```
+
+### Types
+
+```ts
+type FaceMatchResult = {
+  status: 'success';
+  requestId: string;
+  externalReferenceId?: string;
+  decision: 'approve' | 'decline' | 'review';
+  facialSimilarityScore: number;           // 0..1
+  facialAuthenticationResult: number;      // provider code (e.g. 3 positive)
+  serviceResultCode: number;               // 0 = OK
+  serviceResultLog: string;                // reason / log text
+  serviceTimeMs: number;
+  transactionId: string;
+  facialAuthenticationHash?: string;       // present for template methods
+  liveness?: {
+    livenessStatus: 'pass' | 'fail' | 'inconclusive' | 'notPerformed';
+    livenessScore?: number;
+    hints?: string[];
+  };
+  policy?: {
+    decisionThreshold: number;
+  };
+};
+
+type FaceMatchAccepted = {
+  status: 'accepted';
+  requestId: string;
+  externalReferenceId?: string;
+};
+```
+
+## Examples
+
+### A) Image ↔ Image (no liveness)
+```ts
+await idcanopy.faceMatch.compare({
+  comparisonMethod: 'openImages',
+  token1: base64Image1,
+  token2: base64Image2,
+  livenessMode: 'none',
+  decisionThreshold: 0.85
+});
+```
+
+### B) Doc Portrait Token ↔ Selfie (with passive liveness)
+```ts
+await idcanopy.faceMatch.compare({
+  comparisonMethod: 'docPhotoToImage',
+  token1: tokenFaceImage,
+  token2: base64Selfie,
+  livenessMode: 'passive',
+  decisionThreshold: 0.88,
+  externalReferenceId: 'onboard-9912'
+});
+```
+
+### C) Image ↔ Template
+```ts
+await idcanopy.faceMatch.compare({
+  comparisonMethod: 'imageToTemplate',
+  token1: base64Selfie,
+  token2: biometricTemplateRaw,
+  livenessMode: 'none'
+});
+```
+## Handling Errors
+SDK raises normalized errors with a consistent shape.
+
+```ts
+try {
+  const out = await idcanopy.faceMatch.compare({ /* ... */ });
+} catch (err: any) {
+  // canonical shape
+  // err.code: 'InvalidInput' | 'UnsupportedMedia' | 'ImageQualityInsufficient' | 'TemplateInvalid' | 'Unauthorized' | ...
+  // err.message: human-friendly string
+  // err.requestId: for support/debugging
+  console.error(err.code, err.message, err.requestId);
+}
+```
+
+### Common causes
+| code                       | when                                             | fix                                        |
+| -------------------------- | ------------------------------------------------ | ------------------------------------------ |
+| `InvalidInput`             | Wrong enum / missing required / wrong token type | Check `comparisonMethod` and token formats |
+| `UnsupportedMedia`         | Corrupted Base64 / wrong MIME                    | Ensure JPEG/PNG encoding                   |
+| `ImageQualityInsufficient` | No face / blur / glare / occlusion               | Guide user to better lighting & framing    |
+| `TemplateInvalid`          | Template string not parseable                    | Verify provider template format            |
+| `Unauthorized`             | Bad apiKey / missing auth                        | Confirm Access Key and environment         |
+| `ProviderError`            | Upstream failure                                 | Retry with backoff                         |
+| `RateLimited`              | Too many requests                                | Throttle / exponential backoff             |
+
+## Async Flow (Optional)
+When you pass `callbackUrl`, the SDK may return `{ status: 'accepted' }` immediately.
+You’ll receive a webhook event when processing completes.
+- **Event**: `face.match.completed`
+- **Verify**: Follows the same signature process as **Webhooks** doc.
+
+```json
+{
+  "event": "face.match.completed",
+  "occurredAt": "2025-10-07T08:33:12Z",
+  "requestId": "9c0d6a3f-2b9e-4b92-9a13-2a6a4e4d1fd5",
+  "externalReferenceId": "onboard-9912",
+  "decision": "approve",
+  "facialSimilarityScore": 0.91,
+  "facialAuthenticationResult": 3,
+  "liveness": {
+    "livenessStatus": "pass",
+    "livenessScore": 0.94
+  }
+}
+```
+
+## Quality Guidance (UX you control)
+Because you own the UI, apply standard capture guidelines:
+- **Framing**: Shoulders & full face centered, single face only
+- **Lighting**: Even, no backlight, avoid glare
+- **Stability**: Brief hold (auto-capture if sharp & face centered)
+- **No occlusions**: Remove masks, hats, sunglasses
+- **Doc portrait token**: Ensure the doc crop flow produces a valid tokenFaceImage
+
+## Security & Privacy
+- **Tokens/images** are sent over TLS; data at rest follows your global retention policy.
+- **Do not log raw images or templates**. Use externalReferenceId for correlation.
+- **Redact PII** in analytics/telemetry.

@@ -2,5 +2,282 @@
 title: "Facematch"
 description: "Upcoming service."
 icon: 'code'
+tag: "UPCOMING"
 ---
 
+
+import Auth from '/snippets/auth.mdx';
+
+# Face Match (UI Widget)
+
+Add a **drop-in Face Match flow** to your app with a few lines of code.  
+The widget handles **selfie capture / upload**, quality guidance, optional **passive liveness**, and sends a normalized request to `/faceMatch`. You receive a **decision** and **similarity score**.
+
+- Built for **Web** (responsive)
+- Zero-setup UI (camera + guidance)
+- Optional **liveness**: `none` \| `passive`
+- Works with:
+  - Two images (selfie ↔ selfie)
+  - Selfie ↔ ID portrait token (`tokenFaceImage`)
+  - Selfie ↔ biometric template
+  - Template ↔ template (no camera UI)
+
+> Prefer bringing your own UI? See **Face Match (Service)**.
+
+---
+
+## Prerequisites
+
+- ✅ **Authentication** (Access Key)
+- ✅ (Optional) **Handshake** if your app uses session bootstrap
+- ✅ (Optional) **Webhooks** if you use `callbackUrl` (async)
+
+<Auth/>
+
+---
+
+## Install & Import
+
+<Tabs>
+  <Tab title="npm">
+    <CodeBlock language="bash">{`npm install @idcanopy/sdk`}</CodeBlock>
+  </Tab>
+  <Tab title="yarn">
+    <CodeBlock language="bash">{`yarn add @idcanopy/sdk`}</CodeBlock>
+  </Tab>
+</Tabs>
+
+```ts
+import { IDCanopy } from '@idcanopy/sdk';
+```
+
+## Basic Usage
+```html
+<!-- Where the widget will render -->
+<div id="idcanopy-container" style="width:100%;max-width:420px;margin:auto" />
+```
+
+```ts
+const idcanopy = new IDCanopy({
+  environment: 'sandbox',          // 'sandbox' | 'production'
+  apiKey: 'YOUR_ACCESS_KEY'
+});
+
+await idcanopy.start({
+  service: 'faceMatch',
+  containerId: 'idcanopy-container',
+  options: {
+    // Provide the reference (token1) and let the widget capture the selfie (token2)
+    reference: {
+      type: 'tokenFaceImage',      // 'image' | 'template' | 'tokenFaceImage'
+      value: tokenFaceImage        // e.g., from your Document Verification step
+    },
+    livenessMode: 'passive',       // 'none' | 'passive'
+    decisionThreshold: 0.85,
+    capture: {
+      acceptGallery: true,         // allow upload as fallback
+      cameraFacingMode: 'user',    // 'user' | 'environment'
+      compression: 0.9,            // 0..1
+      maxImageSizeMb: 10
+    },
+    ui: {
+      theme: 'auto',               // 'auto' | 'light' | 'dark'
+      locale: 'en',
+      texts: {
+        title: 'Face Match',
+        instructions: 'Center your face, good lighting, remove glasses.',
+        retry: 'Retake selfie'
+      }
+    }
+  },
+  onSuccess: (result) => {
+    // result matches FaceMatchResult shape (normalized)
+    console.log('decision:', result.decision);
+    console.log('score:', result.facialSimilarityScore);
+  },
+  onError: (err) => {
+    console.error(err.code, err.message, err.requestId);
+  },
+  onClose: () => {
+    console.log('Face Match widget closed');
+  },
+  onEvent: (evt) => {
+    // Optional analytics stream
+    // evt.type: 'capture.start' | 'capture.success' | 'quality.hint' | 'upload.start' | 'request.sent' | 'result.received' | 'error'
+    // evt.data: { hint?: 'low_light' | 'no_face' | ... }
+    console.debug('event:', evt.type, evt.data);
+  }
+});
+```
+
+### Configuration
+```ts
+type FaceMatchWidgetOptions = {
+  // What will we compare against (token1)?
+  reference:
+    | { type: 'image'; value: string }           // Base64 JPEG/PNG
+    | { type: 'template'; value: string }        // provider template raw
+    | { type: 'tokenFaceImage'; value: string }; // doc portrait token
+
+  // The widget captures token2 (selfie) unless both sides are templates
+  comparisonMethod?: 'openImages' | 'biometricTemplates' | 'imageToTemplate' | 'docPhotoToImage' | 'docPhotoToTemplate';
+  livenessMode?: 'none' | 'passive';            // default 'none'
+  decisionThreshold?: number;                    // default 0.85
+
+  // Async mode (optional)
+  callbackUrl?: string;
+  externalReferenceId?: string;
+  idempotencyKey?: string;
+
+  // Capture controls (when selfie is needed)
+  capture?: {
+    acceptGallery?: boolean;                     // default true
+    cameraFacingMode?: 'user' | 'environment';   // default 'user'
+    compression?: number;                        // default 0.9
+    maxImageSizeMb?: number;                     // default 10
+    autoCapture?: boolean;                       // default true (auto when sharp & face centered)
+    guidance?: boolean;                          // default true (on-screen hints)
+  };
+
+  // UI
+  ui?: {
+    theme?: 'auto' | 'light' | 'dark';
+    locale?: string;
+    texts?: Partial<{
+      title: string;
+      instructions: string;
+      captureButton: string;
+      retry: string;
+      uploading: string;
+      analyzing: string;
+      successTitle: string;
+      failTitle: string;
+    }>;
+  };
+};
+```
+
+### Notes
+- If `comparisonMethod` is omitted, the widget infers it from `reference.type`:
+-- `tokenFaceImage` → `docPhotoToImage`
+-- `image` → `openImages`
+-- `template` → `imageToTemplate` (selfie → template)
+
+If you pass `comparisonMethod: 'biometricTemplates'`, the widget won’t open the camera (no selfie needed).
+
+### Result Shape
+```ts
+type FaceMatchResult = {
+  status: 'success';
+  requestId: string;
+  externalReferenceId?: string;
+  decision: 'approve' | 'decline' | 'review';
+  facialSimilarityScore: number;           // 0..1
+  facialAuthenticationResult: number;      // provider code (e.g. 3 positive)
+  serviceResultCode: number;               // 0 = OK
+  serviceResultLog: string;
+  serviceTimeMs: number;
+  transactionId: string;
+  facialAuthenticationHash?: string;
+  liveness?: {
+    livenessStatus: 'pass' | 'fail' | 'inconclusive' | 'notPerformed';
+    livenessScore?: number;
+    hints?: string[];
+  };
+  policy?: {
+    decisionThreshold: number;
+  };
+};
+```
+
+## Examples
+### A) Selfie ↔ Doc Portrait (with Passive Liveness)
+```ts
+await idcanopy.start({
+  service: 'faceMatch',
+  containerId: 'idcanopy-container',
+  options: {
+    reference: { type: 'tokenFaceImage', value: tokenFaceImage },
+    livenessMode: 'passive',
+    decisionThreshold: 0.86
+  },
+  onSuccess, onError
+});
+```
+
+### B) Selfie ↔ Template (no liveness)
+```ts
+await idcanopy.start({
+  service: 'faceMatch',
+  containerId: 'idcanopy-container',
+  options: {
+    reference: { type: 'template', value: biometricTemplateRaw },
+    livenessMode: 'none',
+    comparisonMethod: 'imageToTemplate'
+  },
+  onSuccess, onError
+});
+```
+
+### C) Template ↔ Template (no camera)
+```ts
+await idcanopy.start({
+  service: 'faceMatch',
+  containerId: 'idcanopy-container',
+  options: {
+    reference: { type: 'template', value: templateA },
+    comparisonMethod: 'biometricTemplates',
+    // Provide second template via texts/upload step if your flow asks the user,
+    // or call the Service SDK directly for full control.
+  }
+});
+```
+
+## Theming & Localization
+```ts
+await idcanopy.start({
+  service: 'faceMatch',
+  containerId: 'idcanopy-container',
+  options: {
+    reference: { type: 'image', value: base64Reference },
+    ui: {
+      theme: 'auto',
+      locale: 'de',
+      texts: {
+        title: 'Gesichtsabgleich',
+        instructions: 'Bitte Gesicht zentrieren und ausreichend beleuchten.',
+        successTitle: 'Match erfolgreich'
+      }
+    }
+  }
+});
+```
+
+## Events & Telemetry
+```ts
+onEvent: (evt) => {
+  // evt.type examples:
+  // 'widget.open' | 'capture.start' | 'capture.success' | 'quality.hint'
+  // 'upload.start' | 'request.sent' | 'result.received' | 'widget.close' | 'error'
+  // evt.data.hint -> 'low_light' | 'no_face' | 'multiple_faces' | 'occlusion' | 'glare'
+}
+```
+
+## Error States
+The widget normalizes errors to a canonical shape (same as Service SDK).
+| code                       | when                               | action                         |
+| -------------------------- | ---------------------------------- | ------------------------------ |
+| `InvalidInput`             | Bad enum / missing required        | Review config / reference type |
+| `UnsupportedMedia`         | Corrupted Base64 / MIME            | Re-capture or compress         |
+| `ImageQualityInsufficient` | No face / blur / glare / occlusion | Widget prompts user with hints |
+| `TemplateInvalid`          | Template unparsable                | Verify provider format         |
+| `Unauthorized`             | Bad apiKey                         | Check Access Key               |
+| `ProviderError`            | Upstream failure                   | Retry with backoff             |
+| `RateLimited`              | Too many requests                  | Throttle                       |
+
+## UX Guidance (Built-in + Your Copy)
+- **Framing**: single face, centered; show shoulders
+- **Lighting**: even front light; avoid backlight & glare
+- **Stability**: hold briefly; auto-capture when sharp
+- **No occlusions**: remove sunglasses/masks/hats
+You can override guidance copy via `ui.texts`.
