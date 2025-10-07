@@ -36,6 +36,7 @@
               "essentials/aml",
               "essentials/documentVerification",
               "essentials/identityVerification",
+              "essentials/faceMatch",
               "essentials/kyb",
               "essentials/phoneServices",
               "essentials/qesOnboarding",
@@ -78,7 +79,7 @@
         ]
       },
       {
-        "tab": "API Reference",
+        "tab": "Playground",
         "groups": [
           {
             "group": "Endpoints",
@@ -146,6 +147,12 @@
                   "api-reference/endpoint/qesOnboarding_createSessionLink",
                   "api-reference/endpoint/qesOnboarding_configureWebhook",
                   "api-reference/endpoint/qesOnboarding_getVerification"
+                ]
+              },
+              {
+                "group": "Face Match",
+                "pages": [
+                  "api-reference/endpoint/faceMatch"
                 ]
               }
             ]

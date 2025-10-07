@@ -1,7 +1,7 @@
 ---
 title: Payment Initiation Service
 description: Payment Service API Documentation
-icon: 'map'
+icon: 'credit-card'
 ---
 import Auth from '/snippets/auth.mdx';
 
@@ -42,6 +42,47 @@ The Payment Service API enables seamless and secure payment processing through o
 
 - **Upcoming Features**: Future improvements include a rendered payment button, seamless/modal implementations, and native SDKs.
 - **Regular Open Banking Payments and Challenge Deposits**: The API supports both regular open banking payments and **Challenge Deposits**, which include additional verification mechanisms such as **name matching**. These are handled through a dedicated endpoint described separately.
+
+### Complete Payment Flow Sequence
+```mermaid
+sequenceDiagram
+    participant C as 👤 Customer
+    participant M as 🛒 Merchant
+    participant API as 🔌 Payment API
+    participant CB as 🏦 Customer Bank
+    participant MB as 💰 Merchant Bank
+    
+    Note over C,MB: Phase 1: Transaction Initiation
+    C->>M: Completes purchase
+    M->>M: Generate referenceId
+    M->>API: POST /payments/initiate<br/>(referenceId, IBAN, amount, currency, returnUrl)
+    API-->>M: Returns redirectUrl + requestId
+    
+    Note over C,MB: Phase 2: Customer Authentication & Authorization
+    Note over API: Status: PENDING_EXTERNAL_AUTHORIZATION
+    M->>C: Browser redirect to hosted payment page
+    C->>API: Lands on payment page
+    API->>CB: Redirect to bank login
+    C->>CB: Authenticates (SCA/2FA)
+    C->>CB: Reviews & authorizes payment
+    CB-->>API: Payment consent confirmed
+    Note over CB: Status: SUCCESS (authorization received)
+    
+    Note over C,MB: Phase 3: Money Movement (Settlement)
+    Note over CB: Status: SETTLEMENT_IN_PROGRESS
+    CB->>CB: 💸 Debit customer account (-€100)
+    CB->>MB: 💰 SEPA transfer (€100)
+    MB->>MB: Credit merchant account (+€100)
+    Note over MB: Status: SETTLEMENT_COMPLETED
+    
+    Note over C,MB: Phase 4: Confirmation & Reconciliation
+    API->>C: Redirect to returnUrl
+    C->>M: Returns to merchant site
+    M->>API: POST /payments/status<br/>(poll for status using referenceId)
+    API-->>M: Status: SETTLEMENT_COMPLETED
+    M->>M: ✅ Fulfill order
+    M-->>C: Order confirmation
+```
 
 ### Typical Payment Workflow
 <Steps>
@@ -322,3 +363,29 @@ Initiates a challenge deposit by sending a small amount to the user's bank accou
     "returnedLastName": "Doe"
 }
 ```
+
+## Best Practices
+
+### Security
+- **Never store bank credentials** - Authentication is handled entirely by banks
+- **Use HTTPS only** - All API calls and redirects must use secure connections
+- **Validate redirect URLs** - Ensure returnUrl points to your domain
+- **Implement CSRF protection** - Validate state tokens on return URLs
+
+### User Experience
+- **Show clear payment status** - Keep customers informed during processing
+- **Handle timeouts gracefully** - Provide clear messaging if authorization expires
+- **Offer alternative payments** - Have backup payment methods available
+- **Mobile optimization** - Ensure redirect flow works on mobile browsers
+
+### Operations
+- **Monitor settlement times** - Track time from SUCCESS to SETTLEMENT_COMPLETED
+- **Reconcile daily** - Match API statuses with actual bank account credits
+- **Set up alerts** - Monitor for unusual failure rate spikes
+- **Log everything** - Maintain audit trail of all transactions and status changes
+
+### Performance
+- **Use webhooks when possible** - Reduces latency vs. polling
+- **Implement intelligent polling** - Poll frequently initially, then back off
+- **Cache status results** - Avoid redundant status checks
+- **Async processing** - Don't block user requests during status checks

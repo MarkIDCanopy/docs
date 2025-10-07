@@ -1,0 +1,126 @@
+---
+title: Face Match
+description: Face Match API Documentation
+icon: 'camera'
+---
+import Auth from '/snippets/auth.mdx';
+
+# Face Match API - Detailed Documentation
+Facematch provides biometric face comparison as a standalone service or as a building block in composite flows. 
+You can compare:
+- Two open images (Base64 JPEG/PNG)
+- Two biometric templates
+- Open image ↔ biometric template
+- ID document portrait (TokenFaceImage) ↔ image/template
+Optionally enable **Liveness** to add passive liveness analysis in the same request.
+
+### API Playground:
+<Tabs>
+  <Tab title="/faceMatch">
+    You can try the openJourney endpoint [here](/api-reference/endpoint/faceMatch).
+  </Tab>
+</Tabs>
+
+### Endpoints Overview
+1. **Face Match**: Compare two faces and return a similarity score and decision.
+
+---
+<Auth/>
+---
+
+## 1. Face Match
+### Endpoint
+**POST** `/faceMatch`
+
+### Description
+This endpoint compares two faces and return a similarity score and decision.
+
+### Required Headers
+| Header         | Value |
+|---------------|----------------------------|
+| Content-Type  | `application/json` |
+| Authorization | `Bearer yourAccessToken` |
+
+### Request Body Parameters
+<Accordion title="Request Body Parameters">
+| Field                  | Type            | Required | Description                                                                                                                                                                                                                                            |
+| ---------------------- | --------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `comparisonMethod`     | string (enum)   |     Yes  | One of:`openImages` (image vs image), `biometricTemplates` (template vs template), `imageToTemplate` (image ↔ template), `docPhotoToImage` (ID portrait token ↔ image), `docPhotoToTemplate` (ID portrait token ↔ template) |
+| `token1`               | string          |     Yes  | First face source. Base64 image, template raw, or `tokenFaceImage` per method.                                                                                                                                                                         |
+| `token2`               | string          |     Yes  | Second face source. Base64 image or template raw per method.                                                                                                                                                                                           |
+| `livenessMode`         | string (enum)   |     No   | `none` (default) or `passive`. When not `none`, liveness is evaluated for `token2` (the selfie).                                                                                                                                                       |
+| `decisionThreshold`    | number          |     No   | Default `0.85`. Score ≥ threshold → `approve`; otherwise `decline` (unless policy uses `review`).                                                                                                                                                      |
+| `callbackUrl`          | string (URL)    |     No   | If set, returns **202** with `RequestId` and posts a webhook upon completion.                                                                                                                                                                          |
+| `externalReferenceId`  | string          |     No   | Your correlation ID, echoed in responses/webhooks.                                                                                                                                                                                                     |
+| `idempotencyKey`       | string (UUID)   |     No   | Required when `callbackUrl` is used. Prevents duplicate processing.                                                                                                                                                                                    |
+| `tracking.extraData`   | string (Base64) |     No   | Tokenized SDK tracking blob.                                                                                                                                                                                                                           |
+| `tracking.operationId` | string          |     No   | Client-side operation identifier.                                                                                                                                                                                                                      |
+</Accordion>
+
+### Response Structure
+<Accordion title="Response Structure">
+| Field                        | Type     | Description                                                |
+| ---------------------------- | -------- | ---------------------------------------------------------- |
+| `status`                     | string   | `success`, `accepted`, or `error`.                         |
+| `requestId`                  | string   | Server-side identifier for this request.                   |
+| `externalReferenceId`        | string   | Echo of your correlation ID.                               |
+| `decision`                   | string   | `approve` | `decline` | `review` (threshold/policy-based). |
+| `facialSimilarityScore`      | number   | 0..1 (1.0 = identical).                                    |
+| `facialAuthenticationResult` | integer  | Provider result code (e.g., 3 = positive).                 |
+| `serviceResultCode`          | integer  | Provider execution code (0 = OK).                          |
+| `serviceResultLog`           | string   | Execution log / reason.                                    |
+| `serviceTimeMs`              | integer  | Processing time (ms).                                      |
+| `transactionId`              | string   | Upstream transaction ID.                                   |
+| `facialAuthenticationHash`   | string   | Integrity hash for template comparisons.                   |
+| `liveness.livenessStatus`    | string   | `pass` | `fail` | `inconclusive` | `notPerformed`.         |
+| `liveness.livenessScore`     | number   | Confidence when liveness is performed.                     |
+| `liveness.hints`             | string[] | Optional guidance/quality hints.                           |
+| `policy.decisionThreshold`   | number   | Effective threshold used.                                  |
+</Accordion>
+
+### Example Request
+<Accordion title="Example Request">
+```json
+{
+  "comparisonMethod": "openImages | biometricTemplates | imageToTemplate | docPhotoToImage | docPhotoToTemplate",
+  "token1": "BASE64_OR_TEMPLATE_OR_TOKEN",
+  "token2": "BASE64_OR_TEMPLATE_OR_TOKEN",
+  "livenessMode": "none | passive",
+  "decisionThreshold": 0.85,
+  "callbackUrl": "https://example.com/webhooks/faceMatch",
+  "externalReferenceId": "your-id-123",
+  "idempotencyKey": "0e2b7a6c-5a6f-4f5e-8e88-0b0f29b87f2a",
+  "tracking": {
+    "extraData": "BASE64_TRACKING_BLOB",
+    "operationId": "abcde-12345-xyz"
+  }
+}
+```
+</Accordion>
+
+### Example Response
+<Accordion title="Example Response">
+```json
+{
+  "status": "success",
+  "requestId": "a29cbe15-2b68-495f-b7eb-be985b21c486",
+  "externalReferenceId": "your-id-123",
+  "decision": "approve | decline | review",
+  "facialSimilarityScore": 0.9915,
+  "facialAuthenticationResult": 3,
+  "serviceResultCode": 0,
+  "serviceResultLog": "positive",
+  "serviceTimeMs": 516,
+  "transactionId": "a29cbe15-2b68-495f-b7eb-be985b21c486",
+  "facialAuthenticationHash": "47D0ACD...74289E",
+  "liveness": {
+    "livenessStatus": "pass | fail | inconclusive | notPerformed",
+    "livenessScore": 0.97,
+    "hints": ["low_light"]
+  },
+  "policy": {
+    "decisionThreshold": 0.85
+  }
+}
+```
+</Accordion>
