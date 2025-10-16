@@ -23,7 +23,7 @@ Use this action to get insights about a phone number such as whether it is activ
   <Tab title="/verification">
     You can try the verification endpoint [here](/api-reference/endpoint/phoneServices_verification).
   </Tab>
-  <Tab title="/verificationMatch/{referenceId}">
+  <Tab title="/verification/{referenceId}">
     You can try the verificationMatch endpoint [here](/api-reference/endpoint/phoneServices_verificationMatch).
   </Tab>
   <Tab title="/fullPhoneIntelligence">
@@ -866,7 +866,7 @@ These codes specify additional reasons for altering the original phone type clas
 </Accordion>
 
 
-## 4. Verification (Upcoming)
+## 4. Verification
 ### 4.1 Verification
 
 ### Endpoint        
@@ -890,8 +890,8 @@ The Messaging API enables you to deliver important verification messages to your
 | Field                         | Type    | Required    | Description                                                                                       |
 |-------------------------------|---------|-------------|---------------------------------------------------------------------------------------------------|
 | `phoneNumber`                 | string  | Yes for SMS    | Recipient's phone number in international format, no spaces or special characters.               |
-| `email`                       | string  | Yes for EMAIL  | Recipient's email address.                                                                       |
 | `method`                      | string  | Yes         | The delivery method to use. Only accepted values: `sms` or `email`.                              |
+| `email`                       | string  | Yes for EMAIL  | Recipient's email address.                                                                       |
 | `securityFactor`             | string  | No          | A custom numeric OTP (3–10 digits). If omitted, a 6-digit OTP is auto-generated.                 |
 | `externalId`                 | string  | No          | Customer-defined transaction ID. Max length: 100 characters.                                     |
 | `messageTemplate.name`       | string  | No          | Template name (lowercase letters and underscores only).                                          |
@@ -903,22 +903,26 @@ The Messaging API enables you to deliver important verification messages to your
 <Accordion title="Response Structure">
 | Field                       | Type    | Description                                                                                             |
 |-----------------------------|---------|---------------------------------------------------------------------------------------------------------|
-| `referenceId`              | string   | A unique 32-character hex string that identifies the verification process.                              |
-| `status.code`              | integer  | Numeric code representing the transaction status.                                                       |
-| `status.description`       | string   | Human-readable description of the transaction status.                                                   |
-| `recipient.phoneNumber`    | string   | Recipient's phone number in international format.                                                       |
-| `recipient.email`          | string   | Recipient's email address.                                                                              |
-| `state`                    | string   | Current state of the verification process. One of: `CREATED`, `ONGOING`, `REJECTED`, `FAILED`, `VERIFIED`, `CANCELED`. |
-| `method`                   | string   | The verification method used. One of: `sms`, `email`.    |
+| `status`                   | boolean | Indicates whether the request was successful (`true` or `false`).                                       |
+| `data.mobileAppToken`       | string  | Token used to authenticate the mobile app session.                                                      |
+| `data.recipient.phoneNumber`| string  | Recipient's phone number in international format.                                                       |
+| `data.referenceId`          | string  | Unique 32-character hex string that identifies the verification process.                                |
+| `data.state`                | string  | Current state of the verification process. One of: `CREATED`, `ONGOING`, `REJECTED`, `FAILED`, `VERIFIED`, `CANCELED`. |
+| `data.status.code`          | integer | Numeric code representing the transaction status.                                                       |
+| `data.status.description`   | string  | Human-readable description of the transaction status.                                                   |
+| `data.status.updatedOn`     | string  | ISO 8601 timestamp indicating when the status was last updated.                                         |
 </Accordion>
 
 ### Example Request
 <Accordion title="Example Request">
 ```json
 {
-    "phoneNumber": "+436501234567",
-    "method": "sms",
-    "email": "test@test.com"
+    "phoneNumber": "436501234567",
+    "method": "email",
+    //"method": "sms",
+    "email": "test@test.com",
+    "externalId": "12312",
+    "securityFactor": "12345"
 }
 ```
 </Accordion>
@@ -927,24 +931,28 @@ The Messaging API enables you to deliver important verification messages to your
 <Accordion title="Example Response">
 ```json
 {
-  "referenceId": "0123456789ABCDEF0123456789ABCDEF",
-  "status": {
-    "code": 3901,
-    "description": "Request in progress"
-  },
-  "recipient": {
-    "phoneNumber": "11234567890"
-  },
-  "method": "sms",
-  "state": "CREATED"
+    "status": true,
+    "data": {
+        "mobileAppToken": "a1378b455f3048059a7be9df6a9da3aa",
+        "recipient": {
+            "phoneNumber": "436501234567"
+        },
+        "referenceId": "366691874BD00250933424F72F7C50CB",
+        "state": "CREATED",
+        "status": {
+            "code": 3901,
+            "description": "Request in progress",
+            "updatedOn": "2025-10-02T10:04:58.505000Z"
+        }
+    }
 }
 ```
 </Accordion>
 
-### 4.2 Verification Match (Upcoming)
+### 4.2 Verification Match 
 
 ### Endpoint
-**PATCH** `/verificationMatch/{referenceId}`
+**PATCH** `/phone-service/verification/{referenceId}`
 
 ### Description
 Use this endpoint to validate the one-time passcode (OTP) provided by the end user and update the state of an active verification process.
@@ -962,24 +970,23 @@ If the OTP is correct, the verification process is marked as VERIFIED. If incorr
 <Accordion title="Request Body Parameters">
 | Field            | Type   | Required | Description                                                                                                                                 |
 |------------------|--------|----------|---------------------------------------------------------------------------------------------------------------------------------------------|
-| `action`         | string | Yes      | Specifies how to change the verification state. Only accepted value: `"finalize"` to complete the verification process.                     |
 | `securityFactor` | string | Yes      | The OTP provided by the end user (3–10 digits). Used to verify whether the entered OTP matches the one previously sent/generated.          |
 </Accordion>
 
 ### Response Structure
 <Accordion title="Response Structure">
-| Field             | Type     | Description                                                               |
-|-------------------|----------|---------------------------------------------------------------------------|
-| `status.code`     | integer  | A numeric code that indicates the result of the verification match.       |
-| `status.description` | string | Human-readable text describing the outcome of the verification match.     |
+| Field                     | Type     | Description                                                               |
+|---------------------------|----------|---------------------------------------------------------------------------|
+| `status`                  | boolean  | Indicates whether the request was successful (`true` or `false`).         |
+| `data.status.code`        | integer  | Numeric code representing the verification result.                        |
+| `data.status.description` | string   | Human-readable description of the verification result.                    |
 </Accordion>
 
 ### Example Request
 <Accordion title="Example Request">
 ```json
 {
-  "action": "finalize",
-  "security_factor": "123456"
+    "securityFactor": "12345"
 }
 ```
 </Accordion>
@@ -988,10 +995,13 @@ If the OTP is correct, the verification process is marked as VERIFIED. If incorr
 <Accordion title="Example Response">
 ```json
 {
-  "status": {
-    "code": 3900,
-    "description": "Verified"
-  }
+    "status": true,
+    "data": {
+        "status": {
+            "code": 3900,
+            "description": "Verified"
+        }
+    }
 }
 ```
 </Accordion>

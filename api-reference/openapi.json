@@ -1540,18 +1540,28 @@
     "/phone-service/verification": {
       "post": {
         "summary": "Verification",
-        "description": "Send a one-time verification code to a user via SMS or Email.",
+        "description": "Deliver a one-time verification code to a user via SMS or Email.",
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": { "$ref": "#/components/schemas/VerificationRequest" },
               "examples": {
-                "default": {
+                "email": {
                   "value": {
-                    "phoneNumber": "+436501234567",
+                    "phoneNumber": "436501234567",
+                    "method": "email",
+                    "email": "test@test.com",
+                    "externalId": "12312",
+                    "securityFactor": "12345"
+                  }
+                },
+                "sms": {
+                  "value": {
+                    "phoneNumber": "436501234567",
                     "method": "sms",
-                    "email": "test@test.com"
+                    "externalId": "12312",
+                    "securityFactor": "123456"
                   }
                 }
               }
@@ -1567,11 +1577,20 @@
                 "examples": {
                   "default": {
                     "value": {
-                      "referenceId": "0123456789ABCDEF0123456789ABCDEF",
-                      "status": { "code": 3901, "description": "Request in progress" },
-                      "recipient": { "phoneNumber": "11234567890" },
-                      "method": "sms",
-                      "state": "CREATED"
+                      "status": true,
+                      "data": {
+                        "mobileAppToken": "a1378b455f3048059a7be9df6a9da3aa",
+                        "recipient": {
+                          "phoneNumber": "436501234567"
+                        },
+                        "referenceId": "366691874BD00250933424F72F7C50CB",
+                        "state": "CREATED",
+                        "status": {
+                          "code": 3901,
+                          "description": "Request in progress",
+                          "updatedOn": "2025-10-02T10:04:58.505000Z"
+                        }
+                      }
                     }
                   }
                 }
@@ -1587,10 +1606,13 @@
         }
       }
     },
-    "/phone-service/verificationMatch/{referenceId}": {
+    "/phone-service/verification/{referenceId}": {
       "patch": {
         "summary": "Verification Match",
-        "description": "Validates the one-time passcode (OTP) provided by the end user and updates the state of an active verification process. Used to finalize verification by checking if the user-entered OTP matches the one originally sent.",
+        "description": "Validate the one-time passcode (OTP) provided by the end user and update the state of an active verification process. If the OTP is correct, the process is marked as VERIFIED; otherwise an error is returned and the process may remain ONGOING, FAILED, or another relevant state.",
+        "security": [
+          { "BearerAuth": [] }
+        ],
         "parameters": [
           {
             "name": "referenceId",
@@ -1608,8 +1630,7 @@
               "examples": {
                 "finalize": {
                   "value": {
-                    "action": "finalize",
-                    "securityFactor": "123456"
+                    "securityFactor": "12345"
                   }
                 }
               }
@@ -1618,14 +1639,20 @@
         },
         "responses": {
           "200": {
-            "description": "Successfully validated verification code.",
+            "description": "Verification result.",
             "content": {
               "application/json": {
                 "schema": { "$ref": "#/components/schemas/VerificationMatchResponse" },
                 "examples": {
                   "verified": {
                     "value": {
-                      "status": { "code": 3900, "description": "Verified" }
+                      "status": true,
+                      "data": {
+                        "status": {
+                          "code": 3900,
+                          "description": "Verified"
+                        }
+                      }
                     }
                   }
                 }
@@ -4285,23 +4312,26 @@
           "phoneNumber": {
             "type": "string",
             "description": "Recipient's phone number in international format, no spaces or special characters. Required if method = sms.",
-            "example": "14155550123"
+            "example": "436501234567",
+            "pattern": "^[0-9]+$",
+            "minLength": 6,
+            "maxLength": 20
           },
           "email": {
             "type": "string",
             "format": "email",
             "description": "Recipient's email address. Required if method = email.",
-            "example": "user@example.com"
+            "example": "test@test.com"
           },
           "method": {
             "type": "string",
-            "description": "Delivery method to use.",
+            "description": "The delivery method to use.",
             "enum": ["sms", "email"],
-            "example": "sms"
+            "example": "email"
           },
           "securityFactor": {
             "type": "string",
-            "description": "Custom numeric OTP (3–10 digits). If omitted, a 6-digit OTP is auto-generated.",
+            "description": "A custom numeric OTP (3–10 digits). If omitted, a 6-digit OTP is auto-generated.",
             "pattern": "^[0-9]{3,10}$",
             "example": "123456"
           },
@@ -4309,10 +4339,11 @@
             "type": "string",
             "description": "Customer-defined transaction ID. Max length: 100 characters.",
             "maxLength": 100,
-            "example": "verifyRequest123"
+            "example": "12312"
           },
           "messageTemplate": {
             "type": "object",
+            "description": "Optional template details for this verification.",
             "properties": {
               "name": {
                 "type": "string",
@@ -4322,100 +4353,161 @@
               },
               "verificationTemplate": {
                 "type": "string",
-                "description": "Template content used for this verification. Use {{code}} placeholder.",
+                "description": "Template content to be used for this verification.",
                 "example": "Your code is {{code}}. It expires in 5 minutes."
               }
-            }
+            },
+            "additionalProperties": false
           },
           "voiceLang": {
             "type": "string",
             "description": "Language code for OTP delivery (e.g., 'en-US'). Defaults to English if not provided.",
             "example": "en-US"
           }
-        }
+        },
+        "allOf": [
+          {
+            "oneOf": [
+              {
+                "properties": { "method": { "const": "sms" } },
+                "required": ["phoneNumber"]
+              },
+              {
+                "properties": { "method": { "const": "email" } },
+                "required": ["email"]
+              }
+            ]
+          }
+        ],
+        "additionalProperties": false
       },
       "VerificationResponse": {
         "type": "object",
-        "required": ["referenceId", "status", "method", "state"],
+        "required": ["status", "data"],
         "properties": {
-          "referenceId": {
-            "type": "string",
-            "description": "Unique 32-character hex string that identifies the verification process.",
-            "example": "0123456789ABCDEF0123456789ABCDEF"
-          },
           "status": {
+            "type": "boolean",
+            "description": "Indicates whether the request was successful (true/false).",
+            "example": true
+          },
+          "data": {
             "type": "object",
-            "required": ["code", "description"],
+            "required": ["recipient", "referenceId", "state", "status"],
             "properties": {
-              "code": {
-                "type": "integer",
-                "description": "Numeric code representing the transaction status.",
-                "example": 3901
-              },
-              "description": {
+              "mobileAppToken": {
                 "type": "string",
-                "description": "Human-readable description of the transaction status.",
-                "example": "Request in progress"
+                "description": "Token used to authenticate the mobile app session.",
+                "example": "a1378b455f3048059a7be9df6a9da3aa",
+                "minLength": 16,
+                "maxLength": 128
+              },
+              "recipient": {
+                "type": "object",
+                "required": ["phoneNumber"],
+                "properties": {
+                  "phoneNumber": {
+                    "type": "string",
+                    "description": "Recipient's phone number in international format.",
+                    "example": "436501234567"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "referenceId": {
+                "type": "string",
+                "description": "Unique 32-character hex string that identifies the verification process.",
+                "example": "366691874BD00250933424F72F7C50CB",
+                "pattern": "^[A-F0-9]{32}$"
+              },
+              "state": {
+                "type": "string",
+                "description": "Current state of the verification process.",
+                "enum": ["CREATED", "ONGOING", "REJECTED", "FAILED", "VERIFIED", "CANCELED"],
+                "example": "CREATED"
+              },
+              "status": {
+                "type": "object",
+                "required": ["code", "description", "updatedOn"],
+                "properties": {
+                  "code": {
+                    "type": "integer",
+                    "description": "Numeric code representing the transaction status.",
+                    "example": 3901
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "Human-readable description of the transaction status.",
+                    "example": "Request in progress"
+                  },
+                  "updatedOn": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "ISO 8601 timestamp indicating when the status was last updated.",
+                    "example": "2025-10-02T10:04:58.505000Z"
+                  }
+                },
+                "additionalProperties": false
               }
-            }
-          },
-          "recipient": {
-            "type": "object",
-            "properties": {
-              "phoneNumber": { "type": "string", "description": "Recipient's phone number in international format.", "example": "11234567890" },
-              "email": { "type": "string", "format": "email", "description": "Recipient's email address.", "example": "user@example.com" }
-            }
-          },
-          "state": {
-            "type": "string",
-            "description": "Current state of the verification process.",
-            "enum": ["CREATED", "ONGOING", "REJECTED", "FAILED", "VERIFIED", "CANCELED"],
-            "example": "CREATED"
-          },
-          "method": {
-            "type": "string",
-            "enum": ["sms", "email"],
-            "description": "The verification method used.",
-            "example": "sms"
+            },
+            "additionalProperties": false
           }
-        }
+        },
+        "additionalProperties": false
       },
       "VerificationMatchRequest": {
         "type": "object",
-        "required": ["action", "securityFactor"],
+        "required": ["securityFactor"],
         "properties": {
-          "action": {
-            "type": "string",
-            "description": "Specifies how to change the verification state.",
-            "enum": ["finalize"],
-            "example": "finalize"
-          },
           "securityFactor": {
             "type": "string",
-            "description": "OTP provided by the end user (3–10 digits).",
-            "pattern": "^[0-9]{3,10}$",
-            "example": "123456"
+            "description": "The OTP provided by the end user (3–10 digits).",
+            "pattern": "^\\d{3,10}$",
+            "example": "12345"
           }
-        }
+        },
+        "additionalProperties": false
       },
       "VerificationMatchResponse": {
         "type": "object",
-        "required": ["status"],
+        "required": ["status", "data"],
         "properties": {
           "status": {
+            "type": "boolean",
+            "description": "Indicates whether the request was successful (true or false).",
+            "example": true
+          },
+          "data": {
             "type": "object",
-            "required": ["code", "description"],
+            "required": ["status"],
             "properties": {
-              "code": {
-                "type": "integer",
-                "description": "Numeric code indicating the result of the verification match.",
-                "example": 3900
-              },
-              "description": {
-                "type": "string",
-                "description": "Human-readable outcome of the verification match.",
-                "example": "Verified"
+              "status": {
+                "type": "object",
+                "required": ["code", "description"],
+                "properties": {
+                  "code": {
+                    "type": "integer",
+                    "description": "Numeric code representing the verification result.",
+                    "example": 3900
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "Human-readable description of the verification result.",
+                    "example": "Verified"
+                  }
+                },
+                "additionalProperties": false
               }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false,
+        "example": {
+          "status": true,
+          "data": {
+            "status": {
+              "code": 3900,
+              "description": "Verified"
             }
           }
         }
