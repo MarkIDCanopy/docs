@@ -47,8 +47,6 @@ The handshake request initiates a customer journey. Please note that:
   },
   "steps": [
     {
-      "interface": "Umbrella Canopy",
-      "step": "Self KYC",
       "configuration": {
         "documentVerification": {
           "extraForensics": false,
@@ -134,10 +132,8 @@ The handshake request initiates a customer journey. Please note that:
 | `passThroughData`                                                                             | object        | No       | Additional data relevant to the entire journey (e.g., user ID, reference number).            |
 | `passThroughData.userId`                                                                      | string        | No       | Your internal user reference (example key).                                                  |
 | `steps`                                                                                       | array         | No       | Define/override the journey by listing all steps in order. If you use a pre-defined process from us, omit this; with manual config you must provide the full sequence (e.g., Self KYC, Address Verification, AML, SMS, IDV Protocol, IBAN Check).|
-| `steps[].interface`                                                                           | string        | No       | Represents a high-level verification journey category (e.g., KYC, Identity Proofing).                                |
-| `steps[].step`                                                                                | string        | Yes      | Specific verification step within the journey (e.g., "Self KYC," "Address Verification").                             |
 | `steps[].configuration`                                                                       | object        | No       | Step-specific configuration. Each key is a verification module (e.g., documentVerification, SanctionPepAdverseMedia) and its value is that module’s options object.  |
-| `configuration.documentVerification`                                                          | object        | No       | (When `step = "Self KYC"`) Document capture/verification settings.                           |
+| `configuration.documentVerification`                                                          | object        | No       | Document capture/verification settings.                           |
 | `documentVerification.extraForensics`                                                         | boolean       | No       | Enable extra forensic checks.                                                                |
 | `documentVerification.biometricMatching`                                                      | boolean       | No       | Enable face ↔ document photo matching.                                                       |
 | `documentVerification.liveness`                                                               | boolean       | No       | Enable liveness checks during selfie capture.                                                |
