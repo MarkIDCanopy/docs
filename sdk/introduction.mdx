@@ -7,8 +7,12 @@ tag: "UPCOMING"
 
 # IdCanopy SDK
 
-The **IdCanopy SDK** wraps the platform APIs and hosted UI into easy building blocks so you can ship KYC/KYB flows fast.  
-It handles **authentication**, **journey creation (handshake)**, **UI initialization**, **events**, and **webhooks**.
+The **IdCanopy SDK** is not a traditional installable library.  
+Instead, it is a **lightweight API + Hosted UI flow** that lets you embed fully managed KYC/KYB journeys into your application with minimal effort.
+
+You make a **handshake API call**, receive a **ui_handle URL**, and then **iframe or redirect** your user into IdCanopy’s hosted verification interface.
+
+No package installation, no build-time dependencies — just HTTPS calls and a URL.
 
 ### Integration in a nutshell
 1. **Authenticate**:
@@ -32,19 +36,7 @@ It handles **authentication**, **journey creation (handshake)**, **UI initializa
 - **Webhook URL** reachable over HTTPS **+ Webhook Secret** (for HMAC verification)
 </Note>
 
-## Install
-
-<Tabs>
-  <Tab title="Node (npm)">
-  
-```bash
-npm install idcanopy-sdk
-```
-</Tab> <Tab title="Python (pip)">
-```python
-pip install idcanopy-sdk
-```
-</Tab> </Tabs>
+---
 
 ## Basics
 - **Error Handling:** The IdCanopy API responds with clear error codes and messages in case of any issues during the journey. You can integrate these error responses into your application logic for appropriate user handling.
@@ -60,6 +52,35 @@ IdCanopy supports secure communication through industry-standard authentication 
 - **JWT (JSON Web Token):** A self-contained token containing encoded information for user verification.
 - **OAuth2:** An authorization framework enabling secure delegation of user authentication.
 - **Basic Authentication**
+
+### Handshake (Journey Creation)  
+Defines the entire verification flow:
+- steps and modules (KYC, AML, Phone Ident, etc.)
+- configuration options
+- validation data (name, DOB, address, IBAN…)
+- optional developer mode (`magicflow`)
+- optional pass-through metadata
+
+The handshake returns a `ui_handle` that your frontend loads.
+
+### Hosted Verification UI  
+The UI at the `ui_handle` link handles:
+- document verification  
+- face match & liveness  
+- AML screening  
+- phone identity checks  
+- and all configured steps  
+
+This allows you to ship verification without building UI components yourself.
+
+### Webhooks  
+When the journey finishes, IdCanopy sends a detailed structured payload to your webhook:
+- identity data
+- authoritative document data
+- fraud signals
+- proof-of-work artifacts
+- full audit trail  
+- your original pass-through metadata
 
 ### Customer Journeys
 Customer journeys represent multi-step verification processes a user undergoes. Each journey can encompass various steps like photo identification (KYC), address verification, and sanction checks.

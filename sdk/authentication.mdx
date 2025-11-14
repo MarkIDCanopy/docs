@@ -6,38 +6,48 @@ tag: "UPCOMING"
 ---
 
 # SDK Authentication
-The SDK manages API tokens for you. Provide credentials once during initialization; the SDK requests and attaches the bearer token to all calls. It also refreshes the token when needed.
+Your backend sends your `Api-Key` and `Customer-Id` to the `/auth` endpoint and receives a **Bearer token**.  
+You then attach this token to all IdCanopy API calls (e.g., Handshake).
 
 ## Configure
 <Tabs>
   <Tab title="Node (JS/TS)">
-  
+
 ```ts
-import { IdCanopy } from "idcanopy-sdk";
+// Obtain a token from the IdCanopy Auth endpoint
+const authResponse = await fetch(
+  "https://api-umbrella.io/api/services/auth",
+  {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      "Api-Key": process.env.IDCANOPY_API_KEY!,
+      "Customer-Id": process.env.IDCANOPY_CUSTOMER_ID!
+    }
+  }
+);
 
-const canopy = new IdCanopy({
-  apiKey: process.env.IDCANOPY_API_KEY!,
-  customerId: process.env.IDCANOPY_CUSTOMER_ID!,
-  environment: "sandbox" // or "production"
+if (!authResponse.ok) {
+  throw new Error("Authentication failed");
+}
+
+const { access_token, expires_in } = await authResponse.json();
+
+// Use this bearer token for all further API calls
+const token = access_token;
+
+// Example: call the Handshake endpoint
+await fetch("https://api-umbrella.io/api/services/journey/handshake", {
+  method: "POST",
+  headers: {
+    "Authorization": `Bearer ${token}`,
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify(handshakeDto)
 });
-
-// Optional: prefetch on startup
-await canopy.auth.getToken();
 ```
-</Tab> <Tab title="Python">
-```python
-from idcanopy_sdk import IdCanopy
 
-canopy = IdCanopy(
-    api_key=os.environ["IDCANOPY_API_KEY"],
-    customer_id=os.environ["IDCANOPY_CUSTOMER_ID"],
-    environment="sandbox"  # or "production"
-)
-
-// Optional Prefetch on startup
-canopy.auth.get_token()
-```
-</Tab> </Tabs>
+  </Tab>
+</Tabs>
 
 <Note> Under the hood, the SDK calls the same `/auth` endpoint documented in [API Authentication](/authentication) and caches the token until it expires. </Note>
-
