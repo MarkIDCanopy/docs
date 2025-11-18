@@ -63,6 +63,11 @@
               "sdk/webhooks",
               "sdk/ui_widgets/hosted_ui"
             ]
+          },
+          {
+            "group": "Examples",
+            "pages": [
+            ]
           }
         ]
       },
