@@ -60,15 +60,8 @@
               "sdk/introduction",
               "sdk/authentication",
               "sdk/handshake",
-              "sdk/webhooks"
-            ]
-          },
-          {
-            "group": "Services",
-            "pages": [
-              "sdk/ui_widgets/hosted_ui",
-              "sdk/ui_widgets/document",
-              "sdk/ui_widgets/facematch"
+              "sdk/webhooks",
+              "sdk/ui_widgets/hosted_ui"
             ]
           }
         ]
