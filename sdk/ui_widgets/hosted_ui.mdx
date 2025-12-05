@@ -5,55 +5,80 @@ icon: 'code'
 ---
 
 # Hosted UI
-Use the `uiHandle` from the **Handshake** to run the full verification flow via **iframe** or **redirect**.
+Use the `uiHandle` returned from the **Handshake (Create Journey)** call to start the verification journey.  
+The hosted UI can be launched either inside an **iframe** or via **full-page redirect**.
 
-## Frontend initialization
+## Frontend Initialization
 
 ### Iframe
-- Create an `<iframe>` and set `src` to the `uiHandle`.
-- Restrict embedding to your domains (via CSP `frame-ancestors` or `X-Frame-Options`).
+Create an `<iframe>` element and set its `src` to the handshake `uiHandle`.
+
+Restrict where the iframe may be embedded (recommended): configure  
+`Content-Security-Policy: frame-ancestors` or use `X-Frame-Options`.
+
+```ts
+// After the Handshake → you have { uiHandle }
+
+const iframe = document.getElementById("idcanopyFrame");
+iframe.src = uiHandle;
+```
 
 ### Redirect
-- `window.location.href = uiHandle`
-- Optionally serve a short-lived `302` from your backend to reduce URL exposure.
+Navigate the user directly to the hosted UI:
 
-### Events
-If you subscribe to frontend events using your own wrapper, you may emit:
-- `journey.started`
-- `journey.step.completed`
-- `journey.completed`
-- `journey.fraud.alert`
-- `ui.closed`
-- `ui.timeout`
+```ts
+window.location.href = uiHandle;
+```
 
-(These are optional and **not provided by a packaged SDK**.)
+Optionally, your backend may issue a short-lived `302` redirect to reduce URL exposure in client logs.
 
-### Example
+---
+
+## Frontend Events (Optional)
+If you build your own wrapper around the iframe or redirect flow, you may emit custom events such as:
+
+- journeyStarted
+- journeyStepCompleted
+- journeyCompleted
+- journeyFraudAlert
+- uiClosed
+- uiTimeout
+
+These events are **not emitted by the SDK**; they are optional and for your own analytics/telemetry.
+
+---
+
+## Example Integration
+
 ```ts
 // After the Handshake → you have { uiHandle }
 
 // Option A: iframe
-const iframe = document.getElementById("idcanopy-frame");
+const iframe = document.getElementById("idcanopyFrame");
 iframe.src = uiHandle;
 
 // Option B: redirect
 // window.location.href = uiHandle;
 
-// Optional: track user activity
+// Optional: simple activity tracker
 let lastActiveTime = Date.now();
-const bump = () => (lastActiveTime = Date.now());
-document.addEventListener("mousemove", bump);
-document.addEventListener("keypress", bump);
+const updateActivity = () => (lastActiveTime = Date.now());
 
+document.addEventListener("mousemove", updateActivity);
+document.addEventListener("keypress", updateActivity);
+
+// Warn user before navigating away from the verification flow
 window.onbeforeunload = (e) => {
-  const msg = "Are you sure you want to leave the verification process?";
-  e.returnValue = msg;
-  return msg;
+  const message = "Are you sure you want to leave the verification process?";
+  e.returnValue = message;
+  return message;
 };
 
 // Optional: inactivity warning
 setInterval(() => {
-  if (Date.now() - lastActiveTime > 5 * 60 * 1000) {
+  const fiveMinutes = 5 * 60 * 1000;
+  if (Date.now() - lastActiveTime > fiveMinutes) {
     console.warn("User inactive for more than 5 minutes");
   }
 }, 60 * 1000);
+```

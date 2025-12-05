@@ -5,7 +5,7 @@ icon: 'webhook'
 ---
 
 # Webhooks
-IdCanopy sends real-time updates about customer journeys to your webhook endpoint. This page covers **how delivery works** (configuration, security, retries) and the **payload schema** you’ll receive.
+IdCanopy sends real-time updates about customer journeys to your webhook endpoint. This page covers **how delivery works** (configuration, security, retries) and the **payload schema** you'll receive.
 
 ## Configure
 - **Webhook URL** — Your HTTPS endpoint that accepts `POST`.
@@ -20,7 +20,7 @@ IdCanopy sends real-time updates about customer journeys to your webhook endpoin
 
 ## Delivery & retries
 
-If we don’t receive 2xx (or your endpoint times out), we retry for ~24 hours:
+If we don't receive 2xx (or your endpoint times out), we retry for ~24 hours:
 - Up to **6** additional attempts
 - Increasing backoff (≈**10s**, **100s**, **1000s**, **10000s**)
 
@@ -71,7 +71,7 @@ http_response_code(200);
   },
   "journeySummary": {
     "journeyStats": {
-      "completedSteps": "2",
+      "completedSteps": 2,
       "startTime": "2022-02-14T10:04:32+01:00",
       "endTime": "2022-02-14T10:06:38+01:00"
     },
@@ -81,7 +81,7 @@ http_response_code(200);
       "nameStructure": { "firstName": "John", "lastName": "Doe" },
       "gender": "M",
       "nationality": "AT",
-      "dob": "1981/12/24",
+      "DOB": "1981/12/24",
       "mobileNumber": "+4312345678"
     },
     "authoritativeData": [
@@ -96,7 +96,7 @@ http_response_code(200);
     ],
     "proofOfWork": [
       { "type": "image", "title": "selfie", "contentOfProof": "https://...", "timestampOfProof": "2024-06-13T16:49:00+02:00", "workstepVerificationSource": "camera" },
-      { "type": "image", "title": "document_front", "contentOfProof": "https://...", "timestampOfProof": "2024-06-13T16:49:00+02:00", "workstepVerificationSource": "camera" }
+      { "type": "image", "title": "documentFront", "contentOfProof": "https://...", "timestampOfProof": "2024-06-13T16:49:00+02:00", "workstepVerificationSource": "camera" }
     ],
     "steps": [ /* ... */ ],
     "fraudAlerts": [ /* ... */ ],
@@ -123,7 +123,7 @@ http_response_code(200);
 | `generalTransactionData.success`                          | string              | Business outcome in the summary.                                                 |
 | `journeySummary`                                          | object              | Aggregated results and artifacts for the journey.                                |
 | `journeySummary.journeyStats`                             | object              | High-level timings and counts.                                                   |
-| `journeyStats.completedSteps`                             | integer \*          | Number of completed steps (*sample shows string `"2"`; recommended as integer*). |
+| `journeyStats.completedSteps`                             | integer             | Number of completed steps.                                                       |
 | `journeyStats.startTime`                                  | string (ISO 8601)   | Journey start time.                                                              |
 | `journeyStats.endTime`                                    | string (ISO 8601)   | Journey end time.                                                                |
 | `journeySummary.identitySubject`                          | object              | Subject details (person/company/government).                                     |
@@ -134,10 +134,10 @@ http_response_code(200);
 | `nameStructure.lastName`                                  | string              | Family name.                                                                     |
 | `identitySubject.gender`                                  | string              | `M`, `F`, `D` (as applicable).                                                   |
 | `identitySubject.nationality`                             | string              | ISO 3166-1 alpha-2 nationality (e.g., `AT`).                                     |
-| `identitySubject.dob`                                     | string (date)       | Date of birth (format `YYYY/MM/DD`).                      |
+| `identitySubject.DOB`                                     | string (date)       | Date of birth (format `YYYY/MM/DD`).                                             |
 | `identitySubject.mobileNumber`                            | string              | Phone number (e.g., E.164 format).                                               |
-| `journeySummary.authoritativeData`                        | array       | Identity document data extracted/verified.                                       |
-| `authoritativeData[].type`                                | string              | Document type (e.g., `drivers_license`, `passport`).                             |
+| `journeySummary.authoritativeData`                        | array               | Identity document data extracted/verified.                                       |
+| `authoritativeData[].type`                                | string              | Document type (e.g., `driversLicense`, `passport`, `nationalId`).                |
 | `authoritativeData[].idNumber`                            | string              | Document number.                                                                 |
 | `authoritativeData[].issuingDate`                         | string (date)       | Issue date (e.g., `YYYY/MM/DD`).                                                 |
 | `authoritativeData[].expirationDate`                      | string (date)       | Expiry date (e.g., `YYYY/MM/DD`).                                                |
@@ -145,8 +145,9 @@ http_response_code(200);
 | `authoritativeData[].issuingCountry`                      | string              | ISO country code of issuance (e.g., `AT`).                                       |
 | `journeySummary.proofOfWork`                              | array               | Captured artifacts (images, excerpts, etc.).                                     |
 | `proofOfWork[].type`                                      | string              | Artifact type (e.g., `image`).                                                   |
-| `proofOfWork[].title`                                     | string              | Artifact label (e.g., `selfie`, `documentFront`).                               |
+| `proofOfWork[].title`                                     | string              | Artifact label (e.g., `selfie`, `documentFront`, `documentBack`).                |
 | `proofOfWork[].contentOfProof`                            | string (URL/handle) | Secure link or opaque handle to the artifact.                                    |
+| `proofOfWork[].timestampOfProof`                          | string (ISO 8601)   | Timestamp when artifact was captured.                                            |
 | `proofOfWork[].workstepVerificationSource`                | string              | Source (e.g., `camera`).                                                         |
 | `journeySummary.steps`                                    | array               | Per-step breakdown (work status, scores, data).                                  |
 | `journeySummary.fraudAlerts`                              | array               | Fraud events, details, evidence, and scores.                                     |
@@ -157,7 +158,7 @@ http_response_code(200);
 
 <Note>
 **Tips**
-- Treat "transactionId" and "artifact" links as **sensitive**; avoid logging them on the client.
+- Treat `transactionId` and artifact links as **sensitive**; avoid logging them on the client.
 - Consider adding your own idempotency handling on receipt to avoid double-processing retries.
 - If you consume payloads in multiple systems, keep a small **payload changelog** in this page to track field additions.
 </Note>

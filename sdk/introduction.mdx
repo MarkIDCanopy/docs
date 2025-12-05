@@ -9,7 +9,7 @@ icon: 'info'
 The **IdCanopy SDK** is not a traditional installable library.  
 Instead, it is a **lightweight API + Hosted UI flow** that lets you embed fully managed KYC/KYB journeys into your application with minimal effort.
 
-You make a **handshake API call**, receive a **ui_handle URL**, and then **iframe or redirect** your user into IdCanopy’s hosted verification interface.
+You make a **handshake API call**, receive a **uiHandle URL**, and then **iframe or redirect** your user into IdCanopy's hosted verification interface.
 
 No package installation, no build-time dependencies — just HTTPS calls and a URL.
 
@@ -17,7 +17,7 @@ No package installation, no build-time dependencies — just HTTPS calls and a U
 1. **Authenticate**:
    - SDK obtains and manages the bearer token for you.
 2. **Handshake**: 
-   - create a journey and receive "transactionId", "uiHandle".
+   - create a journey and receive `transactionId` and `uiHandle`.
 3. **Run the flow**: 
    - either embed the Hosted UI (iframe/redirect) or mount UI modules.
 4. **Listen to events & webhooks**: 
@@ -54,16 +54,16 @@ IdCanopy supports secure communication through industry-standard authentication 
 
 ### Handshake (Journey Creation)  
 Defines the entire verification flow:
-- steps and modules (KYC, AML, Phone Ident, etc.)
-- configuration options
-- validation data (name, DOB, address, IBAN…)
-- optional developer mode (`magicflow`)
-- optional pass-through metadata
+- steps and modules (documentVerification, amlScreening, mobileIdent, idvProtocol, etc.)
+- configuration options for each step
+- validationData (fullName, DOB, address, iban, phoneNumber, etc.)
+- optional developer mode (`magicFlow`)
+- optional pass-through metadata (`passThroughData`)
 
-The handshake returns a `ui_handle` that your frontend loads.
+The handshake returns a `uiHandle` that your frontend loads.
 
 ### Hosted Verification UI  
-The UI at the `ui_handle` link handles:
+The UI at the `uiHandle` link handles:
 - document verification  
 - face match & liveness  
 - AML screening  
@@ -79,10 +79,10 @@ When the journey finishes, IdCanopy sends a detailed structured payload to your 
 - fraud signals
 - proof-of-work artifacts
 - full audit trail  
-- your original pass-through metadata
+- your original `passThroughData` metadata
 
 ### Customer Journeys
-Customer journeys represent multi-step verification processes a user undergoes. Each journey can encompass various steps like photo identification (KYC), address verification, and sanction checks.
+Customer journeys represent multi-step verification processes a user undergoes. Each journey can encompass various steps like documentVerification (KYC), address verification, and sanction checks.
 
 **Benefits:**
 - **Streamlined user experience:** users interact with a single experience for the entire verification process.
