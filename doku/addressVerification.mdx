@@ -27,15 +27,21 @@ To access the Address Verification API, authentication is required. A **Bearer T
 
 Authorization: Bearer YOUR_ACCESS_TOKEN
 
-## API Base URL
+## API Base URLs
 
-https://api-umbrella.io/api/services
+Production:   https://api-umbrella.io/api/services
+
+Sandbox:      https://sandbox-umbrella-api.azurewebsites.net/api/services
 
 ## 1. Verify Address
 
-### Endpoint
+### Endpoints
 
-**POST** `/address/verify`
+Production:  **POST** `/address/verify`
+
+Sandbox:     **POST** `/address/verify`
+
+For verification test cases, the base URL is the same as Sandbox but the endpoint is **POST** `/address/test-cases`
 
 ### Description
 
@@ -166,21 +172,23 @@ Verifies if an individual can be matched to a given address, including validatio
 }
 ```
 
-## Verification Test Cases
+## Verification Test Cases 
+
+Please refer above for the Base URL and endpoints to use, to try these test cases.
 
 ### Input Table
 
-| Test Case | Description          | Street                | Number | ZIP   | City          | Country | Full Name       | DOB        |
-| --------- | -------------------- | --------------------- | ------ | ----- | ------------- | ------- | --------------- | ---------- |
-| 1         | Full match           | Kampgasse             | 9      | 3492  | Etsdorf       | AT      | Joe Cardholder  | 1970/12/01 |
-| 2         | Corrected full match | Billrothstr.          | 39/16  | 1190  | Wien          | AT      | Wilma Wohndtort | 1998/03/05 |
-| 3         | Street number match  | Billrothstraße        | 39     | 1190  | Wien          | AT      | Wilma Wohndtort | 1998/03/05 |
-| 4         | Street level match   | Billrothstraße        | 3/16   | 1190  | Wien          | AT      | Wilma Wohndtort | 1998/03/05 |
-| 5         | Postcode match       | Döblinger Hauptstraße | 4/1    | 1190  | Wien          | AT      | Wilma Wohndtort | 1998/03/05 |
-| 6         | No match             | Edlinger Hauptstraße  | 12/7   | 12345 | Berlin        | DE      | Hans Dampf      | 1998/03/05 |
-| 7         | Identity not found   | Seegasse              | 1      | 1000  | Lachen/Zürich | CH      | Hubert Spion    | 1901/01/01 |
-| 8         | ZIP corrected        | Kampgasse             | 9      | 3496  | Etsdorf       | AT      | Joe Cardholder  | 1970/12/01 |
-| 9         | Household match      | Kampgasse             | 9      | 3492  | Etsdorf       | AT      | Jane Cardholder | 1970/12/01 |
+| Test Case | Description          | Street                | Number | ZIP   | City          | Country | First Name | Last Name  | DOB        |
+| --------- | -------------------- | --------------------- | ------ | ----- | ------------- | ------- | ---------- | ---------- | ---------- |
+| 1         | Full match           | Kampgasse             | 9      | 3492  | Etsdorf       | AT      | Joe        | Cardholder | 1970-12-01 |
+| 2         | Corrected full match | Billrothstr.          | 39/16  | 1190  | Wien          | AT      | Wilma      | Wohndtort  | 1998-03-05 |
+| 3         | Street number match  | Billrothstraße        | 39     | 1190  | Wien          | AT      | Wilma      | Wohndtort  | 1998-03-05 |
+| 4         | Street level match   | Billrothstraße        | 3/16   | 1190  | Wien          | AT      | Wilma      | Wohndtort  | 1998-03-05 |
+| 5         | Postcode match       | Döblinger Hauptstraße | 4/1    | 1190  | Wien          | AT      | Wilma      | Wohndtort  | 1998-03-05 |
+| 6         | No match             | Edlinger Hauptstraße  | 12/7   | 12345 | Berlin        | DE      | Hans       | Dampf      | 1998-03-05 |
+| 7         | Identity not found   | Seegasse              | 1      | 1000  | Lachen/Zürich | CH      | Hubert     | Spion      | 1901-01-01 |
+| 8         | ZIP corrected        | Kampgasse             | 9      | 3496  | Etsdorf       | AT      | Joe        | Cardholder | 1970-12-01 |
+| 9         | Household match      | Kampgasse             | 9      | 3492  | Etsdorf       | AT      | Jane       | Cardholder | 1970-12-01 |
 
 ### Output Table
 
