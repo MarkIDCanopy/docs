@@ -6,12 +6,16 @@ icon: 'map'
 import Auth from '/snippets/auth.mdx';
 
 # Address Verification API - Detailed Documentation
-
 The Address Verification API is designed to support the management of address data by providing comprehensive address verification, validation, and cleansing functionalities.
----
+
+### API Playground:
+<Tabs>
+  <Tab title="/address/verify">
+    You can try the address verify endpoint [here](/api-reference/endpoint/addressVerification_address_verify).
+  </Tab>
+</Tabs>
 
 ## Endpoints Overview
-
 1. **Get Country Template**: Retrieve required fields for address verification based on the country.
 2. **Validate Address**: Check if a given address exists and normalize it if necessary.
 3. **Verify Address**: Validate whether an individual can be matched to an address, including a match score, verification details, and handling corrections.
@@ -29,7 +33,8 @@ Production:  **POST** `/address/verify`
 
 Sandbox:     **POST** `/address/verify`
 
-For verification test cases, the base URL is the same as Sandbox but the endpoint is **POST** `/address/test-cases`
+For verification test cases, the base URL is the same as Sandbox but the endpoint is 
+**POST** `/address/test-cases`
 
 ### Description
 
@@ -195,17 +200,14 @@ Please refer above for the Base URL and endpoints to use, to try these test case
 ## 2. Get Country Template _(Upcoming Service)_
 
 ### Description
-
 Retrieve the required fields for address verification for a given country. Use this endpoint to ensure all mandatory fields are provided when performing address verification.
 
 ## 3. Validate Address _(Upcoming Service)_
 
 ### Description
-
 Validates if a given address exists. If corrections are necessary, the response includes both the original and corrected versions of the address.
 
 ## 4. Cleanse Address _(Upcoming Service)_
 
 ### Description
-
 Normalizes and formats an address to adhere to standard address conventions.
