@@ -6,245 +6,444 @@ icon: 'user-plus'
 import Auth from '/snippets/auth.mdx';
 
 # AML Screening API - Detailed Documentation
-The AML Screening API provides functionality for screening individuals and entities against sanctions, politically exposed persons (PEP), and criminal watchlists. It also supports ongoing monitoring of registered profiles.
+
+The AML Screening API provides functionality for screening individuals against sanctions, politically exposed persons (PEP), and other risk lists. A new underlying provider is used for the screening logic; the request and response format for **Check Individual** has been updated accordingly.
 
 ### API Playground:
 <Tabs>
   <Tab title="/aml/checkIndividual">
     You can try the check individual endpoint [here](/api-reference/endpoint/aml_checkIndividual).
   </Tab>
-    <Tab title="/aml/ongoingMonitoring/registerIndividual">
-    You can try the register individual endpoint [here](/api-reference/endpoint/aml_ongoingMonitoring_registerIndividual).
+  <Tab title="/aml/ongoingMonitoring/registerIndividual">
+    The register individual endpoint is currently being updated. Documentation for the new provider will follow.
   </Tab>
   <Tab title="/aml/ongoingMonitoring/registerEntity">
-    You can try the register entity endpoint [here](/api-reference/endpoint/aml_ongoingMonitoring_registerEntity).
+    The register entity endpoint is currently being updated. Documentation for the new provider will follow.
   </Tab>
   <Tab title="/aml/ongoingMonitoring/removeSearchProfile">
-    You can try the remove search profile endpoint [here](/api-reference/endpoint/aml_ongoingMonitoring_removeSearchProfile).
+    The remove search profile endpoint is currently being updated. Documentation for the new provider will follow.
   </Tab>
 </Tabs>
 
 ### Endpoints Overview
-1. **Check Individual**: Screen an individual against AML databases.
-2. **Ongoing Monitoring**:
-   - Register Individual: Add an individual to the ongoing monitoring system.
-   - Register Entity: Add an entity to the ongoing monitoring system.
-   - Remove Search Profile: Remove a profile from the ongoing monitoring system.
+1. **Check Individual**: Screen an individual against AML datasets (PEP, sanctions, and related lists).
+2. **Ongoing Monitoring** (coming soon for the new provider):
+   - Register Individual
+   - Register Entity
+   - Remove Search Profile
 
 ---
+
 <Auth/>
+
 ---
 
 ## 1. Check Individual
+
 ### Endpoint
+
 **POST** `/aml/checkIndividual`
 
 ### Description
-Checks an individual in the AML system to see if there are any matches for the provided details.
+
+Checks an individual against AML datasets (e.g. PEP and sanctions) using the new provider’s search service.  
+You supply a name, optional date of birth, and search constraints (datasets, countries, threshold, matching mode) and receive a detailed profile for the best match, when found.
 
 ### Required Headers
-| Header         | Value |
-|---------------|----------------------------|
-| Content-Type  | `application/json` |
+
+| Header         | Value                |
+|---------------|----------------------|
+| Content-Type  | `application/json`   |
 | Authorization | `Bearer yourAccessToken` |
 
 ### Request Body Parameters
+
 <Accordion title="Request Body Parameters">
-| Field | Type   | Required | Description |
-|-------|--------|----------|-------------|
-| name  | string | Yes      | Search string checked against name fields. |
-| dob   | string | No       | Date of birth in the format `yyyy/mm/dd`. |
+| Field        | Type    | Required | Description |
+|-------------|---------|----------|-------------|
+| `name`      | string  | Yes      | The full name of the person you are searching for. For best results use the format `"lastnames, firstnames middlenames"` (e.g. `"Johnson, Boris"`). Alternatively you can use `"firstnames middlenames lastnames"` if you do not know the precise last name. |
+| `dateOfBirth` | string | No       | Date of birth in `YYYY-MM-DD` or `YYYY` format. Must be after 1900 and not in the future. Example: `"1964-06-19"`. |
+| `countries` | string  | No       | Comma-separated list of two-letter ISO-3166 country codes affecting both address and nationality. Example: `"NL,GB"`. |
+| `datasets`  | string  | Yes      | Comma-separated list specifying which datasets will be searched. See **Datasets** below. Example: `"PEP,SAN"`. |
+| `threshold` | integer | No       | Match score threshold between `75` and `100`. Only profiles with a score equal or above this value are returned. Default is `85`. Example: `90`. |
+| `matching`  | string  | No       | Name-matching algorithm. Either `"fuzzy"` (recommended, default) or `"strict"`. Fuzzy applies extensive fuzzy matching techniques to find likely matches; strict is more conservative and may miss matches if the exact name is not known. |
 </Accordion>
 
-### Response Structure
-<Accordion title="Response Structure">
-| Field           | Type        | Description |
-|-----------------|-------------|-------------|
-| timestamp       | string      | The timestamp of the response (ISO 8601 date time). |
-| totalHits       | number      | The total number of hits for the searched parameters. |
-| foundRecords    | object array| Array with attributes of type `Individual`. |
-| sourceType      | string      | Possible values: `SANCTION`, `PEP`, `CRIMINAL`. |
-| pepType         | string      | Possible values: `POLITICIAN`, `JUDGE`, `BOARD_MEMBER_OF_CENTRAL_BANK`, etc. |
-| sourceId        | string      | The source ID of the list. |
-| entityType      | string      | Enumeration: `INDIVIDUAL`, `UNKNOWN`. |
-| gender          | string      | Enumeration: `FEMALE`, `MALE`, `UNKNOWN`. |
-| name            | string      | Name of the individual. |
-| lastNames       | string array| A list of last names of this individual. |
-| aliasNames      | string array| A list of alias names of this individual. |
-| givenNames      | string array| A list of given names of this individual. |
-| nameRemarks     | string array| A list of name remarks for this individual. |
-| spouse          | string array| A list of spouse names for this individual. |
-| parents         | string array| A list of parent names for this individual. |
-| children        | string array| A list of children names for this individual. |
-| siblings        | string array| A list of sibling names for this individual. |
-| dateOfBirth     | string array| A list of dates of birth for this individual. |
-| dateOfBirthRemarks | string array | A list of date of birth remarks for this individual. |
-| placeOfBirth    | string array| A list of places of birth for this individual. |
-| placeOfBirthRemarks | string array | A list of place of birth remarks for this individual. |
-| address         | string array| A list of addresses for this individual. |
-| addressRemarks  | string array| A list of address remarks for this individual. |
-| citizenship     | string array| A list of citizenships for this individual in ISO 3166-1 alpha-2 format. |
-| citizenshipRemarks | string array | A list of citizenship remarks for this individual. |
-| sanctionDetails | string array| A list of sanction details for this individual. |
-| description     | string array| A list of descriptions for this individual. |
-| occupations     | string array| A list of occupations for this individual. |
-| positions       | string array| A list of positions for this individual. |
-| politicalParties| string array| A list of political parties for this individual. |
-| links           | string array| A list of links for this individual (e.g., websites, email addresses). |
-| titles          | string array| A list of titles for this individual (e.g., Dr., Prof., Hon.). |
-| functions       | string array| A list of functions for this individual. |
-| otherInformation| string array| A list of other information for this individual. |
+<Accordion title="Datasets">
+The `datasets` parameter is a comma-separated string. Available options:
+
+- `PEP` – Politically Exposed Persons (all)
+- `PEP-CURRENT` – Only current PEPs
+- `PEP-FORMER` – Only former PEPs
+- `PEP-LINKED` – PEP by association / linked persons
+- `SAN` – Sanctioned (all)
+- `SAN-CURRENT` – Only current sanctions
+- `SAN-FORMER` – Only former sanctions
+- `INS` – Insolvency lists
+- `RRE` – Reputational Risk Exposure
+- `DD` – Disqualified Directors
+- `POI` – Profiles of Interest
+- `REL` – Regulatory Enforcement Lists
+
 </Accordion>
-### Response Codes
-| Code | Description |
-|------|-------------|
-| `200` | A JSON array of matching individuals. |
-| `400` | Bad request due to missing or invalid parameters. |
-| `401` | API key is missing or invalid. |
-| `500` | An internal server error occurred. |
 
 ### Example Request
+
 ```json
 {
-"name": "Boris Johnson",
-"dob": "1964/06/19"
+  "name": "Johnson, Boris",
+  "dateOfBirth": "1964-06-19",
+  "countries": "GB",
+  "datasets": "PEP,SAN",
+  "threshold": 90,
+  "matching": "fuzzy"
 }
 ```
+
+### Response Structure
+
+The response returns a JSON object containing a single person profile (the best match) from the AML provider.
+
+<Accordion title="Top-level Structure">
+| Field         | Type   | Description |
+|--------------|--------|-------------|
+| `data`       | object | Root object that wraps the person profile. |
+| `data.type`  | string | Resource type, for individuals this will be `"persons"`. |
+| `data.id`    | string | Provider-specific identifier of the person profile. |
+| `data.attributes` | object | Detailed attributes describing the person, risk exposure, and linked entities. |
+| `data.links` | object or null | Optional hypermedia links – often `null` for this integration. |
+</Accordion>
+
+<Accordion title="data.attributes (Person Attributes)">
+| Field                         | Type          | Description |
+|------------------------------|---------------|-------------|
+| `firstName`                  | string        | Given name of the person. |
+| `middleName`                 | string        | Middle name(s) of the person, if available. |
+| `lastName`                   | string        | Family name / surname of the person. |
+| `gender`                     | string        | Gender of the person, e.g. `Male`, `Female`, or `Unknown`. |
+| `datesOfBirthIso`            | string array  | List of known dates of birth in ISO `YYYY-MM-DD` format. |
+| `datesOfDeathIso`            | string array  | List of known dates of death in ISO format, if applicable. |
+| `nationalitiesIsoCodes`      | string array  | List of nationality country codes (ISO-3166-1 alpha-2), e.g. `["GB"]`. |
+| `isDeceased`                 | boolean       | Indicates whether the person is known to be deceased. |
+| `isDeleted`                  | boolean       | Indicates whether the profile has been logically deleted in the provider system. |
+| `monitoringId`               | string        | Identifier used by the provider for ongoing monitoring of this profile. |
+| `version`                    | integer       | Internal version of the profile in the provider system (monotonically increasing). |
+| `datasets`                   | string array  | Datasets that apply to this profile, e.g. `["PEP-LINKED","POI","SAN-CURRENT"]`. |
+| `addresses`                  | object array  | List of known addresses for the person. See **Address object**. |
+| `aliases`                    | object array  | List of known aliases, name variations, and alternative spellings. See **Alias object**. |
+| `contactEntries`             | object array  | Contact information such as phone numbers, fax numbers, and email addresses. See **Contact entry object**. |
+| `notes`                      | object array  | Optional free-form notes associated with the profile. |
+| `evidences`                  | object array  | List of evidence sources that support the profile (articles, websites, official documents). See **Evidence object**. |
+| `profileImages`              | string array  | URLs to profile images associated with the person. |
+| `pepEntries`                 | object or array | Structured data describing PEP status; may be empty `{}` if not applicable. |
+| `pepByAssociationEntries`    | object array  | PEP-by-association information, linking this subject to other PEP profiles via shared evidence. |
+| `poiEntries`                 | object array  | Profiles of Interest information, including public roles and positions. See **POI entry object**. |
+| `sanEntries`                 | object        | Sanctions information. See **Sanctions object**. |
+| `relEntries`                 | object array  | Regulatory enforcement list entries (if present). |
+| `rreEntries`                 | object array  | Reputational Risk Exposure entries (if present). |
+| `ddEntries`                  | object array  | Disqualified Director entries (if present). |
+| `griEntries`                 | object array  | Other risk / intelligence entries (if present). |
+| `identifiers`                | object array  | Provider-specific identifiers and external reference IDs. |
+| `individualLinks`            | object array  | Individuals linked directly to the subject (family members, associates, etc.). See **Linked individual object**. |
+| `businessLinks`              | object array  | Businesses linked to the subject and their key people. See **Linked business object**. |
+</Accordion>
+
+#### Address object
+
+<Accordion title="Address object (data.attributes.addresses[])">
+| Field                | Type   | Description |
+|----------------------|--------|-------------|
+| `addressType`        | string | Type of address, e.g. `"Place of birth"`, `"Business"`, `"Residential"`. |
+| `line1`              | string | First line of the address (street address, building name, etc.). |
+| `line2`              | string | Second line of the address, if any (area, estate, etc.). |
+| `city`               | string | City or town. |
+| `postcode`           | string | Postal / ZIP code, if available. |
+| `county`             | string | County / region name, if available. |
+| `countyAbbreviation` | string | Abbreviation or code for the county / region, if available. |
+| `countryIsoCode`     | string | Two-letter ISO country code of the address. |
+</Accordion>
+
+#### Alias object
+
+<Accordion title="Alias object (data.attributes.aliases[])">
+| Field       | Type   | Description |
+|-------------|--------|-------------|
+| `firstName` | string | First or given name used in this alias. |
+| `middleName`| string | Middle name(s) used in this alias, if any. |
+| `lastName`  | string | Surname used in this alias. |
+| `type`      | string | Type of alias, e.g. `"Name Spelling Variation"`, `"Former name"`, etc. |
+</Accordion>
+
+#### Contact entry object
+
+<Accordion title="Contact entry object (data.attributes.contactEntries[])">
+| Field       | Type   | Description |
+|-------------|--------|-------------|
+| `category`  | string | Type of contact detail, e.g. `"Telephone"`, `"Fax"`, `"Email"`. |
+| `value`     | string | Contact value (phone number, fax number, email address). |
+</Accordion>
+
+#### Evidence object
+
+<Accordion title="Evidence object (data.attributes.evidences[])">
+| Field                | Type    | Description |
+|----------------------|---------|-------------|
+| `evidenceId`         | string  | Provider’s unique identifier for the evidence. |
+| `datasets`           | string array | Datasets for which this evidence is relevant (e.g. `["SAN-CURRENT"]`, `["POI","ID"]`). |
+| `originalUrl`        | string  | URL of the original source (news article, official site, etc.). |
+| `assetUrl`           | string  | Optional URL to stored copies or documents (e.g. PDFs) hosted by the provider. |
+| `publicationDateIso` | string  | Publication date in ISO format, if available. |
+| `captureDateIso`     | string  | Date when the provider captured/indexed this evidence. |
+| `summary`            | string  | Short description of what the source says about the subject. |
+| `title`              | string  | Title of the article or document, if provided. |
+| `credibility`        | string  | Assessment of source credibility (`High`, `Medium`, etc.), where available. |
+| `language`           | string  | Language code of the source content, if known (e.g. `eng`, `rus`). |
+| `isCopyrighted`      | boolean | Indicates whether the source is copyrighted. |
+</Accordion>
+
+#### POI entry object
+
+<Accordion title="POI entry object (data.attributes.poiEntries[])">
+| Field          | Type         | Description |
+|----------------|--------------|-------------|
+| `category`     | string       | Category of the profile of interest, e.g. `"Other Public Figures"` or `"Senior Government Officials"`. |
+| `evidenceIds`  | string array | List of evidence IDs that support this POI classification. |
+| `positions`    | object array | List of positions associated with this POI entry. |
+
+**Position object fields:**
+
+| Field            | Type   | Description |
+|------------------|--------|-------------|
+| `countryIsoCode` | string | ISO-3166-1 alpha-2 code of the country in which the position is held. |
+| `dateFromIso`    | string | Start date of the position in ISO format (may be year-only in some cases). |
+| `dateToIso`      | string | End date of the position in ISO format, if applicable. |
+| `position`       | string | Title of the role (e.g. `"Former Prime Minister | Her Majesty's Government"`). |
+| `segment`        | string | Segment / classification of the position, e.g. `"Executive Branch - Head and Members of Government and Deputies"`. |
+</Accordion>
+
+#### Sanctions object
+
+<Accordion title="Sanctions object (data.attributes.sanEntries)">
+The `sanEntries` object groups sanctions information by status. For example:
+
+- `current` – active sanctions
+- `former` – historical sanctions, if provided by the data source
+
+Each entry in `sanEntries.current` (or `former`) has the following structure:
+
+| Field       | Type         | Description |
+|------------|--------------|-------------|
+| `events`   | object array | Chronological events related to the sanction (added, updated, removed). |
+| `measures` | string array | Measures imposed, such as `"Travel Ban"`, asset freezes, and other restrictions. |
+| `regime`   | object       | Details of the sanction regime (issuing body and regime name). |
+| `sanctionId` | string     | Provider-specific identifier for the sanction, if present. |
+
+**Sanction event fields:**
+
+| Field      | Type         | Description |
+|-----------|--------------|-------------|
+| `dateIso` | string       | Event date in ISO format. |
+| `evidenceIds` | string array | Evidence IDs supporting this sanction event. |
+| `type`    | string       | Type of sanction event (e.g. `"Added"`). |
+
+**Sanction regime fields:**
+
+| Field   | Type   | Description |
+|--------|--------|-------------|
+| `body` | string | Issuing body or authority (e.g. `"Government of the Russian Federation"`). |
+| `name` | string | Name of the sanctions regime. |
+| `origin` | string | Country or organisation of origin. |
+</Accordion>
+
+#### Linked individual object
+
+<Accordion title="Linked individual object (data.attributes.individualLinks[] and businessLinks[].individualLinks[])">
+| Field                | Type         | Description |
+|----------------------|--------------|-------------|
+| `firstName`          | string       | First name of the linked individual. |
+| `middleName`         | string       | Middle name(s) of the linked individual, if any. |
+| `lastName`           | string       | Last name of the linked individual. |
+| `datasets`           | string array | Datasets that apply to the linked individual (e.g. `["PEP-CURRENT"]`, `["POI"]`). |
+| `monitoringId`       | string       | Monitoring identifier of the linked individual in the provider’s system. |
+| `ownershipPercentage`| number       | Ownership percentage when the link represents ownership (often `0` for purely relational links). |
+| `relationship`       | string       | Description of how this person is related to the subject (e.g. `"is the father of"`, `"is a Member of the Board of Directors of ..."`). |
+| `id`                 | string       | Provider-specific identifier of the linked individual. |
+</Accordion>
+
+#### Linked business object
+
+<Accordion title="Linked business object (data.attributes.businessLinks[])">
+| Field                | Type         | Description |
+|----------------------|--------------|-------------|
+| `name`               | string       | Name of the linked business. |
+| `datasets`           | string array | Datasets that apply to the business (e.g. `["PEP-LINKED","REL"]`). |
+| `monitoringId`       | string       | Monitoring identifier for the business profile in the provider’s system. |
+| `ownershipPercentage`| number       | Ownership percentage for the link, where applicable. |
+| `relationship`       | string       | Description of how the business is related to the subject (e.g. `"Boris Johnson is a former senior official of The Spectator"`). |
+| `id`                 | string       | Provider-specific identifier for the business profile. |
+| `individualLinks`    | object array | Individuals that are key for this business (board members, executives, etc.). See **Linked individual object**. |
+</Accordion>
+
+### Response Codes
+
+| Code | Description |
+|------|-------------|
+| `200` | A JSON object describing the best matching individual profile. |
+| `400` | Bad request due to missing or invalid parameters. |
+| `401` | API key is missing, invalid, or the caller is not authorized. |
+| `500` | An internal server error occurred while processing the request. |
 
 ### Example Response
+
+Below is a **trimmed** example response showing the overall structure returned by the new provider. The real payload can contain many more linked entities, evidences, and positions.
+
 ```json
 {
-  "timestamp": "2024/09/24T19:16:00Z",
-  "totalHits": 1,
-  "foundRecords": [
-    {
-      "id": "c438b18a93cd3c13",
-      "entityType": "INDIVIDUAL",
-      "name": "Boris Johnson",
-      "lastNames": ["Johnson", "Pfeffel"],
-      "aliasNames": ["Alexander Boris de Pfeffel Johnson", "Boris", "BoJo"],
-      "givenNames": ["Alexander", "Boris"],
-      "dateOfBirth": ["1964/06/19"],
-      "placeOfBirth": ["New York City"],
-      "citizenship": ["GB", "US"],
-      "occupations": ["journalist", "politician"],
-      "positions": [
-        "2001/06/07 - 2005/04/11 Member of the 53rd Parliament of the United Kingdom",
-        "Since 2019/07/24 Prime Minister of the United Kingdom"
+  "data": {
+    "type": "persons",
+    "id": "NQZGEVkxHy1HZ1sOQB0dXQ4kRAh6SlJDU3cOWjJWC10CdmtwUHZDfmQmQgB3RlRxLG0DVRcXRA4AJFNcDQVVSWQBAlYJJxE=",
+    "attributes": {
+      "firstName": "Boris",
+      "middleName": "",
+      "lastName": "Johnson",
+      "gender": "Male",
+      "datesOfBirthIso": [
+        "1964-06-19"
       ],
-      "politicalParties": ["Conservative Party"],
-      "links": [
-        "https://www.gov.uk/government/people/boris-johnson",
-        "Facebook: borisjohnson"
+      "nationalitiesIsoCodes": [
+        "GB"
       ],
-      "sourceId": "dilisense_pep",
-      "sourceType": "PEP",
-      "pepType": "POLITICIAN",
-      "gender": "MALE",
-      "spouse": ["Allegra Mostyn-Owen", "Carrie Johnson", "Marina Wheeler"],
-      "siblings": ["Jo Johnson", "Leo Johnson", "Rachel Johnson"],
-      "parents": ["Charlotte Johnson Wahl", "Stanley Johnson"],
-      "description": ["Prime Minister of the United Kingdom from 2019 to 2022"]
-    }
-  ]
+      "datasets": [
+        "PEP-LINKED",
+        "POI",
+        "SAN-CURRENT"
+      ],
+      "addresses": [
+        {
+          "addressType": "Place of birth",
+          "city": "New York",
+          "countryIsoCode": "US",
+          "line1": "",
+          "line2": "",
+          "postcode": ""
+        },
+        {
+          "addressType": "Business",
+          "city": "London",
+          "countryIsoCode": "GB",
+          "line1": "10 Downing Street",
+          "line2": "Westminster",
+          "postcode": "SW1A 2AA"
+        }
+      ],
+      "aliases": [
+        {
+          "firstName": "Alexander",
+          "middleName": "Boris de Pfeffel",
+          "lastName": "Johnson",
+          "type": "Name Spelling Variation"
+        }
+      ],
+      "contactEntries": [
+        {
+          "category": "Telephone",
+          "value": "+44 1491612852"
+        },
+        {
+          "category": "Email",
+          "value": "johnsonb@parliament.uk"
+        }
+      ],
+      "businessLinks": [
+        {
+          "name": "Transport for London Limited",
+          "datasets": ["PEP-LINKED", "REL", "SOE-CURRENT"],
+          "relationship": "Boris Johnson is a Former Chairperson of the Board of Directors of Transport for London Limited",
+          "ownershipPercentage": 0,
+          "monitoringId": "NQZGEVkxH34WYwhdEw=="
+        }
+      ],
+      "sanEntries": {
+        "current": [
+          {
+            "events": [
+              {
+                "dateIso": "2022-04-16",
+                "evidenceIds": ["23937631"],
+                "type": "Added"
+              }
+            ],
+            "measures": ["Travel Ban"],
+            "regime": {
+              "body": "Government of the Russian Federation",
+              "name": "Russia - Special economic measures against unfriendly actions of foreign countries and international organisations",
+              "origin": "Russia"
+            },
+            "sanctionId": ""
+          }
+        ]
+      },
+      "poiEntries": [
+        {
+          "category": "Senior Government Officials",
+          "positions": [
+            {
+              "countryIsoCode": "GB",
+              "dateFromIso": "2019-07",
+              "dateToIso": "2022-07",
+              "position": "Former Prime Minister | Her Majesty's Government",
+              "segment": "Executive Branch - Head and Members of Government and Deputies"
+            }
+          ]
+        }
+      ]
+    },
+    "links": null
+  }
 }
 ```
 
+---
+
 ## 2. Ongoing Monitoring
+
+> **Note:** The following endpoints are in the process of being aligned with the new AML provider.  
+> The public API paths are reserved but the final request/response formats are still subject to change.  
+> Until this work is completed, they are marked as **coming soon** and details are intentionally omitted.
+
 ### 2.1 Register Individual
 
 ### Endpoint
+
 **POST** `/aml/ongoingMonitoring/registerIndividual`
 
-### Description
-Registers an individual for ongoing monitoring in the AML system.
+### Status
 
-### Required Headers
-| Header         | Value |
-|---------------|----------------------------|
-| Content-Type  | `application/json` |
-| Authorization | `Bearer yourAccessToken` |
+This endpoint will allow you to register an individual profile for ongoing AML monitoring (periodic re-screening).  
+Updated documentation for the new provider integration is **coming soon**.
 
-### Request Body Parameters
-<Accordion title="Request Body Parameters">
-| Field         | Required | Description |
-|---------------|----------|-------------|
-| `profileId`   | Yes      | Unique identifier for the individual profile in the system. |
-| `names`       | Yes      | Full name of the individual (e.g., "Elon Musk"). |
-| `gender`      | No       | Gender of the individual (optional, e.g., "male"). |
-| `searchAll`   | No       | This field cannot be combined with the `names` parameter. |
-| `dob`         | No       | Date of birth of the individual (optional). |
-| `fuzzySearch` | No       | Enables fuzzy search for the name (optional). |
-</Accordion>
-
-### Example Request
-```json
-{
-  "profileId": "8dac-b5393ce5ef3a", // Required: Unique profile identifier
-  "names": "Elon Musk",             // Required: Full name of the individual
-  "gender": "male",                 // Optional: Gender of the individual
-  "dob": "1971/06/28",              // Optional: Date of birth
-  "fuzzySearch": ""                 // Optional: Enables fuzzy search for the name
-}
-```
+---
 
 ### 2.2 Register Entity
 
 ### Endpoint
+
 **POST** `/aml/ongoingMonitoring/registerEntity`
 
-### Description
-Registers an entity for ongoing monitoring in the AML system.
+### Status
 
-### Required Headers
-| Header         | Value |
-|---------------|----------------------------|
-| Content-Type  | `application/json` |
-| Authorization | `Bearer yourAccessToken` |
+This endpoint will allow you to register a legal entity (company, organisation) for ongoing AML monitoring.  
+Updated documentation for the new provider integration is **coming soon**.
 
-### Request Body Parameters
-<Accordion title="Request Body Parameters">
-| Field         | Required | Description |
-|---------------|----------|-------------|
-| `profileId`   | Yes      | Unique identifier for the entity profile in the system. |
-| `names`       | Yes      | Full name of the entity (e.g., "Tesla"). |
-| `searchAll`   | No       | This field cannot be combined with the `names` parameter. |
-| `fuzzySearch` | No       | Enables fuzzy search for the name (optional). |
-</Accordion>
-### Example Request
-```json
-{
-    "profileId": "8dac-b5393ce5ef3a", // Required: Unique profile identifier 
-    "names": "Tesla", // Required: Full name of the entity
-    "searchAll" : "", //Cannot be combined with 'names' parameter
-    "fuzzySearch": "" //optional
-}
-```
+---
 
 ### 2.3 Remove Search Profile
 
 ### Endpoint
+
 **POST** `/aml/ongoingMonitoring/removeSearchProfile`
 
-### Description
-Removes a search profile from the AML ongoing monitoring system.
+### Status
 
-### Required Headers
-| Header         | Value |
-|---------------|----------------------------|
-| Content-Type  | `application/json` |
-| Authorization | `Bearer yourAccessToken` |
-
-### Request Body Parameters 
-<Accordion title="Request Body Parameters">
-| Field         | Required | Description |
-|---------------|----------|-------------|
-| `profileId`   | Yes      | Unique identifier for the entity profile in the system. |
-</Accordion>
-
-### Example Request
-```json
-{
-    "profileId": "8dac-b5393ce5ef3a"          // Required: Unique profile identifier to remove
-}
-```
+This endpoint will allow you to remove an existing monitoring profile from ongoing AML monitoring.  
+Updated documentation for the new provider integration is **coming soon**.
