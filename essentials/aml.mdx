@@ -7,14 +7,15 @@ import Auth from '/snippets/auth.mdx';
 
 # AML Screening API - Detailed Documentation
 
-The AML Screening API provides functionality for screening individuals against sanctions, politically exposed persons (PEP), and other risk lists. A new underlying provider is used for the screening logic; the request and response format for **Check Individual** has been updated accordingly.
+The AML Screening API provides functionality for screening individuals against sanctions, politically exposed persons (PEP), and other risk lists.  
+
 
 ### API Playground:
 <Tabs>
   <Tab title="/aml/checkIndividual">
     You can try the check individual endpoint [here](/api-reference/endpoint/aml_checkIndividual).
   </Tab>
-  <Tab title="/aml/ongoingMonitoring/registerIndividual">
+  {/* <Tab title="/aml/ongoingMonitoring/registerIndividual">
     The register individual endpoint is currently being updated. Documentation for the new provider will follow.
   </Tab>
   <Tab title="/aml/ongoingMonitoring/registerEntity">
@@ -22,12 +23,12 @@ The AML Screening API provides functionality for screening individuals against s
   </Tab>
   <Tab title="/aml/ongoingMonitoring/removeSearchProfile">
     The remove search profile endpoint is currently being updated. Documentation for the new provider will follow.
-  </Tab>
+  </Tab> */}
 </Tabs>
 
 ### Endpoints Overview
 1. **Check Individual**: Screen an individual against AML datasets (PEP, sanctions, and related lists).
-2. **Ongoing Monitoring** (coming soon for the new provider):
+2. **Ongoing Monitoring**:
    - Register Individual
    - Register Entity
    - Remove Search Profile
@@ -84,6 +85,7 @@ The `datasets` parameter is a comma-separated string. Available options:
 - `DD` – Disqualified Directors
 - `POI` – Profiles of Interest
 - `REL` – Regulatory Enforcement Lists
+- `GRI` – Gambling Risk Intelligence
 
 </Accordion>
 
@@ -102,14 +104,14 @@ The `datasets` parameter is a comma-separated string. Available options:
 
 ### Response Structure
 
-The response returns a JSON object containing a single person profile (the best match) from the AML provider.
+The response returns a JSON object containing a single person profile (the best match) from the AML check.
 
 <Accordion title="Top-level Structure">
 | Field         | Type   | Description |
 |--------------|--------|-------------|
 | `data`       | object | Root object that wraps the person profile. |
 | `data.type`  | string | Resource type, for individuals this will be `"persons"`. |
-| `data.id`    | string | Provider-specific internal identifier of the person profile. |
+| `data.id`    | string | System-specific internal identifier of the person profile. |
 | `data.attributes` | object | Detailed attributes describing the person, risk exposure, and linked entities. |
 | `data.links` | object or null | Optional hypermedia links if found. |
 </Accordion>
@@ -127,7 +129,7 @@ The response returns a JSON object containing a single person profile (the best 
 | `isDeceased`                 | boolean       | Indicates whether the person is known to be deceased. |
 | `isDeleted`                  | boolean       | Indicates whether the profile has been logically deleted in the back systems. |
 | `monitoringId`               | string        | Identifier used by IDCanopy for ongoing monitoring of this profile. |
-| `version`                    | integer       | Internal version of the profile in the provider system (monotonically increasing). |
+| `version`                    | integer       | Internal version of the profile in the monitoring system. |
 | `datasets`                   | string array  | Datasets that apply to this profile, e.g. `["PEP-LINKED","POI","SAN-CURRENT"]`. |
 | `addresses`                  | object array  | List of known addresses for the person. See **Address object**. |
 | `aliases`                    | object array  | List of known aliases, name variations, and alternative spellings. See **Alias object**. |
@@ -143,7 +145,7 @@ The response returns a JSON object containing a single person profile (the best 
 | `rreEntries`                 | object array  | Reputational Risk Exposure entries (if present). |
 | `ddEntries`                  | object array  | Disqualified Director entries (if present). |
 | `griEntries`                 | object array  | Other risk / intelligence entries (if present). |
-| `identifiers`                | object array  | Provider-specific identifiers and external reference IDs. |
+| `identifiers`                | object array  | System-specific identifiers and external reference IDs. |
 | `individualLinks`            | object array  | Individuals linked directly to the subject (family members, associates, etc.). See **Linked individual object**. |
 | `businessLinks`              | object array  | Businesses linked to the subject and their key people. See **Linked business object**. |
 </Accordion>
@@ -188,12 +190,12 @@ The response returns a JSON object containing a single person profile (the best 
 <Accordion title="Evidence object (data.attributes.evidences[])">
 | Field                | Type    | Description |
 |----------------------|---------|-------------|
-| `evidenceId`         | string  | Provider’s unique identifier for the evidence. |
+| `evidenceId`         | string  | System unique identifier for the evidence. |
 | `datasets`           | string array | Datasets for which this evidence is relevant (e.g. `["SAN-CURRENT"]`, `["POI","ID"]`). |
 | `originalUrl`        | string  | URL of the original source (news article, official site, etc.). |
-| `assetUrl`           | string  | Optional URL to stored copies or documents (e.g. PDFs) hosted by the provider. |
+| `assetUrl`           | string  | Optional URL to stored copies or documents (e.g. PDFs). |
 | `publicationDateIso` | string  | Publication date in ISO format, if available. |
-| `captureDateIso`     | string  | Date when the provider captured/indexed this evidence. |
+| `captureDateIso`     | string  | Date when the evidence was captured/indexed. |
 | `summary`            | string  | Short description of what the source says about the subject. |
 | `title`              | string  | Title of the article or document, if provided. |
 | `credibility`        | string  | Assessment of source credibility (`High`, `Medium`, etc.), where available. |
@@ -236,7 +238,7 @@ Each entry in `sanEntries.current` (or `former`) has the following structure:
 | `events`   | object array | Chronological events related to the sanction (added, updated, removed). |
 | `measures` | string array | Measures imposed, such as `"Travel Ban"`, asset freezes, and other restrictions. |
 | `regime`   | object       | Details of the sanction regime (issuing body and regime name). |
-| `sanctionId` | string     | Provider-specific identifier for the sanction, if present. |
+| `sanctionId` | string     | Specific identifier for the sanction, if present. |
 
 **Sanction event fields:**
 
@@ -317,10 +319,10 @@ Each entry in `sanEntries.current` (or `former`) has the following structure:
 | `middleName`         | string       | Middle name(s) of the linked individual, if any. |
 | `lastName`           | string       | Last name of the linked individual. |
 | `datasets`           | string array | Datasets that apply to the linked individual (e.g. `["PEP-CURRENT"]`, `["POI"]`). |
-| `monitoringId`       | string       | Monitoring identifier of the linked individual in the provider’s system. |
+| `monitoringId`       | string       | Monitoring identifier of the linked individual in the monitoring system. |
 | `ownershipPercentage`| number       | Ownership percentage when the link represents ownership (often `0` for purely relational links). |
 | `relationship`       | string       | Description of how this person is related to the subject (e.g. `"is the father of"`, `"is a Member of the Board of Directors of ..."`). |
-| `id`                 | string       | Provider-specific identifier of the linked individual. |
+| `id`                 | string       | Specific identifier of the linked individual. |
 </Accordion>
 
 #### Linked business object
@@ -330,10 +332,10 @@ Each entry in `sanEntries.current` (or `former`) has the following structure:
 |----------------------|--------------|-------------|
 | `name`               | string       | Name of the linked business. |
 | `datasets`           | string array | Datasets that apply to the business (e.g. `["PEP-LINKED","REL"]`). |
-| `monitoringId`       | string       | Monitoring identifier for the business profile in the provider’s system. |
+| `monitoringId`       | string       | Monitoring identifier for the business profile in the monitoring system. |
 | `ownershipPercentage`| number       | Ownership percentage for the link, where applicable. |
 | `relationship`       | string       | Description of how the business is related to the subject (e.g. `"Boris Johnson is a former senior official of The Spectator"`). |
-| `id`                 | string       | Provider-specific identifier for the business profile. |
+| `id`                 | string       | Specific identifier for the business profile. |
 | `individualLinks`    | object array | Individuals that are key for this business (board members, executives, etc.). See **Linked individual object**. |
 </Accordion>
 
@@ -348,7 +350,7 @@ Each entry in `sanEntries.current` (or `former`) has the following structure:
 
 ### Example Response
 
-Below is a **trimmed** example response showing the overall structure returned by the new provider. The real payload can contain many more linked entities, evidences, and positions.
+Below is a **trimmed** example response showing the overall structure returned. The real payload can contain many more linked entities, evidences, and positions.
 
 ```json
 {
@@ -460,9 +462,9 @@ Below is a **trimmed** example response showing the overall structure returned b
 
 ## 2. Ongoing Monitoring
 
-> **Note:** The following endpoints are in the process of being aligned with the new AML provider.  
-> The public API paths are reserved but the final request/response formats are still subject to change.  
-> Until this work is completed, they are marked as **coming soon** and details are intentionally omitted.
+You will be given a "Monitoring_Group_Id" that you will use to register an individual or business profile to. 
+The registered profile will be screened on a regular basis as per the monitoring rules set in the monitoring group configuration, 
+
 
 ### 2.1 Register Individual
 
@@ -473,8 +475,78 @@ Below is a **trimmed** example response showing the overall structure returned b
 ### Status
 
 This endpoint will allow you to register an individual profile for ongoing AML monitoring (periodic re-screening).  
-Updated documentation for the new provider integration is **coming soon**.
 
+you will need to provide the `Monitoring_Group_Id` that you received from IDCanopy, along with the individual's name and date 
+of birth and country information. The individual will then be screened on a regular basis as per the monitoring rules set in the monitoring group configuration
+
+### Required Headers
+
+| Header         | Value                |
+|---------------|----------------------|
+| Content-Type  | `application/json`   |
+| Authorization | `Bearer yourAccessToken` |
+
+### Request Body Parameters
+
+<Accordion title="Request Body Parameters">
+| Field        | Type    | Required | Description |
+|-------------|---------|----------|-------------|
+| `Monitoring_Group_Id` | string  | Yes      | The monitoring group ID you received from IDCanopy. |
+| `type`  | string | Yes      | Resource type requested, for individuals this will be `"subscriptions"`. |
+| `name`      | string  | Yes      | The full name of the person you are searching for. For best results use the format `"lastnames, firstnames middlenames"` (e.g. `"Johnson, Boris"`). Alternatively you can use `"firstnames middlenames lastnames"` if you do not know the precise last name. |
+| `dateOfBirth` | string | No       | Date of birth in `YYYY-MM-DD` or `YYYY` format. Must be after 1900 and not in the future. Example: `"1964-06-19"`. |
+| `countries` | string  | Yes       | Comma-separated list of two-letter ISO-3166 country codes affecting both address and nationality. Example: `"NL,GB"`. |
+| `gender`  | string  | No      | Gender of the person. Example: `"male"` or `"female"`. |
+
+</Accordion>
+
+### Example Request
+
+```json
+{
+  "Monitoring_Group_Id": "01ARZ3NDEKTSV4RRFFQ69G5FAV",
+  "type": "subscriptions",
+  "data": {
+      "name": "Jane Doe",
+      "countries": [
+        "US"
+      ],
+      "dateOfBirth": "1991-07-22",
+      "gender": "female"
+    }
+}
+```
+### Response Structure
+
+The response returns a JSON object containing the subscription details for the registered individual..
+
+<Accordion title="Top-level Structure">
+
+| Field         | Type   | Description |
+|--------------|--------|-------------|
+| `subscriptionId`    | string | The subscription ID of the registered individual. |
+| `type`  | string | Resource type, for individuals this will be `"subscriptions"`. |
+| `attributes` | object | Detailed attributes echoing the person's information provided in the registration request (name, date of birth, gender, countries). |
+
+</Accordion>
+
+### Example Response
+```json
+{
+  "data": {
+    "subscriptionId": "93CVS1NDEKTSV4RRFFQ69F2FDC",
+    "type": "subscriptions",
+    "attributes": {
+      "name": "Jane Doe",
+      "countries": [
+        "US"
+      ],
+      "dateOfBirth": "1991-07-22",
+      "gender": "female"
+    },
+  }
+}
+```
 ---
 
 ### 2.2 Register Entity
@@ -486,7 +558,71 @@ Updated documentation for the new provider integration is **coming soon**.
 ### Status
 
 This endpoint will allow you to register a legal entity (company, organisation) for ongoing AML monitoring.  
-Updated documentation for the new provider integration is **coming soon**.
+
+you will need to provide the `Monitoring_Group_Id` that you received from IDCanopy, along with the company/organization's name and country information. 
+The company/organization will then be screened on a regular basis as per the monitoring rules set in the monitoring group configuration
+
+### Required Headers
+
+| Header         | Value                |
+|---------------|----------------------|
+| Content-Type  | `application/json`   |
+| Authorization | `Bearer yourAccessToken` |
+
+### Request Body Parameters
+
+<Accordion title="Request Body Parameters">
+| Field        | Type    | Required | Description |
+|-------------|---------|----------|-------------|
+| `Monitoring_Group_Id` | string  | Yes      | The monitoring group ID you received from IDCanopy. |
+| `type`  | string | Yes      | Resource type requested, for companies/organizations this will be `"subscriptions"`. |
+| `name`      | string  | Yes      | The full name of the company/organization you are searching for. |
+| `countries` | string  | Yes       | Comma-separated list of two-letter ISO-3166 country codes affecting both address and nationality. Example: `"NL,GB"`. |
+
+
+</Accordion>
+
+### Example Request
+
+```json
+{
+  "Monitoring_Group_Id": "02GRKT6NDEUUYSV4RRFFQ695V2TF",
+  "type": "subscriptions",
+  "name": "BMI Corporation",
+  "countries": ["US","GB"]
+}
+```
+### Response Structure
+
+The response returns a JSON object containing the subscription details for the registered company/organization.
+
+<Accordion title="Top-level Structure">
+
+| Field         | Type   | Description |
+|--------------|--------|-------------|
+| `subscriptionId`    | string | The subscription ID of the registered company/organization. |
+| `type`  | string | Resource type, for companies/organizations this will be `"subscriptions"`. |
+| `attributes` | object | Detailed attributes echoing the company/organization's information provided in the registration request (name, countries). |
+
+</Accordion>
+
+### Example Response
+```json
+{
+  "data": {
+    "subscriptionId": "1KLRTYHGHD8UUJBOJMHSLKJH3",
+    "type": "subscriptions",
+    "attributes": {
+      "name": "BMI Corporation",
+      "countries": [
+        "US",
+        "GB"
+      ],
+    },
+  }
+}
+```
+
 
 ---
 
@@ -498,5 +634,121 @@ Updated documentation for the new provider integration is **coming soon**.
 
 ### Status
 
-This endpoint will allow you to remove an existing monitoring profile from ongoing AML monitoring.  
-Updated documentation for the new provider integration is **coming soon**.
+This endpoint will allow you to remove an existing monitoring profile from ongoing AML monitoring for either an individual or a company/organization.  
+
+To delete a monitoring profile, you will need to provide the `Monitoring_Group_Id` that you received from IDCanopy, along with the `subscriptionId` of the profile you want to remove.
+
+### Required Headers
+| Header         | Value                |
+|---------------|----------------------|
+| Content-Type  | `application/json`   |
+| Authorization | `Bearer yourAccessToken` |
+
+### Request Body Parameters
+<Accordion title="Request Body Parameters">
+| Field        | Type    | Required | Description |
+|-------------|---------|----------|-------------|
+| `Monitoring_Group_Id` | string  | Yes      | The monitoring group ID you received from IDCanopy. |
+| `subscriptionId` | string  | Yes      | The subscription ID of the monitoring profile you want to remove. |
+| `entityType`  | string | Yes      | Resource type requested, for companies/organizations this will be `"Business"`, for individuals this will be `"Person"`. |
+</Accordion>
+
+### Example Request
+
+```json
+{
+  "Monitoring_Group_Id": "01ARZ3NDEKTSV4RRFFQ69G5FAV",
+  "subscriptionId": "93CVS1NDEKTSV4RRFFQ69F2FDC",
+  "entityType": "Person"
+}
+```
+
+### 2.4 Query Monitoring Results
+
+### Endpoint
+
+**GET** `/aml/ongoingMonitoring/getMonitoringResults/{Monitoring_Group_Id}/person/{subscriptionId}` for individuals
+or  
+**GET** `/aml/ongoingMonitoring/getMonitoringResults/{Monitoring_Group_Id}/entity/{subscriptionId}` for companies/organizations
+
+### Status
+You can query the monitoring results via the endpoints above for either an individual or a company/organization that you have registered for ongoing monitoring.
+
+### Required Headers
+| Header         | Value                |
+|---------------|----------------------|
+| Content-Type  | `application/json`   |
+| Authorization | `Bearer yourAccessToken` |
+
+### Response Structure
+The response returns a JSON object containing the monitoring results for the specified subscription ID, including any matches found during the ongoing monitoring process. 
+
+<Accordion title="Top-level Structure">
+| Field         | Type   | Description |
+|--------------|--------|-------------|
+| `data`       | object | Root object that wraps the alert profile. |
+| `data.type`  | string | The alert type, e.g. `"reviews"`, `"alerts"`. |
+| `data.id`    | string | System-specific internal identifier of the monitoring incident or alert. |
+| `data.attributes` | object | Detailed attributes describing the alert. |
+| `links` | object or null | Optional hypermedia links if found. |
+</Accordion>
+
+<Accordion title="data.attributes (Alert Attributes)">
+| Field                         | Type          | Description |
+|------------------------------|---------------|-------------|
+| `currentStatus`              | string        | Current status of the match. |
+| `version`                    | integer       | The version number can be used to detect when a profile has changed. |
+| `personID`                   | string        | The profile Id can be used to retrieve the full profile of the person  |
+| `score`                      | integer       | Confidence score of the profile match, ranging from 50 to 100. |
+| `match`                      | string        | The name on the profile that has been matched in the search, e.g.: Jane Doe.  |
+| `name`                       | string        | The primary name of the person in the profile. |
+| `countries            `      | string array  | List of countries from the addresses and nationalities of the profile, e.g. `["GB"]`. |
+| `datesOfBirth`               | string array  | List of dates of birth in either YYYY-MM-DD or YYYY ISO format. E.g. `[ "1994", "1994-08-22" ]` |
+| `gender   `                  | string        | Indicates the gender of the person in the profileif known, e.g. `"Male"`, `"Female"`. |
+| `profileImage`               | string        | Main profile image URL for the person. |
+| `datasets`                   | string array  | Datasets that apply to this profile, e.g. `["PEP-LINKED","POI","SAN-CURRENT"]` refer to [here](Datasets). |
+| `pepTier  `                  | string        | The PEP tier of the person in the profile, e.g. `"PEP Tier 1"`, `"PEP Tier 2"`. |
+
+</Accordion>
+
+<Accordion title="currentStatus">
+The `currentStatus` field indicates the current status of the match found during ongoing monitoring. Possible values include:
+
+- `open` – indicates that the alert requires review
+- `true-positive` –  Indicates that the alert is closed and that the profile was matched correctly
+- `false-positive` – Indicates that the alert is closed and that the profile was matched incorrectly
+- `discarded` – Indicates that the profile in the alert no longer matches the subscription due to the changes in the profile, subscription, or the follow list.
+
+</Accordion>
+
+### Example Response
+```json
+{
+  "data": {
+    "type": "reviews",
+    "id": "NQZGEVkxH3oUZAFaFRA=",
+    "attributes": {
+      "currentStatus": "open",
+      "version": 1673422459727,
+      "personID": "NQZGEVkxHy1HZ1sOQB0dXQ4kRAh6SlJDU3cOWjJWC10CdmtwUHZDfmQmQgB3teRxLG0DVRcXRA4AJFNcDQVVSWQBAlYJJxE=",
+      "score": 95,
+      "match": "Jane Doe",
+      "name": "Jane Marie Doe",
+      "countries": [
+        "US"
+      ],
+      "datesOfBirth": [
+        "1991-07-22"
+      ],
+      "gender": "female",
+      "profileImage": "https://example.com/profile.jpg",
+      "datasets": [
+        "PEP-CURRENT",
+        "SAN-CURRENT"
+      ],
+      "pepTier": "PEP Tier 1"
+    },
+    "links": null
+  }
+}
+```    
