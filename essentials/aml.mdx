@@ -46,7 +46,7 @@ The AML Screening API provides functionality for screening individuals against s
 
 ### Description
 
-Checks an individual against AML datasets (e.g. PEP and sanctions) using the new provider’s search service.  
+Checks an individual against AML datasets (e.g. PEP and sanctions).  
 You supply a name, optional date of birth, and search constraints (datasets, countries, threshold, matching mode) and receive a detailed profile for the best match, when found.
 
 ### Required Headers
@@ -63,8 +63,8 @@ You supply a name, optional date of birth, and search constraints (datasets, cou
 |-------------|---------|----------|-------------|
 | `name`      | string  | Yes      | The full name of the person you are searching for. For best results use the format `"lastnames, firstnames middlenames"` (e.g. `"Johnson, Boris"`). Alternatively you can use `"firstnames middlenames lastnames"` if you do not know the precise last name. |
 | `dateOfBirth` | string | No       | Date of birth in `YYYY-MM-DD` or `YYYY` format. Must be after 1900 and not in the future. Example: `"1964-06-19"`. |
-| `countries` | string  | No       | Comma-separated list of two-letter ISO-3166 country codes affecting both address and nationality. Example: `"NL,GB"`. |
-| `datasets`  | string  | Yes      | Comma-separated list specifying which datasets will be searched. See **Datasets** below. Example: `"PEP,SAN"`. |
+| `countries` | string  | Yes       | Comma-separated list of two-letter ISO-3166 country codes affecting both address and nationality. Example: `"NL,GB"`. |
+| `datasets`  | string  | No      | Comma-separated list specifying which datasets will be searched. See **Datasets** below. Default: `"PEP,SAN"`. |
 | `threshold` | integer | No       | Match score threshold between `75` and `100`. Only profiles with a score equal or above this value are returned. Default is `85`. Example: `90`. |
 | `matching`  | string  | No       | Name-matching algorithm. Either `"fuzzy"` (recommended, default) or `"strict"`. Fuzzy applies extensive fuzzy matching techniques to find likely matches; strict is more conservative and may miss matches if the exact name is not known. |
 </Accordion>
@@ -109,9 +109,9 @@ The response returns a JSON object containing a single person profile (the best 
 |--------------|--------|-------------|
 | `data`       | object | Root object that wraps the person profile. |
 | `data.type`  | string | Resource type, for individuals this will be `"persons"`. |
-| `data.id`    | string | Provider-specific identifier of the person profile. |
+| `data.id`    | string | Provider-specific internal identifier of the person profile. |
 | `data.attributes` | object | Detailed attributes describing the person, risk exposure, and linked entities. |
-| `data.links` | object or null | Optional hypermedia links – often `null` for this integration. |
+| `data.links` | object or null | Optional hypermedia links if found. |
 </Accordion>
 
 <Accordion title="data.attributes (Person Attributes)">
@@ -125,8 +125,8 @@ The response returns a JSON object containing a single person profile (the best 
 | `datesOfDeathIso`            | string array  | List of known dates of death in ISO format, if applicable. |
 | `nationalitiesIsoCodes`      | string array  | List of nationality country codes (ISO-3166-1 alpha-2), e.g. `["GB"]`. |
 | `isDeceased`                 | boolean       | Indicates whether the person is known to be deceased. |
-| `isDeleted`                  | boolean       | Indicates whether the profile has been logically deleted in the provider system. |
-| `monitoringId`               | string        | Identifier used by the provider for ongoing monitoring of this profile. |
+| `isDeleted`                  | boolean       | Indicates whether the profile has been logically deleted in the back systems. |
+| `monitoringId`               | string        | Identifier used by IDCanopy for ongoing monitoring of this profile. |
 | `version`                    | integer       | Internal version of the profile in the provider system (monotonically increasing). |
 | `datasets`                   | string array  | Datasets that apply to this profile, e.g. `["PEP-LINKED","POI","SAN-CURRENT"]`. |
 | `addresses`                  | object array  | List of known addresses for the person. See **Address object**. |
@@ -253,6 +253,59 @@ Each entry in `sanEntries.current` (or `former`) has the following structure:
 | `body` | string | Issuing body or authority (e.g. `"Government of the Russian Federation"`). |
 | `name` | string | Name of the sanctions regime. |
 | `origin` | string | Country or organisation of origin. |
+</Accordion>
+
+#### GRI entry object
+
+<Accordion title="GRI entry object (data.attributes.griEntries[])">
+| Field          | Type         | Description |
+|----------------|--------------|-------------|
+| `title`        | string       | The title of the GRI report, e.g. `"EDD Report - Executive Summary Report"`. |
+| `evidenceId`   | string  | The ID of supporting evidence. |
+| `summary`      | string  | The description of the GRI report, e.g. `"In-depth information about the subject based on an Enhanced Due Diligence investigation on source wealth, potential political exposure and reputational risk exposure"`. |
+| `keywords`     | string | Keywords associated with the report, e.g. `"Source of Wealth"`. |
+
+</Accordion>
+
+#### REL entry object
+
+<Accordion title="REL entry object (data.attributes.relEntries[])">
+| Field          | Type         | Description |
+|----------------|--------------|-------------|
+| `category`     | string    | The category of the REL entry, e.g. `"Law Enforcement"`. Enums are `[Law Enforcement, Financial Regulator]` |
+| `subcategory`   | string  | The name of the list, e.g. `" Police - Avon and Somerset Police - Wanted & In Court - United Kingdom"`. |
+| `events`      | string array  | The events associated with the REL entry. |
+
+**REL events fields:**
+
+| Field   | Type   | Description |
+|--------|--------|-------------|
+| `type` | string | The type of event associated with the list entry (e.g. `"Arrest`). |
+| `currencyCode` | string | For specific event types, there can be associated financial penalties. This field indicates the international currency code, e.g. `"USD"` |
+| `amount` | integer | The amount of the financial penalty, if applicable, e.g. `"100000"` |
+| `period` | string array | Indicates the length of time of the penalty. The properties are `[days: integer, months: integer, years: integer]` |
+| `dateISO` | string | The date of the event in ISO format (e.g. `2020-01-01` for 1st January 2020). |
+| `evidenceIDs` | string array | The list of IDs of supporting evidences for the event. |
+
+</Accordion>
+
+#### RRE entry object
+
+<Accordion title="RRE entry object (data.attributes.rreEntries[])">
+| Field          | Type         | Description |
+|----------------|--------------|-------------|
+| `category`     | string    | The category of the RRE entry, e.g. `"Law Enforcement"`.|
+| `subcategory`   | string  | The name of the list, e.g. `" Identity Theft"`. |
+| `events`      | string array  | The events associated with the RRE entry. |
+
+**RRE events fields:**
+
+| Field   | Type   | Description |
+|--------|--------|-------------|
+| `type` | string | The type of event associated with the list entry (e.g. `"Court Proceedings in Progress: Remand`). |
+| `dateISO` | string | The date of the event in ISO format (e.g. `2020-01-01` for 1st January 2020). |
+| `evidenceIDs` | string array | The list of IDs of supporting evidences for the event. |
+
 </Accordion>
 
 #### Linked individual object
