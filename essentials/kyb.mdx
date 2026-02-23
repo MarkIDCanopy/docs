@@ -9,7 +9,7 @@ import Auth from '/snippets/auth.mdx';
 
 The KYB API lets you search for a legal entity and retrieve structured company data directly from official registers and aggregated sources.
 
-Three endpoints cover the full workflow: 
+Three endpoints cover the full workflow:
 
 - **[Authentication (`/auth`)](#authentication)** — Obtain a Bearer token using your `Api-Key` and `Customer-Id`. Required before any other call.
 - **[Search (`/kyb/search`)](#1-search-company)** — Find a company by name or registration number. Returns a `companyId` and `transactionId` required for the next step.
@@ -382,3 +382,2503 @@ Returns the document as a binary file stream. The `Content-Type` response header
 <Note>
 `linkToken` values are scoped to the originating `transactionId` and `companyId`. They cannot be reused across sessions.
 </Note>
+
+---
+
+
+## Test Cases
+
+The following test cases are organized by country. Each shows a search request, the response with available company IDs, and then the full company details call.
+
+---
+### GB
+
+<Tabs>
+  <Tab title="Case GB-1 — Waitrose">
+
+#### Search
+
+<Accordion title="Request">
+
+```json
+{
+  "name": "Waitrose",
+  "country": "GB",
+  "locality": "London"
+}
+```
+
+</Accordion>
+
+<Accordion title="Response">
+
+```json
+{
+    "status": true,
+    "data": [
+        {
+            "transactionId": "9d53e4c6-53f3-45d6-8fe4-fdb6485fcaa8",
+            "companyId": "35ca6d2b-a897-4604-9d2c-84889ce221a3",
+            "name": "WAITROSE LIMITED",
+            "status": "active",
+            "registrationNumber": "00099405",
+            "addressLine": "1 Drummond Gate, Pimlico, London, United Kingdom, SW1V 2QQ",
+            "country": "GB"
+        },
+        {
+            "transactionId": "9d53e4c6-53f3-45d6-8fe4-fdb6485fcaa8",
+            "companyId": "97d03b00-2d2b-4cc8-af37-a2d1072a8e58",
+            "name": "STARBUCKS COFFEE MCDONALD'S WAITROSE LIMITED",
+            "status": "active",
+            "registrationNumber": "07703544",
+            "addressLine": "2 Vantage Court, Tickford Street, Newport Pagnell, Buckinghamshire, MK16 9EZ",
+            "country": "GB"
+        },
+}
+```
+
+</Accordion>
+
+#### Company Details — WAITROSE LIMITED
+
+<Accordion title="Request">
+
+```json
+{
+    "transactionId": "9d53e4c6-53f3-45d6-8fe4-fdb6485fcaa8",
+    "companyId": "35ca6d2b-a897-4604-9d2c-84889ce221a3",
+    "include": {
+        "officers": true,
+        "addresses": true,
+        "ownerships": true,
+        "transparency": true,
+        "documents": true,
+        "financials": true
+    },
+}
+```
+
+</Accordion>
+
+<Accordion title="Response">
+
+```json
+{
+    "status": true,
+    "data": {
+        "company": {
+            "legalName": "WAITROSE LIMITED",
+            "tradingNames": [],
+            "status": "active",
+            "companyType": {},
+            "incorporationDate": "1908-09-03T00:00:00.000Z",
+            "registrationDate": null,
+            "country": "GB",
+            "registeredAddress": {
+                "singleLine": "1 Drummond Gate, SW1V 2QQ London, GB",
+                "structured": {
+                    "line1": "1 Drummond Gate",
+                    "line2": null,
+                    "city": "London",
+                    "postalCode": "SW1V 2QQ",
+                    "region": null,
+                    "country": "GB"
+                }
+            },
+            "businessAddress": {
+                "singleLine": null,
+                "structured": {
+                    "line1": null,
+                    "line2": null,
+                    "city": null,
+                    "postalCode": null,
+                    "region": null,
+                    "country": "GB"
+                }
+            },
+            "identifiers": [
+                {
+                    "scheme": "REGISTRATION_NUMBER",
+                    "value": "00099405",
+                    "country": "GB"
+                }
+            ],
+            "industryCodes": [],
+            "website": null,
+            "contacts": [],
+            "signatureRules": {
+                "signatureQuality": null
+            },
+            "resources": [],
+            "officers": [
+                {
+                    "type": "secretary",
+                    "officerId": "230",
+                    "officerData": {
+                        "firstName": null,
+                        "lastName": null,
+                        "legalName": "CHEONG TUNG SING, Jane Christina",
+                        "dob": null,
+                        "birthplace": null,
+                        "countryOfBirth": null,
+                        "nationality": null,
+                        "country": null,
+                        "identifiers": [],
+                        "address": {
+                            "singleLine": null,
+                            "structured": {
+                                "line1": null,
+                                "line2": null,
+                                "city": null,
+                                "postalCode": null,
+                                "region": null,
+                                "country": null
+                            }
+                        },
+                        "identityData": {}
+                    },
+                    "activity": {
+                        "role": {
+                            "native": {
+                                "value": "secretary",
+                                "language": "en",
+                                "source": null
+                            }
+                        },
+                        "status": null,
+                        "from": "2021-11-01T00:00:00.000Z",
+                        "to": null,
+                        "phone": null,
+                        "email": null,
+                        "signatureRights": {
+                            "signatureQuality": null
+                        }
+                    }
+                },
+                {
+                    "type": "director",
+                    "officerId": "231",
+                    "officerData": {
+                        "firstName": null,
+                        "lastName": null,
+                        "legalName": "MOUNSEY, Andrew John",
+                        "dob": null,
+                        "birthplace": null,
+                        "countryOfBirth": null,
+                        "nationality": "British",
+                        "country": null,
+                        "identifiers": [],
+                        "address": {
+                            "singleLine": null,
+                            "structured": {
+                                "line1": null,
+                                "line2": null,
+                                "city": null,
+                                "postalCode": null,
+                                "region": null,
+                                "country": null
+                            }
+                        },
+                        "identityData": {}
+                    },
+                    "activity": {
+                        "role": {
+                            "native": {
+                                "value": "director",
+                                "language": "en",
+                                "source": null
+                            }
+                        },
+                        "status": null,
+                        "from": "2024-09-06T00:00:00.000Z",
+                        "to": null,
+                        "phone": null,
+                        "email": null,
+                        "signatureRights": {
+                            "signatureQuality": null
+                        }
+                    }
+                },
+                {
+                    "type": "director",
+                    "officerId": "232",
+                    "officerData": {
+                        "firstName": null,
+                        "lastName": null,
+                        "legalName": "TARRY, Jason Mark",
+                        "dob": null,
+                        "birthplace": null,
+                        "countryOfBirth": null,
+                        "nationality": "British",
+                        "country": null,
+                        "identifiers": [],
+                        "address": {
+                            "singleLine": null,
+                            "structured": {
+                                "line1": null,
+                                "line2": null,
+                                "city": null,
+                                "postalCode": null,
+                                "region": null,
+                                "country": null
+                            }
+                        },
+                        "identityData": {}
+                    },
+                    "activity": {
+                        "role": {
+                            "native": {
+                                "value": "director",
+                                "language": "en",
+                                "source": null
+                            }
+                        },
+                        "status": null,
+                        "from": "2024-09-12T00:00:00.000Z",
+                        "to": null,
+                        "phone": null,
+                        "email": null,
+                        "signatureRights": {
+                            "signatureQuality": null
+                        }
+                    }
+                }
+            ],
+            "ownership": [
+                {
+                    "ownerName": "John Lewis Plc",
+                    "ownershipPercentage": null,
+                    "natureOfControl": "ownership-of-shares-75-to-100-percent, voting-rights-75-to-100-percent, right-to-appoint-and-remove-directors",
+                    "country": null
+                }
+            ],
+            "relationships": {
+                "ultimateBeneficialOwners": [],
+                "transparencyRegister": [],
+                "familyTree": [],
+                "isHeadquarter": null,
+                "isGlobalUltimate": null,
+                "isDomesticUltimate": null,
+                "isSubsidiary": null
+            }
+        }
+    }
+}
+```
+
+</Accordion>
+
+#### Company Details — STARBUCKS COFFEE MCDONALD'S WAITROSE LIMITED
+
+> This entity appeared in the Waitrose search above. Same `transactionId`, different `companyId`.
+
+<Accordion title="Request">
+
+```json
+{
+    "transactionId": "9d53e4c6-53f3-45d6-8fe4-fdb6485fcaa8",
+    "companyId": "97d03b00-2d2b-4cc8-af37-a2d1072a8e58",
+    "include": {
+        "officers": true,
+        "addresses": true,
+        "ownerships": true,
+        "transparency": true,
+        "documents": true,
+        "financials": true
+    },
+}
+```
+
+</Accordion>
+
+<Accordion title="Response">
+
+```json
+{
+    "status": true,
+    "data": {
+        "company": {
+            "legalName": "STARBUCKS COFFEE MCDONALD'S WAITROSE LIMITED",
+            "tradingNames": [],
+            "status": "active",
+            "companyType": {},
+            "incorporationDate": "2011-07-13T00:00:00.000Z",
+            "registrationDate": null,
+            "country": "GB",
+            "registeredAddress": {
+                "singleLine": "2 Vantage Court, MK16 9EZ Newport Pagnell, GB",
+                "structured": {
+                    "line1": "2 Vantage Court",
+                    "line2": "Tickford Street",
+                    "city": "Newport Pagnell",
+                    "postalCode": "MK16 9EZ",
+                    "region": "Buckinghamshire",
+                    "country": "GB"
+                }
+            },
+            "businessAddress": {
+                "singleLine": null,
+                "structured": {
+                    "line1": null,
+                    "line2": null,
+                    "city": null,
+                    "postalCode": null,
+                    "region": null,
+                    "country": "GB"
+                }
+            },
+            "identifiers": [
+                {
+                    "scheme": "REGISTRATION_NUMBER",
+                    "value": "07703544",
+                    "country": "GB"
+                }
+            ],
+            "industryCodes": [],
+            "website": null,
+            "contacts": [],
+            "signatureRules": {
+                "signatureQuality": null
+            },
+            "resources": [],
+            "officers": [
+                {
+                    "type": "director",
+                    "officerId": "281",
+                    "officerData": {
+                        "firstName": null,
+                        "lastName": null,
+                        "legalName": "DIVINEY, John",
+                        "dob": null,
+                        "birthplace": null,
+                        "countryOfBirth": null,
+                        "nationality": "Irish",
+                        "country": null,
+                        "identifiers": [],
+                        "address": {
+                            "singleLine": null,
+                            "structured": {
+                                "line1": null,
+                                "line2": null,
+                                "city": null,
+                                "postalCode": null,
+                                "region": null,
+                                "country": null
+                            }
+                        },
+                        "identityData": {}
+                    },
+                    "activity": {
+                        "role": {
+                            "native": {
+                                "value": "director",
+                                "language": "en",
+                                "source": null
+                            },
+                            "modeled": {
+                                "value": "Director",
+                                "scheme": "idcanopy",
+                                "source": "modeled"
+                            }
+                        },
+                        "status": null,
+                        "from": "2018-11-29T00:00:00.000Z",
+                        "to": null,
+                        "phone": null,
+                        "email": null,
+                        "signatureRights": {
+                            "signatureQuality": null
+                        }
+                    }
+                },
+                {
+                    "type": "corporate-secretary",
+                    "officerId": "282",
+                    "officerData": {
+                        "firstName": null,
+                        "lastName": null,
+                        "legalName": "HP SECRETARIAL SERVICES LIMITED",
+                        "dob": null,
+                        "birthplace": null,
+                        "countryOfBirth": null,
+                        "nationality": null,
+                        "country": null,
+                        "identifiers": [],
+                        "address": {
+                            "singleLine": null,
+                            "structured": {
+                                "line1": null,
+                                "line2": null,
+                                "city": null,
+                                "postalCode": null,
+                                "region": null,
+                                "country": null
+                            }
+                        },
+                        "identityData": {}
+                    },
+                    "activity": {
+                        "role": {
+                            "native": {
+                                "value": "corporate-secretary",
+                                "language": "en",
+                                "source": null
+                            }
+                        },
+                        "status": null,
+                        "from": "2011-07-13T00:00:00.000Z",
+                        "to": "2011-09-14T00:00:00.000Z",
+                        "phone": null,
+                        "email": null,
+                        "signatureRights": {
+                            "signatureQuality": null
+                        }
+                    }
+                },
+                {
+                    "type": "director",
+                    "officerId": "283",
+                    "officerData": {
+                        "firstName": null,
+                        "lastName": null,
+                        "legalName": "BELL, Robbie Ian",
+                        "dob": null,
+                        "birthplace": null,
+                        "countryOfBirth": null,
+                        "nationality": "British",
+                        "country": null,
+                        "identifiers": [],
+                        "address": {
+                            "singleLine": null,
+                            "structured": {
+                                "line1": null,
+                                "line2": null,
+                                "city": null,
+                                "postalCode": null,
+                                "region": null,
+                                "country": null
+                            }
+                        },
+                        "identityData": {}
+                    },
+                    "activity": {
+                        "role": {
+                            "native": {
+                                "value": "director",
+                                "language": "en",
+                                "source": null
+                            },
+                            "modeled": {
+                                "value": "Director",
+                                "scheme": "idcanopy",
+                                "source": "modeled"
+                            }
+                        },
+                        "status": null,
+                        "from": "2017-09-29T00:00:00.000Z",
+                        "to": "2018-12-20T00:00:00.000Z",
+                        "phone": null,
+                        "email": null,
+                        "signatureRights": {
+                            "signatureQuality": null
+                        }
+                    }
+                },
+                {
+                    "type": "director",
+                    "officerId": "284",
+                    "officerData": {
+                        "firstName": null,
+                        "lastName": null,
+                        "legalName": "COULDRAKE, Gerald Mark",
+                        "dob": null,
+                        "birthplace": null,
+                        "countryOfBirth": null,
+                        "nationality": "British",
+                        "country": null,
+                        "identifiers": [],
+                        "address": {
+                            "singleLine": null,
+                            "structured": {
+                                "line1": null,
+                                "line2": null,
+                                "city": null,
+                                "postalCode": null,
+                                "region": null,
+                                "country": null
+                            }
+                        },
+                        "identityData": {}
+                    },
+                    "activity": {
+                        "role": {
+                            "native": {
+                                "value": "director",
+                                "language": "en",
+                                "source": null
+                            },
+                            "modeled": {
+                                "value": "Director",
+                                "scheme": "idcanopy",
+                                "source": "modeled"
+                            }
+                        },
+                        "status": null,
+                        "from": "2011-07-13T00:00:00.000Z",
+                        "to": "2011-09-14T00:00:00.000Z",
+                        "phone": null,
+                        "email": null,
+                        "signatureRights": {
+                            "signatureQuality": null
+                        }
+                    }
+                },
+                {
+                    "type": "director",
+                    "officerId": "285",
+                    "officerData": {
+                        "firstName": null,
+                        "lastName": null,
+                        "legalName": "MCKIE, Roderick Wallace",
+                        "dob": null,
+                        "birthplace": null,
+                        "countryOfBirth": null,
+                        "nationality": "British",
+                        "country": null,
+                        "identifiers": [],
+                        "address": {
+                            "singleLine": null,
+                            "structured": {
+                                "line1": null,
+                                "line2": null,
+                                "city": null,
+                                "postalCode": null,
+                                "region": null,
+                                "country": null
+                            }
+                        },
+                        "identityData": {}
+                    },
+                    "activity": {
+                        "role": {
+                            "native": {
+                                "value": "director",
+                                "language": "en",
+                                "source": null
+                            },
+                            "modeled": {
+                                "value": "Director",
+                                "scheme": "idcanopy",
+                                "source": "modeled"
+                            }
+                        },
+                        "status": null,
+                        "from": "2011-09-14T00:00:00.000Z",
+                        "to": "2018-05-31T00:00:00.000Z",
+                        "phone": null,
+                        "email": null,
+                        "signatureRights": {
+                            "signatureQuality": null
+                        }
+                    }
+                },
+                {
+                    "type": "director",
+                    "officerId": "286",
+                    "officerData": {
+                        "firstName": null,
+                        "lastName": null,
+                        "legalName": "WRIGHT, Nicholas David",
+                        "dob": null,
+                        "birthplace": null,
+                        "countryOfBirth": null,
+                        "nationality": "British",
+                        "country": null,
+                        "identifiers": [],
+                        "address": {
+                            "singleLine": null,
+                            "structured": {
+                                "line1": null,
+                                "line2": null,
+                                "city": null,
+                                "postalCode": null,
+                                "region": null,
+                                "country": null
+                            }
+                        },
+                        "identityData": {}
+                    },
+                    "activity": {
+                        "role": {
+                            "native": {
+                                "value": "director",
+                                "language": "en",
+                                "source": null
+                            },
+                            "modeled": {
+                                "value": "Director",
+                                "scheme": "idcanopy",
+                                "source": "modeled"
+                            }
+                        },
+                        "status": null,
+                        "from": "2011-09-14T00:00:00.000Z",
+                        "to": "2017-09-29T00:00:00.000Z",
+                        "phone": null,
+                        "email": null,
+                        "signatureRights": {
+                            "signatureQuality": null
+                        }
+                    }
+                },
+                {
+                    "type": "corporate-director",
+                    "officerId": "287",
+                    "officerData": {
+                        "firstName": null,
+                        "lastName": null,
+                        "legalName": "HP DIRECTORS LIMITED",
+                        "dob": null,
+                        "birthplace": null,
+                        "countryOfBirth": null,
+                        "nationality": null,
+                        "country": null,
+                        "identifiers": [],
+                        "address": {
+                            "singleLine": null,
+                            "structured": {
+                                "line1": null,
+                                "line2": null,
+                                "city": null,
+                                "postalCode": null,
+                                "region": null,
+                                "country": null
+                            }
+                        },
+                        "identityData": {}
+                    },
+                    "activity": {
+                        "role": {
+                            "native": {
+                                "value": "corporate-director",
+                                "language": "en",
+                                "source": null
+                            }
+                        },
+                        "status": null,
+                        "from": "2011-07-13T00:00:00.000Z",
+                        "to": "2011-09-14T00:00:00.000Z",
+                        "phone": null,
+                        "email": null,
+                        "signatureRights": {
+                            "signatureQuality": null
+                        }
+                    }
+                }
+            ],
+            "ownership": [
+                {
+                    "ownerName": "Welcome Break Group Limited",
+                    "ownershipPercentage": null,
+                    "natureOfControl": "ownership-of-shares-75-to-100-percent, voting-rights-75-to-100-percent, right-to-appoint-and-remove-directors, significant-influence-or-control",
+                    "country": null
+                }
+            ],
+            "relationships": {
+                "ultimateBeneficialOwners": [],
+                "transparencyRegister": [],
+                "familyTree": [],
+                "isHeadquarter": null,
+                "isGlobalUltimate": null,
+                "isDomesticUltimate": null,
+                "isSubsidiary": null
+            }
+        }
+    }
+}
+```
+
+</Accordion>
+
+  </Tab>
+  <Tab title="Case GB-2 — BM Developers">
+
+#### Search
+
+<Accordion title="Request">
+
+```json
+{
+  "name": "BM Dev",
+  "country": "GB",
+"companyNo": "15463692"
+  "locality": "London"
+}
+```
+
+</Accordion>
+
+<Accordion title="Response">
+
+```json
+{
+        {
+            "transactionId": "9d53e4c6-53f3-45d6-8fe4-fdb6485fcj5a8",
+            "companyId": "24689af7-f971-4ccd-9275-6fb2e22aa052",
+            "name": "BM DEVELOPERS LIMITED",
+            "status": "active",
+            "registrationNumber": "15463692",
+            "addressLine": "28 All Saints Croft, Burton-On-Trent, England, DE14 3EA",
+            "country": "GB"
+        }
+    ]
+}
+```
+
+</Accordion>
+
+#### Company Details — BM DEVELOPERS LIMITED
+
+<Accordion title="Request">
+
+```json
+{
+    "transactionId": "9d53e4c6-53f3-45d6-8fe4-fdb6485fcJ5a8",
+    "companyId": "24689af7-f971-4ccd-9275-6fb2e22aa052",
+    "include": {
+        "officers": true,
+        "addresses": true,
+        "ownerships": true,
+        "transparency": true,
+        "documents": true,
+        "financials": true
+    },
+}
+```
+
+</Accordion>
+
+<Accordion title="Response">
+
+```json
+{
+    "status": true,
+    "data": {
+        "company": {
+            "legalName": "BM DEVELOPERS LIMITED",
+            "tradingNames": [],
+            "status": "active",
+            "companyType": {},
+            "incorporationDate": "2024-02-03T00:00:00.000Z",
+            "registrationDate": null,
+            "country": "GB",
+            "registeredAddress": {
+                "singleLine": "28 All Saints Croft, DE14 3EA Burton-On-Trent, ENGLAND",
+                "structured": {
+                    "line1": "28 All Saints Croft",
+                    "line2": null,
+                    "city": "Burton-On-Trent",
+                    "postalCode": "DE14 3EA",
+                    "region": null,
+                    "country": "ENGLAND"
+                }
+            },
+            "businessAddress": {
+                "singleLine": null,
+                "structured": {
+                    "line1": null,
+                    "line2": null,
+                    "city": null,
+                    "postalCode": null,
+                    "region": null,
+                    "country": "GB"
+                }
+            },
+            "identifiers": [
+                {
+                    "scheme": "REGISTRATION_NUMBER",
+                    "value": "15463692",
+                    "country": null
+                }
+            ],
+            "industryCodes": [],
+            "website": null,
+            "contacts": [],
+            "signatureRules": {
+                "signatureQuality": null
+            },
+            "resources": [],
+            "officers": [
+                {
+                    "type": "director",
+                    "officerId": "288",
+                    "officerData": {
+                        "firstName": null,
+                        "lastName": null,
+                        "legalName": "HUSSAIN, Abid",
+                        "dob": null,
+                        "birthplace": null,
+                        "countryOfBirth": null,
+                        "nationality": "British",
+                        "country": null,
+                        "identifiers": [],
+                        "address": {
+                            "singleLine": null,
+                            "structured": {
+                                "line1": null,
+                                "line2": null,
+                                "city": null,
+                                "postalCode": null,
+                                "region": null,
+                                "country": null
+                            }
+                        },
+                        "identityData": {}
+                    },
+                    "activity": {
+                        "role": {
+                            "native": {
+                                "value": "director",
+                                "language": "en",
+                                "source": null
+                            }
+                        },
+                        "status": null,
+                        "from": "2025-01-15T00:00:00.000Z",
+                        "to": null,
+                        "phone": null,
+                        "email": null,
+                        "signatureRights": {
+                            "signatureQuality": null
+                        }
+                    }
+                },
+                {
+                    "type": "director",
+                    "officerId": "289",
+                    "officerData": {
+                        "firstName": null,
+                        "lastName": null,
+                        "legalName": "SULTAN, Nosha",
+                        "dob": null,
+                        "birthplace": null,
+                        "countryOfBirth": null,
+                        "nationality": "British",
+                        "country": null,
+                        "identifiers": [],
+                        "address": {
+                            "singleLine": null,
+                            "structured": {
+                                "line1": null,
+                                "line2": null,
+                                "city": null,
+                                "postalCode": null,
+                                "region": null,
+                                "country": null
+                            }
+                        },
+                        "identityData": {}
+                    },
+                    "activity": {
+                        "role": {
+                            "native": {
+                                "value": "director",
+                                "language": "en",
+                                "source": null
+                            }
+                        },
+                        "status": null,
+                        "from": "2024-02-03T00:00:00.000Z",
+                        "to": "2024-04-05T00:00:00.000Z",
+                        "phone": null,
+                        "email": null,
+                        "signatureRights": {
+                            "signatureQuality": null
+                        }
+                    }
+                },
+                {
+                    "type": "director",
+                    "officerId": "290",
+                    "officerData": {
+                        "firstName": null,
+                        "lastName": null,
+                        "legalName": "SULTAN, Shoaib Ali",
+                        "dob": null,
+                        "birthplace": null,
+                        "countryOfBirth": null,
+                        "nationality": "British",
+                        "country": null,
+                        "identifiers": [],
+                        "address": {
+                            "singleLine": null,
+                            "structured": {
+                                "line1": null,
+                                "line2": null,
+                                "city": null,
+                                "postalCode": null,
+                                "region": null,
+                                "country": null
+                            }
+                        },
+                        "identityData": {}
+                    },
+                    "activity": {
+                        "role": {
+                            "native": {
+                                "value": "director",
+                                "language": "en",
+                                "source": null
+                            }
+                        },
+                        "status": null,
+                        "from": "2024-05-05T00:00:00.000Z",
+                        "to": "2025-01-15T00:00:00.000Z",
+                        "phone": null,
+                        "email": null,
+                        "signatureRights": {
+                            "signatureQuality": null
+                        }
+                    }
+                }
+            ],
+            "ownership": [
+                {
+                    "ownerName": "Mr Abid Hussain",
+                    "ownershipPercentage": "25-50",
+                    "natureOfControl": "ownership-of-shares-25-to-50-percent",
+                    "country": null
+                },
+                {
+                    "ownerName": "Mr Shoaib Ali Sultan",
+                    "ownershipPercentage": "25-50",
+                    "natureOfControl": "ownership-of-shares-25-to-50-percent",
+                    "country": null
+                },
+                {
+                    "ownerName": "Mr Nosha Sultan",
+                    "ownershipPercentage": "75",
+                    "natureOfControl": "ownership-of-shares-75-to-100-percent, voting-rights-75-to-100-percent, right-to-appoint-and-remove-directors",
+                    "country": null
+                }
+            ],
+            "relationships": {
+                "ultimateBeneficialOwners": [],
+                "transparencyRegister": [],
+                "familyTree": [],
+                "isHeadquarter": null,
+                "isGlobalUltimate": null,
+                "isDomesticUltimate": null,
+                "isSubsidiary": null
+            }
+        }
+    }
+}
+```
+
+</Accordion>
+
+  </Tab>
+</Tabs>
+
+---
+### AT
+
+<Tabs>
+  <Tab title="Case AT-1 — IDCanopy Flexco">
+
+#### Search
+
+<Accordion title="Request">
+
+```json
+{
+  "name": "IDCANOPY",
+  "country": "AT",
+  "locality": "Vienna"
+}
+```
+
+</Accordion>
+
+<Accordion title="Response">
+
+```json
+{
+    "status": true,
+    "data": [
+        {
+            "transactionId": "02fbbcb4-2b21-49d7-87d7-0cfe0da63da5",
+            "companyId": "ef9ba1cb-ca7e-4a55-b133-4e633ae92661",
+            "name": "IDCANOPY FLEXCO",
+            "status": "Active",
+            "registrationNumber": "FN 628013Z",
+            "addressLine": "DR.-KARL-LUEGER-PLATZ 5",
+            "country": "AT"
+        }
+    ]
+}
+```
+
+</Accordion>
+
+#### Company Details — IDCANOPY FLEXCO
+
+<Accordion title="Request">
+
+```json
+{
+    "transactionId": "02fbbcb4-2b21-49d7-87d7-0cfe0da63da5",
+    "companyId": "ef9ba1cb-ca7e-4a55-b133-4e633ae92661",
+    "include": {
+        "officers": true,
+        "addresses": true,
+        "ownerships": true,
+        "transparency": true,
+        "documents": true,
+        "financials": true
+    },
+}
+```
+
+</Accordion>
+
+<Accordion title="Response">
+
+```json
+{
+    "status": true,
+    "data": {
+        "company": {
+            "status": "active",
+            "country": "AT",
+            "website": null,
+            "contacts": [],
+            "officers": [],
+            "ownership": [
+                {
+                    "country": null,
+                    "ownerName": "IDCANOPY GROUP LTD",
+                    "natureOfControl": "unknown",
+                    "ownershipPercentage": "100"
+                }
+            ],
+            "resources": [],
+            "legalName": "IDCANOPY FLEXCO",
+            "identifiers": [
+                {
+                    "value": "FN 628013Z",
+                    "scheme": "REGISTRATION_NUMBER",
+                    "country": "AT"
+                }
+            ],
+            "companyType": {},
+            "relationships": {
+                "familyTree": [],
+                "isSubsidiary": null,
+                "isHeadquarter": null,
+                "isGlobalUltimate": null,
+                "isDomesticUltimate": null,
+                "transparencyRegister": [],
+                "ultimateBeneficialOwners": []
+            },
+            "tradingNames": [],
+            "industryCodes": [],
+            "signatureRules": {
+                "signatureQuality": null
+            },
+            "businessAddress": {
+                "structured": {
+                    "city": null,
+                    "line1": null,
+                    "line2": null,
+                    "region": null,
+                    "country": "AT",
+                    "postalCode": null
+                },
+                "singleLine": null
+            },
+            "registrationDate": null,
+            "incorporationDate": null,
+            "registeredAddress": {
+                "structured": {
+                    "city": "WIEN",
+                    "line1": "DR.-KARL-LUEGER-PLATZ 5",
+                    "line2": null,
+                    "region": "WIEN",
+                    "country": "AT",
+                    "postalCode": "1010"
+                },
+                "singleLine": "DR.-KARL-LUEGER-PLATZ 5, 1010 WIEN, AT"
+            }
+        }
+    }
+}
+```
+
+</Accordion>
+
+  </Tab>
+</Tabs>
+
+---
+### IT
+
+<Tabs>
+  <Tab title="Case IT-1 — WIND TELECOM">
+
+#### Search
+
+<Accordion title="Request">
+
+```json
+{
+  "name": "WIND",
+  "country": "IT",
+  "locality": "Rome"
+}
+```
+
+</Accordion>
+
+<Accordion title="Response">
+
+```json
+{
+    "status": true,
+    "data": [
+        {
+            "transactionId": "968b703b-54cd-4a7c-8fc4-9300f14b9255",
+            "companyId": "c79bd0f4-b3ed-446b-8d47-e1a766feb307",
+            "name": "WIND TELECOM S.P.A.",
+            "status": "Active",
+            "registrationNumber": null,
+            "addressLine": "VIA CESARE GIULIO VIOLA, 48",
+            "country": "IT"
+        },
+        {
+            "transactionId": "968b703b-54cd-4a7c-8fc4-9300f14b9255",
+            "companyId": "196946f2-02c1-45c3-9f7f-d0529544ef57",
+            "name": "WIND NEGOZIO",
+            "status": "Active",
+            "registrationNumber": null,
+            "addressLine": "VIA DI BOCCEA 126",
+            "country": "IT"
+        },
+        {
+            "transactionId": "968b703b-54cd-4a7c-8fc4-9300f14b9255",
+            "companyId": "e7b6b29b-2f2c-438a-a62f-1485df17ff85",
+            "name": "WIND 3 SPA",
+            "status": "Active",
+            "registrationNumber": null,
+            "addressLine": "VIA CESARE GIULIO VIOLA 58",
+            "country": "IT"
+        },
+        {
+            "transactionId": "968b703b-54cd-4a7c-8fc4-9300f14b9255",
+            "companyId": "679ad594-bb39-49a7-992f-de2127740d7e",
+            "name": "WIND",
+            "status": "Active",
+            "registrationNumber": null,
+            "addressLine": "PIAZZA CARITÀ'3",
+            "country": "IT"
+        },
+        {
+            "transactionId": "968b703b-54cd-4a7c-8fc4-9300f14b9255",
+            "companyId": "1911d1bc-f597-49c7-befe-4221ea28215b",
+            "name": "WIND S.R.L.",
+            "status": "Active",
+            "registrationNumber": null,
+            "addressLine": "VIA LOMBARDIA 7/9",
+            "country": "IT"
+        },
+        {
+            "transactionId": "968b703b-54cd-4a7c-8fc4-9300f14b9255",
+            "companyId": "b387f4c8-6bfe-4318-97b0-aa142a518cc7",
+            "name": "WIND RETAIL S.R.L.",
+            "status": "Active",
+            "registrationNumber": null,
+            "addressLine": "VIA CESARE GIULIO VIOLA 48",
+            "country": "IT"
+        },
+        {
+            "transactionId": "968b703b-54cd-4a7c-8fc4-9300f14b9255",
+            "companyId": "6acdbf5b-5e75-4ff1-ac81-26dcc69fb1ed",
+            "name": "WIND S.R.L.",
+            "status": "Inactive",
+            "registrationNumber": "PR257550",
+            "addressLine": "VIA PARADIGNA 21/A",
+            "country": "IT"
+        }
+    ]
+}
+```
+
+</Accordion>
+
+#### Company Details — WIND TELECOM S.P.A.
+
+<Accordion title="Request">
+
+```json
+{
+    "transactionId": "968b703b-54cd-4a7c-8fc4-9300f14b9255",
+    "companyId": "c79bd0f4-b3ed-446b-8d47-e1a766feb307",
+    "include": {
+        "officers": true,
+        "addresses": true,
+        "ownerships": true,
+        "transparency": true,
+        "documents": true,
+        "financials": true
+    },
+}
+```
+
+</Accordion>
+
+<Accordion title="Response">
+
+```json
+{
+    "status": true,
+    "data": {
+        "company": {
+            "legalName": "WIND TELECOM S.P.A.",
+            "tradingNames": [],
+            "status": "active",
+            "companyType": {},
+            "incorporationDate": null,
+            "registrationDate": null,
+            "country": "IT",
+            "registeredAddress": {
+                "singleLine": "VIA CESARE GIULIO VIOLA, 48, 00148 ROME, IT",
+                "structured": {
+                    "line1": "VIA CESARE GIULIO VIOLA, 48",
+                    "line2": null,
+                    "city": "ROME",
+                    "postalCode": "00148",
+                    "region": "ROMA",
+                    "country": "IT"
+                }
+            },
+            "businessAddress": {
+                "singleLine": null,
+                "structured": {
+                    "line1": null,
+                    "line2": null,
+                    "city": null,
+                    "postalCode": null,
+                    "region": null,
+                    "country": "IT"
+                }
+            },
+            "identifiers": [],
+            "industryCodes": [],
+            "website": null,
+            "contacts": [],
+            "signatureRules": {
+                "signatureQuality": null
+            },
+            "resources": [],
+            "officers": [],
+            "ownership": [],
+            "relationships": {
+                "ultimateBeneficialOwners": [],
+                "transparencyRegister": [],
+                "familyTree": [],
+                "isHeadquarter": null,
+                "isGlobalUltimate": null,
+                "isDomesticUltimate": null,
+                "isSubsidiary": null
+            }
+        }
+    }
+}
+```
+
+</Accordion>
+
+  </Tab>
+  <Tab title="Case IT-2 — LAVAZZA">
+
+#### Search
+
+<Accordion title="Request">
+
+```json
+{
+  "name": "Lavazza",
+  "country": "IT",
+  "locality": "Rome"
+}
+```
+
+</Accordion>
+
+<Accordion title="Response">
+
+```json
+{
+    "status": true,
+    "data": [
+        {
+            "transactionId": "542a50a7-97ab-4b2b-a4cf-fc47eb118463",
+            "companyId": "89626945-fc2f-45e1-8968-4637711ca40c",
+            "name": "LAVAZZA",
+            "status": "Active",
+            "registrationNumber": null,
+            "addressLine": "VIA LEONARDO DA VINCI",
+            "country": "IT"
+        },
+        {
+            "transactionId": "542a50a7-97ab-4b2b-a4cf-fc47eb118463",
+            "companyId": "c4180eee-7490-4aa5-97ba-434f9eb7ad2b",
+            "name": "BAR LAVAZZA 140",
+            "status": "Active",
+            "registrationNumber": null,
+            "addressLine": "VIA ANASTASIO II 140",
+            "country": "IT"
+        },
+        {
+            "transactionId": "542a50a7-97ab-4b2b-a4cf-fc47eb118463",
+            "companyId": "b83818ab-a55a-4f6d-bd3f-57036d4a26c8",
+            "name": "LAVAZZA MARIO",
+            "status": "Active",
+            "registrationNumber": null,
+            "addressLine": "VIA GARIBALDI 35",
+            "country": "IT"
+        },
+        {
+            "transactionId": "542a50a7-97ab-4b2b-a4cf-fc47eb118463",
+            "companyId": "4dcf78b3-fd87-4080-8af2-badce3897041",
+            "name": "LAVAZZA LUIGI",
+            "status": "Active",
+            "registrationNumber": null,
+            "addressLine": "STRADA STATALE 121 KM 9.300",
+            "country": "IT"
+        },
+        {
+            "transactionId": "542a50a7-97ab-4b2b-a4cf-fc47eb118463",
+            "companyId": "3a99f55b-9fb8-458f-9415-727537e1ea00",
+            "name": "PAOLO LAVAZZA",
+            "status": "Active",
+            "registrationNumber": null,
+            "addressLine": "V. ROCCAVIONE 9",
+            "country": "IT"
+        },
+        {
+            "transactionId": "542a50a7-97ab-4b2b-a4cf-fc47eb118463",
+            "companyId": "5762b5d5-17f3-4a72-af48-e7cdc2827884",
+            "name": "LAVAZZA MARCO",
+            "status": "Active",
+            "registrationNumber": null,
+            "addressLine": "V. LUIGI GALVANI 27",
+            "country": "IT"
+        },
+        {
+            "transactionId": "542a50a7-97ab-4b2b-a4cf-fc47eb118463",
+            "companyId": "a742120d-8fbd-454f-b389-7f0bca801da6",
+            "name": "A. TEAM LAVAZZA S.R.L.",
+            "status": "Inactive",
+            "registrationNumber": null,
+            "addressLine": "VIA LIFIA 0",
+            "country": "IT"
+        },
+        {
+            "transactionId": "542a50a7-97ab-4b2b-a4cf-fc47eb118463",
+            "companyId": "8ce677d3-e117-4e85-9322-c58d88594f07",
+            "name": "A. TEAM LAVAZZA S.R.L.",
+            "status": "Inactive",
+            "registrationNumber": "ME219067",
+            "addressLine": "VIA LIFIA 0",
+            "country": "IT"
+        },
+        {
+            "transactionId": "542a50a7-97ab-4b2b-a4cf-fc47eb118463",
+            "companyId": "57c92298-f5aa-4b11-aaae-4fec8cf66390",
+            "name": "LAVAZZA LUCA",
+            "status": "Inactive",
+            "registrationNumber": "TO887902",
+            "addressLine": "PZA SOLFERINO 9",
+            "country": "IT"
+        }
+    ]
+}
+```
+
+</Accordion>
+
+#### Company Details — LAVAZZA
+
+<Accordion title="Request">
+
+```json
+{
+    "transactionId": "542a50a7-97ab-4b2b-a4cf-fc47eb118463",
+    "companyId": "89626945-fc2f-45e1-8968-4637711ca40c",
+    "include": {
+        "officers": true,
+        "addresses": true,
+        "ownerships": true,
+        "transparency": true,
+        "documents": true,
+        "financials": true
+    },
+}
+```
+
+</Accordion>
+
+<Accordion title="Response">
+
+```json
+{
+    "status": true,
+    "data": {
+        "company": {
+            "legalName": "LAVAZZA",
+            "tradingNames": [],
+            "status": "active",
+            "companyType": {},
+            "incorporationDate": null,
+            "registrationDate": null,
+            "country": "IT",
+            "registeredAddress": {
+                "singleLine": "VIA LEONARDO DA VINCI, 00054 FIUMICINO, IT",
+                "structured": {
+                    "line1": "VIA LEONARDO DA VINCI",
+                    "line2": null,
+                    "city": "FIUMICINO",
+                    "postalCode": "00054",
+                    "region": null,
+                    "country": "IT"
+                }
+            },
+            "businessAddress": {
+                "singleLine": "CORSO NOVARA 59,  BOLZANO, IT",
+                "structured": {
+                    "line1": "CORSO NOVARA 59",
+                    "line2": null,
+                    "city": "BOLZANO",
+                    "postalCode": null,
+                    "region": null,
+                    "country": "IT"
+                }
+            },
+            "identifiers": [],
+            "industryCodes": [],
+            "website": null,
+            "contacts": [],
+            "signatureRules": {
+                "signatureQuality": null
+            },
+            "resources": [],
+            "officers": [],
+            "ownership": [],
+            "relationships": {
+                "ultimateBeneficialOwners": [],
+                "transparencyRegister": [],
+                "familyTree": [],
+                "isHeadquarter": null,
+                "isGlobalUltimate": null,
+                "isDomesticUltimate": null,
+                "isSubsidiary": null
+            }
+        }
+    }
+}
+```
+
+</Accordion>
+
+  </Tab>
+</Tabs>
+
+---
+### DE
+
+<Tabs>
+  <Tab title="Case DE-1 — Bosch GmbH">
+
+#### Search
+
+<Accordion title="Request">
+
+```json
+{
+  "name": "Bosch",
+  "country": "DE",
+  "locality": "Berlin"
+}
+```
+
+</Accordion>
+
+<Accordion title="Response">
+
+```json
+{
+    "status": true,
+    "data": [
+        {
+            "transactionId": "134dbc33-10cd-41ad-a0d0-c5d6632de563",
+            "companyId": "9288e6fb-cedb-4945-b080-2a5d63cd0fe5",
+            "name": "Bosch GmbH",
+            "status": "active",
+            "registrationNumber": null,
+            "addressLine": "Pestalozziring, Aldenhoven",
+            "country": "DE"
+        },
+    ]
+}
+```
+
+</Accordion>
+
+#### Company Details — Bosch GmbH
+
+<Accordion title="Request">
+
+```json
+{
+   "transactionId": "134dbc33-10cd-41ad-a0d0-c5d6632de563",
+    "companyId": "9288e6fb-cedb-4945-b080-2a5d63cd0fe5",
+    "include": {
+        "officers": true,
+        "addresses": true,
+        "ownerships": true,
+        "transparency": true,
+        "documents": true,
+        "financials": true
+    },
+}
+```
+
+</Accordion>
+
+<Accordion title="Response">
+
+```json
+{
+    "status": true,
+    "data": {
+        "company": {
+            "legalName": "Bosch GmbH",
+            "tradingNames": [],
+            "status": "active",
+            "companyType": {},
+            "incorporationDate": null,
+            "registrationDate": null,
+            "country": "DE",
+            "registeredAddress": {
+                "singleLine": "Pestalozziring, 52457 Aldenhoven, DE",
+                "structured": {
+                    "line1": "Pestalozziring, Aldenhoven",
+                    "line2": null,
+                    "city": "Aldenhoven",
+                    "postalCode": "52457",
+                    "region": null,
+                    "country": "DE"
+                }
+            },
+            "businessAddress": {
+                "singleLine": "Pestalozziring, Aldenhoven, DE",
+                "structured": {
+                    "line1": "Pestalozziring, Aldenhoven",
+                    "line2": null,
+                    "city": "Aldenhoven",
+                    "postalCode": null,
+                    "region": null,
+                    "country": "DE"
+                }
+            },
+            "identifiers": [
+                {
+                    "scheme": "REGISTRATION_NUMBER",
+                    "value": "HRB 4319",
+                    "country": "DE"
+                }
+            ],
+            "industryCodes": [],
+            "website": null,
+            "contacts": [],
+            "signatureRules": {
+                "signatureQuality": null
+            },
+            "resources": [],
+            "officers": [
+                {
+                    "type": "director",
+                    "officerId": "291",
+                    "officerData": {
+                        "firstName": "Rainer Norbert",
+                        "lastName": "Bosch",
+                        "legalName": "Rainer Norbert Bosch",
+                        "dob": null,
+                        "birthplace": null,
+                        "countryOfBirth": null,
+                        "nationality": null,
+                        "country": null,
+                        "identifiers": [],
+                        "address": {
+                            "singleLine": null,
+                            "structured": {
+                                "line1": null,
+                                "line2": null,
+                                "city": null,
+                                "postalCode": null,
+                                "region": null,
+                                "country": null
+                            }
+                        },
+                        "identityData": {}
+                    },
+                    "activity": {
+                        "role": {
+                            "native": {
+                                "value": "director",
+                                "language": "de",
+                                "source": null
+                            }
+                        },
+                        "status": null,
+                        "from": null,
+                        "to": null,
+                        "phone": null,
+                        "email": null,
+                        "signatureRights": {
+                            "signatureQuality": null
+                        }
+                    }
+                }
+            ],
+            "ownership": [
+                {
+                    "ownerName": "Bosch GmbH",
+                    "ownershipPercentage": null,
+                    "natureOfControl": "unknown",
+                    "country": null
+                },
+                {
+                    "ownerName": "Fertigbeton Rheinland GmbH & Co. KG",
+                    "ownershipPercentage": null,
+                    "natureOfControl": "unknown",
+                    "country": null
+                }
+            ],
+            "relationships": {
+                "ultimateBeneficialOwners": [],
+                "transparencyRegister": [],
+                "familyTree": [],
+                "isHeadquarter": null,
+                "isGlobalUltimate": null,
+                "isDomesticUltimate": null,
+                "isSubsidiary": null
+            }
+        }
+    }
+}
+```
+
+</Accordion>
+
+  </Tab>
+
+  <Tab title="Case DE-2 — Mueller.legal">
+
+#### Search
+
+<Accordion title="Request">
+```json
+{
+  "name": "Müller",
+  "country": "DE",
+  "locality": "Berlin"
+}
+```
+</Accordion>
+
+<Accordion title="Response">
+```json
+{
+  "status": true,
+  "data": [
+    {
+      "transactionId": "[TBD]",
+      "companyId": "[TBD]",
+      "name": "Mueller.legal Müller Rechtsanwälte Partnerschaft PartG",
+      "status": "active",
+      "registrationNumber": "PR 930 B",
+      "addressLine": "Mauerstr. 66, 10117 Berlin, DE",
+      "country": "DE"
+    },
+    {
+      "transactionId": "[TBD]",
+      "companyId": "[TBD]",
+      "name": "Gebr. Müller Müllerbräu GmbH & Co. KG",
+      "status": "active",
+      "registrationNumber": null,
+      "addressLine": null,
+      "country": "DE"
+    },
+    {
+      "transactionId": "[TBD]",
+      "companyId": "[TBD]",
+      "name": "muellerfinancial GmbH",
+      "status": "active",
+      "registrationNumber": null,
+      "addressLine": null,
+      "country": "DE"
+    },
+    {
+      "transactionId": "[TBD]",
+      "companyId": "[TBD]",
+      "name": "MüllerKälber GmbH",
+      "status": "active",
+      "registrationNumber": null,
+      "addressLine": null,
+      "country": "DE"
+    },
+    {
+      "transactionId": "[TBD]",
+      "companyId": "[TBD]",
+      "name": "Muellerim UG",
+      "status": "active",
+      "registrationNumber": null,
+      "addressLine": null,
+      "country": "DE"
+    }
+  ]
+}
+```
+</Accordion>
+
+#### Company Details — Mueller.legal Müller Rechtsanwälte Partnerschaft PartG
+
+<Accordion title="Request">
+```json
+{
+  "transactionId": "[TBD]",
+  "companyId": "[TBD]",
+  "include": {
+    "officers": true,
+    "addresses": true,
+    "ownerships": true,
+    "transparency": true,
+    "documents": true,
+    "financials": true
+  }
+}
+```
+</Accordion>
+
+<Accordion title="Response">
+```json
+{
+  "status": true,
+  "data": {
+    "company": {
+      "legalName": "Mueller.legal Müller Rechtsanwälte Partnerschaft PartG",
+      "tradingNames": [],
+      "status": "active",
+      "companyType": {
+        "native": { "value": "PartG", "language": "de", "source": null }
+      },
+      "incorporationDate": null,
+      "registrationDate": "2014-06-03T00:00:00.000Z",
+      "country": "DE",
+      "registeredAddress": {
+        "singleLine": "Mauerstr. 66, 10117 Berlin, DE",
+        "structured": {
+          "line1": "Mauerstr. 66",
+          "line2": null,
+          "city": "Berlin",
+          "postalCode": "10117",
+          "region": null,
+          "country": "DE"
+        }
+      },
+      "businessAddress": {
+        "singleLine": null,
+        "structured": {
+          "line1": null, "line2": null, "city": null,
+          "postalCode": null, "region": null, "country": "DE"
+        }
+      },
+      "identifiers": [
+        { "scheme": "REGISTRATION_NUMBER", "value": "PR 930 B", "country": "DE" },
+        { "scheme": "VAT", "value": "DE281527011", "country": "DE" }
+      ],
+      "industryCodes": [
+        { "scheme": "WZ2008", "code": "69102", "label": null },
+        { "scheme": "NACE", "code": "6910", "label": null }
+      ],
+      "website": "https://sos-recht.de",
+      "contacts": [
+        { "type": "phone", "value": "+49 30206436810" },
+        { "type": "fax",   "value": "+49 30206436811" },
+        { "type": "email", "value": "info@mueller.legal" }
+      ],
+      "signatureRules": {
+        "native": {
+          "value": "Jeder Partner vertritt die Gesellschaft allein.",
+          "language": "de",
+          "source": null
+        },
+        "signatureQuality": "individual"
+      },
+      "resources": [],
+      "officers": [
+        {
+          "type": "partner",
+          "officerId": "292",
+          "officerData": {
+            "firstName": "Carl-Christian",
+            "lastName": "Müller",
+            "legalName": "Carl-Christian Müller",
+            "dob": "1972-03-08",
+            "birthplace": "Berlin",
+            "countryOfBirth": "DE",
+            "nationality": null,
+            "country": "DE",
+            "identifiers": [],
+            "address": {
+              "singleLine": "Berlin, DE",
+              "structured": {
+                "line1": null, "line2": null, "city": "Berlin",
+                "postalCode": null, "region": null, "country": "DE"
+              }
+            },
+            "identityData": {}
+          },
+          "activity": {
+            "role": {
+              "native": { "value": "partner", "language": "de", "source": null }
+            },
+            "status": "active",
+            "from": "2014-06-03T00:00:00.000Z",
+            "to": null,
+            "phone": null,
+            "email": null,
+            "signatureRights": { "signatureQuality": "individual" }
+          }
+        },
+        {
+          "type": "partner",
+          "officerId": "293",
+          "officerData": {
+            "firstName": "Sören Christian Günter",
+            "lastName": "Rößner",
+            "legalName": "Sören Christian Günter Rößner",
+            "dob": "1975-07-17",
+            "birthplace": "Oberwaldach",
+            "countryOfBirth": "DE",
+            "nationality": null,
+            "country": "DE",
+            "identifiers": [],
+            "address": {
+              "singleLine": "Oberwaldach, DE",
+              "structured": {
+                "line1": null, "line2": null, "city": "Oberwaldach",
+                "postalCode": null, "region": null, "country": "DE"
+              }
+            },
+            "identityData": {}
+          },
+          "activity": {
+            "role": {
+              "native": { "value": "partner", "language": "de", "source": null }
+            },
+            "status": "inactive",
+            "from": null,
+            "to": "2019-01-31T00:00:00.000Z",
+            "phone": null,
+            "email": null,
+            "signatureRights": { "signatureQuality": "individual" }
+          }
+        },
+        {
+          "type": "partner",
+          "officerId": "294",
+          "officerData": {
+            "firstName": "Peter",
+            "lastName": "Weiler",
+            "legalName": "Peter Weiler",
+            "dob": "1984-11-19",
+            "birthplace": "Berlin",
+            "countryOfBirth": "DE",
+            "nationality": null,
+            "country": "DE",
+            "identifiers": [],
+            "address": {
+              "singleLine": "Berlin, DE",
+              "structured": {
+                "line1": null, "line2": null, "city": "Berlin",
+                "postalCode": null, "region": null, "country": "DE"
+              }
+            },
+            "identityData": {}
+          },
+          "activity": {
+            "role": {
+              "native": { "value": "partner", "language": "de", "source": null }
+            },
+            "status": "active",
+            "from": "2021-02-05T00:00:00.000Z",
+            "to": null,
+            "phone": null,
+            "email": null,
+            "signatureRights": { "signatureQuality": "individual" }
+          }
+        },
+        {
+          "type": "partner",
+          "officerId": "295",
+          "officerData": {
+            "firstName": "Thomas Gerald",
+            "lastName": "Müller",
+            "legalName": "Thomas Gerald Müller",
+            "dob": "1977-10-05",
+            "birthplace": "Kleinmachnow",
+            "countryOfBirth": "DE",
+            "nationality": null,
+            "country": "DE",
+            "identifiers": [],
+            "address": {
+              "singleLine": "Kleinmachnow, DE",
+              "structured": {
+                "line1": null, "line2": null, "city": "Kleinmachnow",
+                "postalCode": null, "region": null, "country": "DE"
+              }
+            },
+            "identityData": {}
+          },
+          "activity": {
+            "role": {
+              "native": { "value": "partner", "language": "de", "source": null }
+            },
+            "status": "inactive",
+            "from": null,
+            "to": "2021-02-05T00:00:00.000Z",
+            "phone": null,
+            "email": null,
+            "signatureRights": { "signatureQuality": "individual" }
+          }
+        }
+      ],
+      "ownership": [],
+      "relationships": {
+        "ultimateBeneficialOwners": [],
+        "transparencyRegister": [],
+        "familyTree": [],
+        "isHeadquarter": null,
+        "isGlobalUltimate": null,
+        "isDomesticUltimate": null,
+        "isSubsidiary": null
+      }
+    }
+  }
+}
+```
+</Accordion>
+
+  </Tab>
+  <Tab title="Case DE-3 — Porsche GmbH">
+
+#### Search
+
+<Accordion title="Request">
+```json
+{
+  "name": "Porsche",
+  "country": "DE"
+}
+```
+</Accordion>
+
+<Accordion title="Response">
+```json
+{
+  "status": true,
+  "data": [
+    {
+      "transactionId": "[TBD]",
+      "companyId": "[TBD]",
+      "name": "Porsche GmbH",
+      "status": "active",
+      "registrationNumber": "HRB 226427",
+      "addressLine": "Perlacher Str. 5 a, 82031 Grünwald, DE",
+      "country": "DE"
+    },
+    {
+      "transactionId": "[TBD]",
+      "companyId": "[TBD]",
+      "name": "Porsche Deutschland GmbH",
+      "status": "active",
+      "registrationNumber": null,
+      "addressLine": null,
+      "country": "DE"
+    },
+    {
+      "transactionId": "[TBD]",
+      "companyId": "[TBD]",
+      "name": "Porsche Consulting GmbH",
+      "status": "active",
+      "registrationNumber": null,
+      "addressLine": null,
+      "country": "DE"
+    },
+    {
+      "transactionId": "[TBD]",
+      "companyId": "[TBD]",
+      "name": "Porsche Digital GmbH",
+      "status": "active",
+      "registrationNumber": null,
+      "addressLine": null,
+      "country": "DE"
+    },
+    {
+      "transactionId": "[TBD]",
+      "companyId": "[TBD]",
+      "name": "Porsche Werkzeugbau GmbH",
+      "status": "active",
+      "registrationNumber": null,
+      "addressLine": null,
+      "country": "DE"
+    }
+  ]
+}
+```
+</Accordion>
+
+#### Company Details — Porsche GmbH
+
+<Accordion title="Request">
+```json
+{
+  "transactionId": "[TBD]",
+  "companyId": "[TBD]",
+  "include": {
+    "officers": true,
+    "addresses": true,
+    "ownerships": true,
+    "transparency": true,
+    "documents": true,
+    "financials": true
+  }
+}
+```
+</Accordion>
+
+<Accordion title="Response">
+```json
+{
+  "status": true,
+  "data": {
+    "company": {
+      "legalName": "Porsche GmbH",
+      "tradingNames": [],
+      "status": "active",
+      "companyType": {
+        "native": { "value": "GmbH", "language": "de", "source": null }
+      },
+      "incorporationDate": null,
+      "registrationDate": "1958-03-13T00:00:00.000Z",
+      "country": "DE",
+      "registeredAddress": {
+        "singleLine": "Perlacher Str. 5 a, 82031 Grünwald, DE",
+        "structured": {
+          "line1": "Perlacher Str. 5 a",
+          "line2": null,
+          "city": "Grünwald",
+          "postalCode": "82031",
+          "region": null,
+          "country": "DE"
+        }
+      },
+      "businessAddress": {
+        "singleLine": null,
+        "structured": {
+          "line1": null, "line2": null, "city": null,
+          "postalCode": null, "region": null, "country": "DE"
+        }
+      },
+      "identifiers": [
+        { "scheme": "REGISTRATION_NUMBER", "value": "HRB 226427", "country": "DE" }
+      ],
+      "industryCodes": [
+        { "scheme": "WZ2008", "code": "29320", "label": null },
+        { "scheme": "NACE", "code": "2932", "label": null }
+      ],
+      "website": null,
+      "contacts": [],
+      "signatureRules": {
+        "native": {
+          "value": "Ist nur ein Geschäftsführer bestellt, so vertritt er die Gesellschaft allein. Sind mehrere Geschäftsführer bestellt, so wird die Gesellschaft durch zwei Geschäftsführer oder durch einen Geschäftsführer gemeinsam mit einem Prokuristen vertreten.",
+          "language": "de",
+          "source": null
+        },
+        "signatureQuality": "joint"
+      },
+      "resources": [],
+      "officers": [
+        {
+          "type": "director",
+          "officerId": "296",
+          "officerData": {
+            "firstName": "Wolfgang",
+            "lastName": "Stoiber",
+            "legalName": "Wolfgang Stoiber",
+            "dob": "1959-05-14",
+            "birthplace": "Grünwald",
+            "countryOfBirth": "DE",
+            "nationality": null,
+            "country": "DE",
+            "identifiers": [],
+            "address": {
+              "singleLine": "Grünwald, DE",
+              "structured": {
+                "line1": null, "line2": null, "city": "Grünwald",
+                "postalCode": null, "region": null, "country": "DE"
+              }
+            },
+            "identityData": {}
+          },
+          "activity": {
+            "role": {
+              "native": { "value": "Geschäftsführer", "language": "de", "source": null },
+              "modeled": { "value": "Managing Director", "scheme": "idcanopy", "source": "modeled" }
+            },
+            "status": "active",
+            "from": "2024-07-18T00:00:00.000Z",
+            "to": null,
+            "phone": null,
+            "email": null,
+            "signatureRights": { "signatureQuality": "joint" }
+          }
+        },
+        {
+          "type": "director",
+          "officerId": "297",
+          "officerData": {
+            "firstName": "Wolfgang Heinz",
+            "lastName": "Porsche",
+            "legalName": "Wolfgang Heinz Porsche",
+            "dob": "1943-05-10",
+            "birthplace": "Salzburg",
+            "countryOfBirth": "AT",
+            "nationality": null,
+            "country": "AT",
+            "identifiers": [],
+            "address": {
+              "singleLine": "Salzburg, AT",
+              "structured": {
+                "line1": null, "line2": null, "city": "Salzburg",
+                "postalCode": null, "region": null, "country": "AT"
+              }
+            },
+            "identityData": {}
+          },
+          "activity": {
+            "role": {
+              "native": { "value": "Geschäftsführer", "language": "de", "source": null },
+              "modeled": { "value": "Managing Director", "scheme": "idcanopy", "source": "modeled" }
+            },
+            "status": "active",
+            "from": "2014-05-07T00:00:00.000Z",
+            "to": null,
+            "phone": null,
+            "email": null,
+            "signatureRights": { "signatureQuality": "joint" }
+          }
+        },
+        {
+          "type": "director",
+          "officerId": "298",
+          "officerData": {
+            "firstName": "Hans Michel",
+            "lastName": "Piëch",
+            "legalName": "Hans Michel Piëch",
+            "dob": "1942-01-10",
+            "birthplace": "Wien",
+            "countryOfBirth": "AT",
+            "nationality": null,
+            "country": "AT",
+            "identifiers": [],
+            "address": {
+              "singleLine": "Wien, AT",
+              "structured": {
+                "line1": null, "line2": null, "city": "Wien",
+                "postalCode": null, "region": null, "country": "AT"
+              }
+            },
+            "identityData": {}
+          },
+          "activity": {
+            "role": {
+              "native": { "value": "Geschäftsführer", "language": "de", "source": null },
+              "modeled": { "value": "Managing Director", "scheme": "idcanopy", "source": "modeled" }
+            },
+            "status": "active",
+            "from": "2014-05-07T00:00:00.000Z",
+            "to": null,
+            "phone": null,
+            "email": null,
+            "signatureRights": { "signatureQuality": "joint" }
+          }
+        },
+        {
+          "type": "director",
+          "officerId": "299",
+          "officerData": {
+            "firstName": "Eckhard F.",
+            "lastName": "Polzer",
+            "legalName": "Eckhard F. Polzer",
+            "dob": "1943-12-25",
+            "birthplace": "München",
+            "countryOfBirth": "DE",
+            "nationality": null,
+            "country": "DE",
+            "identifiers": [],
+            "address": {
+              "singleLine": "München, DE",
+              "structured": {
+                "line1": null, "line2": null, "city": "München",
+                "postalCode": null, "region": null, "country": "DE"
+              }
+            },
+            "identityData": {}
+          },
+          "activity": {
+            "role": {
+              "native": { "value": "Geschäftsführer", "language": "de", "source": null },
+              "modeled": { "value": "Managing Director", "scheme": "idcanopy", "source": "modeled" }
+            },
+            "status": "inactive",
+            "from": null,
+            "to": "2024-07-18T00:00:00.000Z",
+            "phone": null,
+            "email": null,
+            "signatureRights": { "signatureQuality": "joint" }
+          }
+        },
+        {
+          "type": "director",
+          "officerId": "300",
+          "officerData": {
+            "firstName": "Michael",
+            "lastName": "Pressl",
+            "legalName": "Michael Pressl",
+            "dob": "1959-03-16",
+            "birthplace": "Salzburg",
+            "countryOfBirth": "DE",
+            "nationality": null,
+            "country": "DE",
+            "identifiers": [],
+            "address": {
+              "singleLine": "Salzburg, DE",
+              "structured": {
+                "line1": null, "line2": null, "city": "Salzburg",
+                "postalCode": null, "region": null, "country": "DE"
+              }
+            },
+            "identityData": {}
+          },
+          "activity": {
+            "role": {
+              "native": { "value": "Geschäftsführer", "language": "de", "source": null },
+              "modeled": { "value": "Managing Director", "scheme": "idcanopy", "source": "modeled" }
+            },
+            "status": "inactive",
+            "from": null,
+            "to": "2014-05-07T00:00:00.000Z",
+            "phone": null,
+            "email": null,
+            "signatureRights": { "signatureQuality": "joint" }
+          }
+        },
+        {
+          "type": "director",
+          "officerId": "301",
+          "officerData": {
+            "firstName": "Karl-Heinz",
+            "lastName": "Moser",
+            "legalName": "Karl-Heinz Moser",
+            "dob": "1949-07-10",
+            "birthplace": "Wien",
+            "countryOfBirth": "AT",
+            "nationality": null,
+            "country": "AT",
+            "identifiers": [],
+            "address": {
+              "singleLine": "Wien, AT",
+              "structured": {
+                "line1": null, "line2": null, "city": "Wien",
+                "postalCode": null, "region": null, "country": "AT"
+              }
+            },
+            "identityData": {}
+          },
+          "activity": {
+            "role": {
+              "native": { "value": "Geschäftsführer", "language": "de", "source": null },
+              "modeled": { "value": "Managing Director", "scheme": "idcanopy", "source": "modeled" }
+            },
+            "status": "inactive",
+            "from": null,
+            "to": "2014-05-07T00:00:00.000Z",
+            "phone": null,
+            "email": null,
+            "signatureRights": { "signatureQuality": "joint" }
+          }
+        },
+        {
+          "type": "director",
+          "officerId": "302",
+          "officerData": {
+            "firstName": "Hans Peter",
+            "lastName": "Schützinger",
+            "legalName": "Hans Peter Schützinger",
+            "dob": "1960-07-06",
+            "birthplace": "Salzburg",
+            "countryOfBirth": "AT",
+            "nationality": null,
+            "country": "AT",
+            "identifiers": [],
+            "address": {
+              "singleLine": "Salzburg, AT",
+              "structured": {
+                "line1": null, "line2": null, "city": "Salzburg",
+                "postalCode": null, "region": null, "country": "AT"
+              }
+            },
+            "identityData": {}
+          },
+          "activity": {
+            "role": {
+              "native": { "value": "Geschäftsführer", "language": "de", "source": null },
+              "modeled": { "value": "Managing Director", "scheme": "idcanopy", "source": "modeled" }
+            },
+            "status": "inactive",
+            "from": null,
+            "to": "2011-04-14T00:00:00.000Z",
+            "phone": null,
+            "email": null,
+            "signatureRights": { "signatureQuality": "joint" }
+          }
+        },
+        {
+          "type": "director",
+          "officerId": "303",
+          "officerData": {
+            "firstName": "Wolf-Dieter",
+            "lastName": "Hellmaier",
+            "legalName": "Wolf-Dieter Hellmaier",
+            "dob": "1943-09-14",
+            "birthplace": "Salzburg",
+            "countryOfBirth": "AT",
+            "nationality": null,
+            "country": "AT",
+            "identifiers": [],
+            "address": {
+              "singleLine": "Salzburg, AT",
+              "structured": {
+                "line1": null, "line2": null, "city": "Salzburg",
+                "postalCode": null, "region": null, "country": "AT"
+              }
+            },
+            "identityData": {}
+          },
+          "activity": {
+            "role": {
+              "native": { "value": "Geschäftsführer", "language": "de", "source": null },
+              "modeled": { "value": "Managing Director", "scheme": "idcanopy", "source": "modeled" }
+            },
+            "status": "inactive",
+            "from": null,
+            "to": "2011-04-14T00:00:00.000Z",
+            "phone": null,
+            "email": null,
+            "signatureRights": { "signatureQuality": "joint" }
+          }
+        }
+      ],
+      "ownership": [],
+      "relationships": {
+        "ultimateBeneficialOwners": [],
+        "transparencyRegister": [],
+        "familyTree": [],
+        "isHeadquarter": null,
+        "isGlobalUltimate": null,
+        "isDomesticUltimate": null,
+        "isSubsidiary": null
+      }
+    }
+  }
+}
+```
+</Accordion>
+
+  </Tab>
+
+
+</Tabs>
+
+---
+### Error Cases
+
+<Tabs>
+  <Tab title="Error 1 — Missing Country">
+
+Calling `/kyb/search` without the required `country` field returns a `400 Bad Request`.
+
+<Accordion title="Request">
+
+```json
+{
+  "name": "Bosch",
+  "locality": "Berlin"
+}
+```
+
+</Accordion>
+
+<Accordion title="Response">
+
+```
+400 Bad Request
+```
+
+```json
+{
+    "status": false,
+    "error": "Validation failed: country: Required"
+}
+```
+
+</Accordion>
+
+  </Tab>
+  <Tab title="Error 2 — Wrong Endpoint">
+
+Calling an incorrect path returns `404 Not Found`.
+
+<Accordion title="Request">
+
+```
+endpoint /kyb/company/search
+```
+
+</Accordion>
+
+<Accordion title="Response">
+
+```
+This page could not be found.
+```
+
+</Accordion>
+
+  </Tab>
+</Tabs>
