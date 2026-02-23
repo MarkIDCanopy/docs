@@ -1,472 +1,384 @@
 ---
-title: KYB Advanced Search
-description: KYB Advanced Search API Documentation
-icon: 'globe'
-tag: "UPCOMING"
+title: KYB API
+description: Know Your Business — company search and data enrichment
+icon: 'building'
 ---
 import Auth from '/snippets/auth.mdx';
 
-# KYB API - Detailed Documentation
-This documentation covers Umbrella’s KYB (Know Your Business) APIs.  
-It provides two core capabilities:  
+# KYB API
 
-- **Basic Search (`/kyb/search`)** → Quickly resolve a company and return its canonical core profile (identity, status, type, identifiers, addresses, industry codes).  
-- **Advanced Company Details (`/kyb/company/details`)** → Retrieve the full register-style record for a resolved company, including officers, ownership, relationships, signatory rules, contacts, and linked resources.  
+The KYB API lets you search for a legal entity and retrieve structured company data directly from official registers and aggregated sources.
 
-These endpoints are designed to return clean, decision-ready fields with both native register values and standardized modeled values (via the *idcanopy* scheme), enriched with metadata on **confidence** and **completeness**. 
+Three endpoints cover the full workflow:
 
-### API Playground:
+- **[Authentication (`/auth`)](#authentication)** — Obtain a Bearer token using your `Api-Key` and `Customer-Id`. Required before any other call.
+- **[Search (`/kyb/search`)](#1-search-company)** — Find a company by name or registration number. Returns a `companyId` and `transactionId` required for the next step.
+- **[Company Details (`/kyb/company/details`)](#2-company-details)** — Retrieve the full company record. The `include` parameter controls which data packages are returned; each package is priced separately. Document and transparency packages return a list of available items with `linkToken` values.
+- **[Document Retrieval (`/kyb/company/document/retrieve`)](#3-document-retrieval)** — Fetch an individual document or transparency register entry using a `linkToken` from the details response.
+
+Where available, structured fields are returned in two forms: **native** (verbatim from the register, in the original language) and **modeled** (normalised to a common English scheme via `idcanopy`). All other data is passed through as-is from the source.
+
 <Tabs>
   <Tab title="/kyb/search">
-    You can try the countries endpoint [here](/api-reference/endpoint/kyb_search).
+    Try the search endpoint [here](/api-reference/endpoint/kyb_search).
   </Tab>
   <Tab title="/kyb/company/details">
-    You can try the search endpoint [here](/api-reference/endpoint/kyb_company_details).
+    Try the company details endpoint [here](/api-reference/endpoint/kyb_company_details).
   </Tab>
 </Tabs>
 
-### Key Considerations
-- **Contract Scope**  
-  `/kyb/search` issues cached-first queries (≤30 days). All subsequent endpoints operate on the resolved `companyId` (Umbrella GUID). Identifiers such as registration number, VAT, or LEI are **data fields only**, not lookup keys.  
-
-- **Data Quality & Modeling**  
-  Returns both native register values and standardized modeled values. Sources are labeled as `native:register` and `idcanopy:modeled`.  
-
-- **Visibility Modes**  
-  - *Minimal* (default): returns a clean canonical payload with no provenance or conflicts.  
-  - *Extended*: adds field-level provenance, conflicts, and source attribution (for eligible tenants).  
-
-### Endpoints Overview
-1. **Search Company (`/kyb/search`)**: Resolve a company by name and country, and return its canonical core profile (identity, status, type, addresses, identifiers, industry codes).  
-2. **Company Details (`/kyb/company/details`)**: Retrieve the full register-style record for a resolved company, including officers, ownership, relationships, signatory rules, contacts, and linked resources.  
-
----
-<Auth/>
 ---
 
-## 1. Simple Search
-### Endpoint
-**POST** `/kyb/search`
+## Authentication
 
-### Description
-*Cached-first search for a company profile.*
-- Uses Umbrella’s canonical company dataset.
-- On cache miss, queries providers and persists identity-only rows.
-- Returns decision-ready core attributes: name, type, status, identifiers, addresses, industry codes.
+**POST** `/auth`
+
+All KYB API requests require a Bearer token. Obtain one by calling the authentication endpoint with your credentials. Tokens are valid for **60 minutes** and must be refreshed after expiration.
 
 ### Required Headers
-| Header         | Value |
-|---------------|----------------------------|
-| Content-Type  | `application/json` |
-| Accept        | `application/json` |
-| Authorization | `Bearer yourAccessToken` |
 
-### Request Body Parameters
-| Field                | Type   | Required | Description                                          |
-| -------------------- | ------ | -------- | ---------------------------------------------------- |
-| `name`               | string | Yes      | Registered name of the company.                      |
-| `country`            | string | Yes      | Two-letter ISO country code of company registration. |
-| `registrationNumber` | string | No       | Official company registration number (may be empty). |
-| `locality`           | string | Yes      | City or locality where the company is registered.    |
-
-### Response Structure
-<Accordion title="Response Structure">
-| Field                                                  | Type   | Description                                                                |
-| ------------------------------------------------------ | ------ | -------------------------------------------------------------------------- |
-| `status`                                               | string | Status of the request (e.g., `success`).                                   |
-| `requestId`                                            | string | Client-provided request identifier for traceability.                       |
-| `companyId`                                            | string | Unique company identifier assigned by the platform.                        |
-| `timestamp`                                            | string | RFC 3339 timestamp when the response was generated.                        |
-| `data`                                                 | object | Contains detailed company information.                                     |
-| `data.company.legalName`                               | string | Official registered legal name of the company.                             |
-| `data.company.tradingNames`                            | array  | List of trading or alternative names.                                      |
-| `data.company.status`                                  | string | Current company status (e.g., `active`, `inactive`).                       |
-| `native.value`                                         | string | Native company type value (e.g., *Gesellschaft mit beschränkter Haftung*). |
-| `native.language`                                      | string | Language code of the native type description.                              |
-| `native.source`                                        | string | Source of the native type (e.g., `register`).                              |
-| `modeled.value`                                        | string | Standardized company type (e.g., *Limited Liability Company*).             |
-| `modeled.scheme`                                       | string | Scheme used for modeled classification (e.g., `idcanopy`).                 |
-| `modeled.source`                                       | string | Source of the modeled type.                                                |
-| `company.incorporationDate`                            | string | Date of incorporation (YYYY-MM-DD).                                        |
-| `company.registrationDate`                             | string | Date of registration in the official register (YYYY-MM-DD).                |
-| `company.country`                                      | string | Two-letter ISO country code of incorporation.                              |
-| `registeredAddress.singleLine`                         | string | Full registered address as a single formatted string.                      |
-| `structured.line1`                                     | string | Street and building information.                                           |
-| `structured.city`                                      | string | City of the registered address.                                            |
-| `structured.postalCode`                                | string | Postal code of the registered address.                                     |
-| `structured.country`                                   | string | Country code of the registered address.                                    |
-| `businessAddress.singleLine`                           | string | Full business/trading address as a single string.                          |
-| `structured.line1`                                     | string | Street and building information of business address.                       |
-| `structured.city`                                      | string | City of the business address.                                              |
-| `structured.postalCode`                                | string | Postal code of the business address.                                       |
-| `structured.country`                                   | string | Country code of the business address.                                      |
-| `company.identifiers[]`                                | array  | List of company identifiers across schemes.                                |
-| `identifiers[].scheme`                                 | string | Identifier scheme (e.g., `REGISTRATION_NUMBER`, `VAT`, `LEI`).             |
-| `identifiers[].value`                                  | string | Identifier value.                                                          |
-| `identifiers[].country`                                | string | Country associated with the identifier.                                    |
-| `company.industryCodes[]`                              | array  | List of industry classification codes.                                     |
-| `industryCodes[].scheme`                               | string | Industry classification scheme (e.g., `NACE`).                             |
-| `industryCodes[].code`                                 | string | Industry code value.                                                       |
-| `industryCodes[].label`                                | string | Human-readable label of the industry code.                                 |
-| `company.website`                                      | string | Official company website URL.                                              |
-| `metadata`                                             | object | Additional response metadata.                                              |
-| `metadata.confidence`                                  | number | Confidence score for the company match (0–1).                              |
-| `metadata.completeness`                                | number | Completeness score for available company data (0–1).                       |
-| `metadata.cacheAge`                                    | string | Age of cached response (e.g., `3h`).                                       |
-</Accordion>
+| Header          | Value                                           |
+|-----------------|-------------------------------------------------|
+| `Content-Type`  | `application/x-www-form-urlencoded`             |
+| `Api-Key`       | Your API key (UUID)                             |
+| `Customer-Id`   | Your customer ID (UUID)                         |
 
 ### Example Request
+
+```bash
+curl -X POST https://api-umbrella.io/api/services/auth \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -H "Api-Key: 40ab0d69-fc3e-5fea-bfa8-b94e93462ad9" \
+  -H "Customer-Id: 16a6c3e7-7a76-4714-9b34-97135ab4bdcd"
+```
+
+### Response
+
 ```json
 {
-  "name": "IDCANOPY GROUP LTD",
+  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "expires_in": 3600,
+  "token_type": "Bearer"
+}
+```
+
+Use the `access_token` value in the `Authorization` header of all subsequent requests:
+
+```
+Authorization: Bearer <access_token>
+```
+
+### Base URLs
+
+| Environment | URL |
+|-------------|-----|
+| Production  | `https://api-umbrella.io/api/services` |
+| Sandbox     | `https://sandbox-umbrella-api.azurewebsites.net/api/services` |
+
+---
+
+## 1. Search Company
+
+**POST** `/kyb/search`
+
+Searches for a legal entity by name (fuzzy) or registration number (exact). Exactly one of `name` or `companyNo` must be provided — not both.
+
+### Required Headers
+
+| Header          | Value                      |
+|-----------------|----------------------------|
+| `Content-Type`  | `application/json`         |
+| `Authorization` | `Bearer <access_token>`    |
+
+### Request Body
+
+| Field       | Type   | Required | Description |
+|-------------|--------|----------|-------------|
+| `name`      | string | XOR      | Company name. Fuzzy matching is applied; quality depends on the underlying source. |
+| `companyNo` | string | XOR      | Official registration number (exact match). |
+| `country`   | string | **Yes**  | ISO 3166-1 alpha-2 country code (e.g. `GB`, `AT`, `DE`). |
+| `locality`  | string | No       | City or locality to narrow results. |
+
+<Note>
+`name` and `companyNo` are mutually exclusive. Providing both will return a validation error.
+</Note>
+
+### Example Request — by name
+
+```json
+{
+  "name": "IDCanopy Group Ltd",
   "country": "GB",
-  "registrationNumber": "",
   "locality": "London"
 }
 ```
 
-### Example Response
-<Accordion title="Example Response">
-```json
-{ 
-  "status": "success", 
-  "requestId": "client-req-987", 
-  "companyId": "umb-7c9a-...", 
-  "timestamp": "2025-08-25T08:00:00Z", 
-  "data": { 
-    "company": { 
-      "legalName": "ACME GmbH", 
-      "tradingNames": ["ACME"], 
-      "status": "active", 
-      "companyType": { 
-        "native": {"value": "Gesellschaft mit beschränkter Haftung", "language": "de", "source": "register"}, 
-        "modeled": {"value": "Limited Liability Company", "scheme": "idcanopy", "source": "modeled"} 
-      }, 
-      "incorporationDate": "2019-07-01", 
-      "registrationDate": "2019-06-15", 
-      "country": "AT", 
-      "registeredAddress": { 
-        "singleLine": "Musterstraße 1, 1010 Wien, AT", 
-        "structured": { 
-          "line1": "Musterstraße 1", 
-          "city": "Wien", 
-          "postalCode": "1010", 
-          "country": "AT" 
-        } 
-      }, 
-      "businessAddress": { 
-        "singleLine": "Musterstraße 1, 1010 Wien, AT", 
-        "structured": { 
-          "line1": "Musterstraße 1", 
-          "city": "Wien", 
-          "postalCode": "1010", 
-          "country": "AT" 
-        } 
-      }, 
-      "identifiers": [ 
-        {"scheme": "REGISTRATION_NUMBER", "value": "FN 123456x", "country": "AT"}, 
-        {"scheme": "PR", "value": "930 B", "country": "DE"}, 
-        {"scheme": "VAT", "value": "ATU12345678", "country": "AT"}, 
-        {"scheme": "LEI", "value": "529900T8BM49AURSDO55"} 
-      ], 
-      "industryCodes": [ 
-        {"scheme": "NACE", "code": "62.01", "label": "Computer programming activities"} 
-      ], 
-      "website": "https://acme.example" 
-    } 
-  }, 
-  "metadata": { 
-    "confidence": 0.93, 
-    "completeness": 0.92, 
-    "cacheAge": "3h" 
-  } 
-} 
-```
-</Accordion>
+### Example Request — by registration number
 
-## 2. Advanced Company Details
-### Endpoint
-**POST** `/kyb/company/details`
-
-### Description
-*Enrich a selected company by companyId.*
-- Returns a full register-style record.
-- Includes officers, ownership, relationships, signatory rules, contacts, and company resources.
-- Completeness and provenance behave as specified (field-level provenance only in extended mode).
-
-### Required Headers
-| Header         | Value |
-|---------------|----------------------------|
-| Content-Type  | `application/json` |
-| Accept        | `application/json` |
-| Authorization | `Bearer yourAccessToken` |
-
-### Request Body Parameters
-| Field       | Type   | Required | Description                                |
-| ----------- | ------ | -------- | ------------------------------------------ |
-| `companyId` | string | Yes      | Unique identifier assigned to the company. |
-
-### Response Structure
-<Accordion title="Response Structure">
-| Field                                                                             | Type   | Description                                                           |
-| --------------------------------------------------------------------------------- | ------ | --------------------------------------------------------------------- |
-| `status`                                                                          | string | Status of the request (e.g., `success`).                              |
-| `requestId`                                                                       | string | Client-provided request identifier.                                   |
-| `companyId`                                                                       | string | Unique company identifier assigned by the platform.                   |
-| `timestamp`                                                                       | string | RFC 3339 timestamp when the response was generated.                   |
-| `data`                                                                            | object | Contains detailed company information.                                |
-| `company.legalName`                                                               | string | Registered legal name of the company.                                 |
-| `company.tradingNames`                                                            | array  | Trading or alternative names.                                         |
-| `company.status`                                                                  | string | Company status (e.g., `active`).                                      |
-| `native.value`                                                                    | string | Native type value (e.g., *Gesellschaft mit beschränkter Haftung*).    |
-| `native.language`                                                                 | string | Language code of the native type.                                     |
-| `native.source`                                                                   | string | Source of the native company type (e.g., `register`).                 |
-| `modeled.value`                                                                   | string | Standardized company type (e.g., *Limited Liability Company*).        |
-| `modeled.scheme`                                                                  | string | Scheme used for modeled classification (e.g., `idcanopy`).            |
-| `modeled.source`                                                                  | string | Source of the modeled type.                                           |
-| `company.incorporationDate`                                                       | string | Date of incorporation (YYYY-MM-DD).                                   |
-| `company.registrationDate`                                                        | string | Date of registration (YYYY-MM-DD).                                    |
-| `company.country`                                                                 | string | ISO 2-letter country code.                                            |
-| `registeredAddress.singleLine`                                                    | string | Registered address in single-line format.                             |
-| `structured.line1`                                                                | string | Street and building of the registered address.                        |
-| `structured.city`                                                                 | string | City of the registered address.                                       |
-| `structured.country`                                                              | string | Country of the registered address.                                    |
-| `structured.postalCode`                                                           | string | Postal code of the registered address.                                |
-| `businessAddress.singleLine`                                                      | string | Business address in single-line format.                               |
-| `structured.line1`                                                                | string | Street and building of the business address.                          |
-| `structured.city`                                                                 | string | City of the business address.                                         |
-| `structured.postalCode`                                                           | string | Postal code of the business address.                                  |
-| `structured.country`                                                              | string | Country of the business address.                                      |
-| `company.identifiers[]`                                                           | array  | Company identifiers across schemes.                                   |
-| `identifiers[].scheme`                                                            | string | Identifier scheme (e.g., `REGISTRATION_NUMBER`, `VAT`, `LEI`).        |
-| `identifiers[].value`                                                             | string | Identifier value.                                                     |
-| `identifiers[].country`                                                           | string | Country linked to the identifier.                                     |
-| `company.industryCodes[]`                                                         | array  | Industry classification codes.                                        |
-| `industryCodes[].scheme`                                                          | string | Classification scheme (e.g., `NACE`).                                 |
-| `industryCodes[].code`                                                            | string | Industry code.                                                        |
-| `industryCodes[].label`                                                           | string | Human-readable label of the industry code.                            |
-| `company.companyContacts[]`                                                       | array  | Company contact details.                                              |
-| `companyContacts[].website`                                                       | string | Website URL.                                                          |
-| `companyContacts[].phone`                                                         | string | Phone number.                                                         |
-| `companyContacts[].fax`                                                           | string | Fax number.                                                           |
-| `companyContacts[].email`                                                         | string | Email address.                                                        |
-| `companyContacts[].linkedin`                                                      | string | LinkedIn or social media profile.                                     |
-| `companyContacts[].scheme`                                                        | string | Contact type scheme (e.g., homepage, phone, email, social media).     |
-| `native.value`                                                                    | string | Native text of signatory rules.                                       |
-| `native.language`                                                                 | string | Language of the native rule.                                          |
-| `native.source`                                                                   | string | Source of the native rule.                                            |
-| `modeled.value`                                                                   | string | Standardized version of the rule.                                     |
-| `modeled.scheme`                                                                  | string | Scheme used for modeling.                                             |
-| `modeled.source`                                                                  | string | Source of the modeled rule.                                           |
-| `company.companyResources[]`                                                      | array  | References to related company resources.                              |
-| `companyResources[].financials`                                                   | string | Reference ID for financials.                                          |
-| `companyResources[].compliance`                                                   | string | Reference ID for compliance.                                          |
-| `companyResources[].ubo`                                                          | string | Reference ID for UBO details.                                         |
-| `companyResources[].sanctionPeP`                                                  | string | Reference ID for sanctions/PEP details.                               |
-| `companyResources[].description`                                                  | string | Description of the resource.                                          |
-| `company.officers[]`                                                              | array  | List of company officers.                                             |
-| `officers[].type`                                                                 | string | Officer type (e.g., individual).                                      |
-| `officers[].officerID`                                                            | string | Unique officer ID.                                                    |
-| `officerData.firstName`                                                           | string | Officer’s first name.                                                 |
-| `officerData.lastName`                                                            | string | Officer’s last name.                                                  |
-| `officerData.DOB`                                                                 | string | Date of birth (YYYY-MM-DD).                                           |
-| `officerData.birthplace`                                                          | string | Birthplace of the officer.                                            |
-| `officerData.countryOfBirth`                                                      | string | Country of birth (ISO code).                                          |
-| `officerData.nationality`                                                         | string | Nationality (ISO code).                                               |
-| `address.singleLine`                                                              | string | Officer’s address in single-line format.                              |
-| `PersonalNumber.identifier`                                                       | string | Identifier value (e.g., PESEL number).                                |
-| `PersonalNumber.country`                                                          | string | Country of issuance of identifier.                                    |
-| `PersonalNumber.scheme`                                                           | string | Identifier scheme (e.g., PESEL).                                      |
-| `native.value`                                                                    | string | Native role (e.g., Geschäftsführer).                                  |
-| `native.language`                                                                 | string | Language of native role.                                              |
-| `native.source`                                                                   | string | Source of native role.                                                |
-| `modeled.value`                                                                   | string | Standardized officer role (e.g., Managing Director).                  |
-| `modeled.scheme`                                                                  | string | Scheme for modeled role.                                              |
-| `modeled.source`                                                                  | string | Source of modeled role.                                               |
-| `activity.status`                                                                 | string | Officer’s current status (e.g., active).                              |
-| `activity.from`                                                                   | string | Officer’s start date.                                                 |
-| `activity.to`                                                                     | string | Officer’s end date (if applicable).                                   |
-| `native.value`                                                                    | string | Native signatory rights description.                                  |
-| `native.language`                                                                 | string | Language of native signatory rights.                                  |
-| `native.source`                                                                   | string | Source of native rights.                                              |
-| `modeled.value`                                                                   | string | Standardized signatory rights description.                            |
-| `modeled.scheme`                                                                  | string | Scheme used for modeling.                                             |
-| `modeled.source`                                                                  | string | Source of modeled rights.                                             |
-| `signatureRights.signatureQuality`                                                | string | Quality/type of signature rights (e.g., `individual`).                |
-| `data.company.ownership[]`                                                        | array  | List of company owners/shareholders.                                  |
-| `ownership[].type`                                                                | string | Type of owner (e.g., individual).                                     |
-| `ownership[].ownerID`                                                             | string | Unique owner ID.                                                      |
-| `ownerData.firstName`                                                             | string | Owner’s first name.                                                   |
-| `ownerData.lastName`                                                              | string | Owner’s last name.                                                    |
-| `address.singleLine`                                                              | string | Owner’s address.                                                      |
-| `holdingPct.shares`                                                               | string | Percentage of shares held.                                            |
-| `holdingPct.capital`                                                              | string | Amount of capital held.                                               |
-| `holdingPct.votingRights`                                                         | string | Percentage of voting rights held.                                     |
-| `verbalholding[].type`                                                            | string | Type of holding description (e.g., shares).                           |
-| `native.value`                                                                    | string | Native description of holding.                                        |
-| `native.language`                                                                 | string | Language of native description.                                       |
-| `native.source`                                                                   | string | Source of native description.                                         |
-| `modeled.value`                                                                   | string | Standardized holding description.                                     |
-| `modeled.scheme`                                                                  | string | Scheme used for standardized holding.                                 |
-| `modeled.source`                                                                  | string | Source of standardized holding.                                       |
-| `ownerData.isUBO`                                                                 | string | Indicates if the owner is an Ultimate Beneficial Owner (e.g., `yes`). |
-| `relationships.ultimateBeneficialOwners`                                          | array  | List of UBOs.                                                         |
-| `relationships.transparencyRegister`                                              | array  | List of transparency register references.                             |
-| `relationships.familyTree`                                                        | array  | Family tree relations.                                                |
-| `relationships.isHeadquarter`                                                     | string | Indicates if the company is a headquarters.                           |
-| `relationships.isGlobalUltimate`                                                  | string | Indicates if the company is a global ultimate.                        |
-| `relationships.isDomesticUltimate`                                                | string | Indicates if the company is a domestic ultimate.                      |
-| `relationships.isSubsidiary`                                                      | string | Indicates if the company is a subsidiary.                             |
-| `metadata`                                                                        | object | Response metadata.                                                    |
-| `metadata.confidence`                                                             | number | Confidence score for company match (0–1).                             |
-| `metadata.completeness`                                                           | number | Completeness score of available data (0–1).                           |
-| `metadata.source`                                                                 | string | Data source used (e.g., Handelsregister).                             |
-| `metadata.sourceTst`                                                              | string | Timestamp when the source data was retrieved.                         |
-| `metadata.cacheAge`                                                               | string | Age of cached response (e.g., `3h`).                                  |
-</Accordion>
-
-### Example Request
 ```json
 {
-  "companyId": "123xyz"
+  "companyNo": "16262990",
+  "country": "GB"
 }
 ```
 
+### Response
+
+The response is an array of matches. Multiple results may be returned for name-based searches.
+
+| Field                       | Type    | Description |
+|-----------------------------|---------|-------------|
+| `status`                    | boolean | `true` on success. |
+| `data[]`                    | array   | List of matched companies. |
+| `data[].transactionId`      | string  | Session token — pass to `/kyb/company/details`. |
+| `data[].companyId`          | string  | Umbrella company identifier — pass to `/kyb/company/details`. |
+| `data[].name`               | string  | Registered legal name. |
+| `data[].status`             | string  | Company status (e.g. `active`, `dissolved`). |
+| `data[].registrationNumber` | string  | Official registration number. |
+| `data[].addressLine`        | string  | Registered address, single line. |
+| `data[].country`            | string  | ISO alpha-2 country code. |
+
 ### Example Response
+
 <Accordion title="Example Response">
 ```json
-{ 
-  "status": "success", 
-  "requestId": "client-req-987", 
-  "companyId": "umb-7c9a-...", 
-  "timestamp": "2025-08-25T08:00:00Z", 
-  "data": { 
-    "company": { 
-      "legalName": "ACME GmbH", 
-      "tradingNames": ["ACME"], 
-      "status": "active", 
-      "companyType": { 
-        "native": {"value": "Gesellschaft mit beschränkter Haftung", "language": "de", "source": "register"}, 
-        "modeled": {"value": "Limited Liability Company", "scheme": "idcanopy", "source": "modeled"} 
-      }, 
-      "incorporationDate": "2019-07-01", 
-      "registrationDate": "2019-06-15", 
-      "country": "AT", 
-      "registeredAddress": { 
-        "singleLine": "Musterstraße 1, 1010 Wien, AT", 
-        "structured": { 
-          "line1": "Musterstraße 1", 
-          "city": "Wien", 
-          "postalCode": "1010", 
-          "country": "AT" 
-        } 
-      }, 
-      "businessAddress": { 
-        "singleLine": "Musterstraße 1, 1010 Wien, AT", 
-        "structured": { 
-          "line1": "Musterstraße 1", 
-          "city": "Wien", 
-          "postalCode": "1010", 
-          "country": "AT" 
-        } 
-      }, 
-      "identifiers": [ 
-        {"scheme": "REGISTRATION_NUMBER", "value": "FN 123456x", "country": "AT"}, 
-        {"scheme": "PR", "value": "930 B", "country": "DE"}, 
-        {"scheme": "VAT", "value": "ATU12345678", "country": "AT"}, 
-        {"scheme": "LEI", "value": "529900T8BM49AURSDO55"} 
-      ], 
-      "industryCodes": [ 
-        {"scheme": "NACE", "code": "62.01", "label": "Computer programming activities"} 
-      ], 
-      "companyContacts": [ 
-        {"website": "https://acme.example", "scheme": "homepage"}, 
-        {"phone": "0049123455", "scheme": "phone"}, 
-        {"fax": "0049123456789", "scheme": "fax"}, 
-        {"email": "office@acme.com", "scheme": "email"}, 
-        {"linkedin": "https://linkedin.com/acme", "scheme": "social media"} 
-      ], 
-      "GlobalsignatoryRules": { 
-        "native": {"value": "Jeder Partner vertritt die Gesellschaft allein.", "language": "de", "source": "register"}, 
-        "modeled": {"value": "Every partner has sole representation rights", "scheme": "idcanopy", "source": "modeled"} 
-      }, 
-      "companyResources": [ 
-        {"financials": "umbrelladetailuuid", "description": "financials reference"}, 
-        {"compliance": "umbrelladetailuuid", "description": "compliance reference"}, 
-        {"ubo": "umbrelladetailuuid", "description": "ubo reference"}, 
-        {"sanctionPeP": "umbrelladetailuuid", "description": "sanctions/PEP reference"} 
-      ], 
-      "officers": [ 
-        { 
-          "type": "individual", 
-          "officerID": "uuid", 
-          "officerData": { 
-            "firstName": "John", 
-            "lastName": "Doe", 
-            "DOB": "2000-01-01", 
-            "birthplace": "Berlin", 
-            "countryOfBirth": "DE", 
-            "nationality": "DE", 
-            "address": {"singleLine": "Musterstraße 1, 1010 Wien, AT"}, 
-            "identityData": {"PersonalNumber": {"identifier": "asdfghj", "country": "PL", "scheme": "PESEL"}} 
-          }, 
-          "activity": { 
-            "role": { 
-              "native": {"value": "Geschäftsführer", "language": "de", "source": "register"}, 
-              "modeled": {"value": "Managing Director", "scheme": "idcanopy", "source": "modeled"} 
-            }, 
-            "status": "active", 
-            "from": "2000-01-01", 
-            "to": "2000-01-01", 
-            "signatureRights": { 
-              "native": {"value": "Einzelvertretungsberechtigt", "language": "de", "source": "register"}, 
-              "modeled": {"value": "Individual Representation", "scheme": "idcanopy", "source": "modeled"}, 
-              "signatureQuality": "individual" 
-            } 
-          } 
-        } 
-      ], 
-      "ownership": [ 
-        { 
-          "type": "individual", 
-          "ownerID": "uuid", 
-          "ownerData": { 
-            "firstName": "John", 
-            "lastName": "Doe", 
-            "address": {"singleLine": "Musterstraße 1, 1010 Wien, AT"}, 
-            "shareholding": { 
-              "holdingPct": {"shares": "49.9%", "capital": "EUR 12500", "votingRights": "99%"}, 
-              "verbalholding": [ 
-                { 
-                  "type": "shares", 
-                  "native": {"value": "holds more than 25% but less than 50% of shares", "language": "en", "source": "register"}, 
-                  "modeled": {"value": "SHARE 25-50", "scheme": "idcanopy", "source": "modeled"} 
-                } 
-              ] 
-            }, 
-            "isUBO": "yes" 
-          } 
-        } 
-      ], 
-      "relationships": { 
-        "ultimateBeneficialOwners": ["loremIpsum"], 
-        "transparencyRegister": [], 
-        "familyTree": ["loremIpsum"], 
-        "isHeadquarter": "Yes", 
-        "isGlobalUltimate": "Yes", 
-        "isDomesticUltimate": "Yes", 
-        "isSubsidiary": "Yes" 
-      } 
-    } 
-  }, 
-  "metadata": { 
-    "confidence": 0.93, 
-    "completeness": 0.92, 
-    "source": "Deutsches Handelsregister", 
-    "sourceTst": "2025-08-25T08:00:00Z", 
-    "cacheAge": "3h" 
-  } 
-} 
+{
+  "status": true,
+  "data": [
+    {
+      "transactionId": "a8b89ef3-9d93-4d96-a495-be605fd1b2fe",
+      "companyId": "223c8dde-9c82-4811-ba3c-4f9fe648c2da",
+      "name": "IDCANOPY GROUP LTD",
+      "status": "active",
+      "registrationNumber": "16262990",
+      "addressLine": "71-75 Shelton Street, Covent Garden, London, United Kingdom, WC2H 9JQ",
+      "country": "GB"
+    }
+  ]
+}
 ```
 </Accordion>
 
+---
+
+## 2. Company Details
+
+**POST** `/kyb/company/details`
+
+Retrieves the full company record for a previously resolved entity. Use the `transactionId` and `companyId` returned by `/kyb/search`.
+
+The `include` object controls which data packages are returned. Only requested packages are fetched and billed.
+
+### Required Headers
+
+| Header          | Value                      |
+|-----------------|----------------------------|
+| `Content-Type`  | `application/json`         |
+| `Authorization` | `Bearer <access_token>`    |
+
+### Request Body
+
+| Field           | Type    | Required | Description |
+|-----------------|---------|----------|-------------|
+| `transactionId` | string  | **Yes**  | From the search response. |
+| `companyId`     | string  | **Yes**  | From the search response. |
+| `include`       | object  | No       | Data packages to retrieve. All default to `false`. |
+| `timeoutMs`     | integer | No       | Request timeout in milliseconds. |
+
+### `include` Packages
+
+| Package        | Type    | Description |
+|----------------|---------|-------------|
+| `officers`     | boolean | Directors, managing partners, and authorised signatories with roles, tenure, and signature rights. |
+| `addresses`    | boolean | All registered and business addresses (structured and single-line). |
+| `ownerships`   | boolean | Shareholder and UBO data including holding percentages, capital, and voting rights. |
+| `transparency` | boolean | Transparency register entries. Returns a list of available entries with `linkToken` values for retrieval via `/kyb/company/document/retrieve`. |
+| `documents`    | boolean | Official company documents (e.g. articles of association, register extracts). Returns a list of available documents with `linkToken` values for retrieval via `/kyb/company/document/retrieve`. |
+| `financials`   | boolean | Available financial data such as balance sheet and revenue figures. |
+
+### Example Request
+
+```json
+{
+  "transactionId": "a8b89ef3-9d93-4d96-a495-be605fd1b2fe",
+  "companyId": "223c8dde-9c82-4811-ba3c-4f9fe648c2da",
+  "include": {
+    "officers": true,
+    "addresses": true,
+    "ownerships": true,
+    "transparency": true,
+    "documents": true,
+    "financials": false
+  },
+  "timeoutMs": 30000
+}
+```
+
+### Response Structure
+
+<Accordion title="Core Company Fields">
+| Field | Type | Description |
+|-------|------|-------------|
+| `status` | boolean | `true` on success. |
+| `data.company.legalName` | string | Official registered legal name. |
+| `data.company.tradingNames[]` | array | Trading or alternative names. |
+| `data.company.status` | string | Current status (e.g. `active`, `dissolved`). |
+| `data.company.companyType` | object | Company type with `native` (register text) and `modeled` (idcanopy scheme) values. |
+| `data.company.incorporationDate` | string | ISO 8601 incorporation date. |
+| `data.company.registrationDate` | string | ISO 8601 registration date, if available. |
+| `data.company.country` | string | ISO alpha-2 country code. |
+| `data.company.registeredAddress.singleLine` | string | Full registered address, single line. |
+| `data.company.registeredAddress.structured` | object | Structured address: `line1`, `line2`, `city`, `postalCode`, `region`, `country`. |
+| `data.company.businessAddress` | object | Business address, same structure. May be `null`. |
+| `data.company.identifiers[]` | array | Identifiers across schemes. Each entry: `scheme` (e.g. `REGISTRATION_NUMBER`, `VAT`, `LEI`), `value`, `country`. |
+| `data.company.industryCodes[]` | array | Industry codes: `scheme` (e.g. `NACE`), `code`, `label`. |
+| `data.company.website` | string | Official website, if available. |
+| `metadata.confidence` | number | Match confidence score (0–1). |
+| `metadata.completeness` | number | Data completeness score (0–1). |
+| `metadata.source` | string | Name of the data source (e.g. `Companies House`). |
+| `metadata.sourceTst` | string | ISO 8601 timestamp of source data retrieval. |
+</Accordion>
+
+<Accordion title="Officers (include.officers)">
+Returned under `data.company.officers[]`.
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `type` | string | `individual` or `company`. |
+| `officerID` | string | Umbrella officer identifier. |
+| `officerData.firstName` | string | First name. |
+| `officerData.lastName` | string | Last name. |
+| `officerData.DOB` | string | Date of birth (ISO 8601). |
+| `officerData.nationality` | string | ISO alpha-2 nationality code. |
+| `officerData.address.singleLine` | string | Officer address. |
+| `activity.role` | object | Role with `native` and `modeled` values. |
+| `activity.status` | string | `active` or `inactive`. |
+| `activity.from` / `activity.to` | string | Tenure start and end dates. |
+| `activity.signatureRights` | object | Signatory rights with `native`, `modeled`, and `signatureQuality` (`individual` or `joint`). |
+</Accordion>
+
+<Accordion title="Ownership (include.ownerships)">
+Returned under `data.company.ownership[]`.
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `type` | string | `individual` or `company`. |
+| `ownerID` | string | Umbrella owner identifier. |
+| `ownerData.firstName` / `lastName` | string | Owner name. |
+| `ownerData.address.singleLine` | string | Owner address. |
+| `ownerData.shareholding.holdingPct.shares` | string | Share percentage. |
+| `ownerData.shareholding.holdingPct.capital` | string | Capital amount. |
+| `ownerData.shareholding.holdingPct.votingRights` | string | Voting rights percentage. |
+| `ownerData.shareholding.verbalholding[]` | array | Verbal holding description with `native` and `modeled` values. |
+| `ownerData.isUBO` | string | Whether the owner is a UBO (`yes` / `no`). |
+</Accordion>
+
+<Accordion title="Documents & Transparency (include.documents / include.transparency)">
+When `documents` or `transparency` is included, the response contains a list of available items. Pass the `linkToken` for each item to `/kyb/company/document/retrieve` to obtain the actual file.
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `type` | string | Document type (e.g. `excerpt`, `articles`, `transparency_entry`). |
+| `description` | string | Human-readable description of the document. |
+| `date` | string | Date of the document, if available. |
+| `linkToken` | string | Opaque token used to retrieve the document. |
+</Accordion>
+
+### Example Response
+
+<Accordion title="Example Response">
+```json
+{
+  "status": true,
+  "data": {
+    "company": {
+      "legalName": "IDCANOPY GROUP LTD",
+      "tradingNames": [],
+      "status": "active",
+      "companyType": {},
+      "incorporationDate": "2025-02-19T00:00:00.000Z",
+      "registrationDate": null,
+      "country": "GB",
+      "registeredAddress": {
+        "singleLine": "71-75 Shelton Street, WC2H 9JQ London, United Kingdom",
+        "structured": {
+          "line1": "71-75 Shelton Street",
+          "line2": null,
+          "city": "London",
+          "postalCode": "WC2H 9JQ",
+          "region": null,
+          "country": "GB"
+        }
+      },
+      "businessAddress": {
+        "singleLine": null,
+        "structured": {
+          "line1": null,
+          "line2": null,
+          "city": null,
+          "postalCode": null,
+          "region": null,
+          "country": "GB"
+        }
+      },
+      "identifiers": [
+        {
+          "scheme": "REGISTRATION_NUMBER",
+          "value": "16262990",
+          "country": "GB"
+        }
+      ],
+      "industryCodes": [],
+      "website": null
+    }
+  },
+  "metadata": {
+    "confidence": 0.85,
+    "completeness": 0.71,
+    "source": "Companies House",
+    "sourceTst": "2025-06-01T10:00:00.000Z"
+  }
+}
+```
+</Accordion>
+
+---
+
+## 3. Document Retrieval
+
+**POST** `/kyb/company/document/retrieve`
+
+Retrieves a company document or transparency register entry using a `linkToken` from the `/kyb/company/details` response.
+
+### Required Headers
+
+| Header          | Value                      |
+|-----------------|----------------------------|
+| `Content-Type`  | `application/json`         |
+| `Authorization` | `Bearer <access_token>`    |
+
+### Request Body
+
+| Field           | Type   | Required | Description |
+|-----------------|--------|----------|-------------|
+| `transactionId` | string | **Yes**  | From the search response. |
+| `companyId`     | string | **Yes**  | From the search response. |
+| `linkToken`     | string | **Yes**  | Token from the `documents` or `transparency` list in the details response. |
+
+### Example Request
+
+```json
+{
+  "transactionId": "a8b89ef3-9d93-4d96-a495-be605fd1b2fe",
+  "companyId": "223c8dde-9c82-4811-ba3c-4f9fe648c2da",
+  "linkToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+```
+
+### Response
+
+Returns the document as a binary file stream. The `Content-Type` response header reflects the file format (typically `application/pdf`).
+
+<Note>
+`linkToken` values are scoped to the originating `transactionId` and `companyId`. They cannot be reused across sessions.
+</Note>
