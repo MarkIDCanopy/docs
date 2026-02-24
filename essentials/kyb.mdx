@@ -209,8 +209,7 @@ The `include` object controls which data packages are returned. Only requested p
     "transparency": true,
     "documents": true,
     "financials": false
-  },
-  "timeoutMs": 30000
+  }
 }
 ```
 
@@ -290,7 +289,7 @@ When `documents` or `transparency` is included, the response contains a list of 
 ```json
 {
   "status": true,
-  "data": {
+  "data":[ {
     "company": {
       "legalName": "IDCANOPY GROUP LTD",
       "tradingNames": [],
@@ -332,6 +331,7 @@ When `documents` or `transparency` is included, the response contains a list of 
       "website": null
     }
   },
+  ]
   "metadata": {
     "confidence": 0.85,
     "completeness": 0.71,
@@ -434,6 +434,7 @@ The following test cases are organized by country. Each shows a search request, 
             "addressLine": "2 Vantage Court, Tickford Street, Newport Pagnell, Buckinghamshire, MK16 9EZ",
             "country": "GB"
         },
+    ]
 }
 ```
 
@@ -454,7 +455,7 @@ The following test cases are organized by country. Each shows a search request, 
         "transparency": true,
         "documents": true,
         "financials": true
-    },
+    }
 }
 ```
 
@@ -465,12 +466,13 @@ The following test cases are organized by country. Each shows a search request, 
 ```json
 {
     "status": true,
-    "data": {
-        "company": {
-            "legalName": "WAITROSE LIMITED",
-            "tradingNames": [],
-            "status": "active",
-            "companyType": {},
+    "data": [
+        {
+            "company": {
+                "legalName": "WAITROSE LIMITED",
+                "tradingNames": [],
+                "status": "active",
+                "companyType": {},
             "incorporationDate": "1908-09-03T00:00:00.000Z",
             "registrationDate": null,
             "country": "GB",
@@ -663,6 +665,7 @@ The following test cases are organized by country. Each shows a search request, 
             }
         }
     }
+    ]
 }
 ```
 
@@ -685,7 +688,7 @@ The following test cases are organized by country. Each shows a search request, 
         "transparency": true,
         "documents": true,
         "financials": true
-    },
+    }
 }
 ```
 
@@ -696,7 +699,7 @@ The following test cases are organized by country. Each shows a search request, 
 ```json
 {
     "status": true,
-    "data": {
+    "data":[ {
         "company": {
             "legalName": "STARBUCKS COFFEE MCDONALD'S WAITROSE LIMITED",
             "tradingNames": [],
@@ -1095,6 +1098,7 @@ The following test cases are organized by country. Each shows a search request, 
             }
         }
     }
+    ]
 }
 ```
 
@@ -1111,7 +1115,7 @@ The following test cases are organized by country. Each shows a search request, 
 {
   "name": "BM Dev",
   "country": "GB",
-"companyNo": "15463692"
+  "companyNo": "15463692",
   "locality": "London"
 }
 ```
@@ -1122,6 +1126,8 @@ The following test cases are organized by country. Each shows a search request, 
 
 ```json
 {
+    "status": true,
+    "data": [
         {
             "transactionId": "9d53e4c6-53f3-45d6-8fe4-fdb6485fcj5a8",
             "companyId": "24689af7-f971-4ccd-9275-6fb2e22aa052",
@@ -1152,7 +1158,7 @@ The following test cases are organized by country. Each shows a search request, 
         "transparency": true,
         "documents": true,
         "financials": true
-    },
+    }
 }
 ```
 
@@ -1163,7 +1169,7 @@ The following test cases are organized by country. Each shows a search request, 
 ```json
 {
     "status": true,
-    "data": {
+    "data": [{
         "company": {
             "legalName": "BM DEVELOPERS LIMITED",
             "tradingNames": [],
@@ -1373,6 +1379,7 @@ The following test cases are organized by country. Each shows a search request, 
             }
         }
     }
+    ]
 }
 ```
 
@@ -1437,7 +1444,7 @@ The following test cases are organized by country. Each shows a search request, 
         "transparency": true,
         "documents": true,
         "financials": true
-    },
+    }
 }
 ```
 
@@ -1448,7 +1455,7 @@ The following test cases are organized by country. Each shows a search request, 
 ```json
 {
     "status": true,
-    "data": {
+    "data":[{
         "company": {
             "status": "active",
             "country": "AT",
@@ -1513,6 +1520,7 @@ The following test cases are organized by country. Each shows a search request, 
             }
         }
     }
+    ]
 }
 ```
 
@@ -1631,7 +1639,7 @@ The following test cases are organized by country. Each shows a search request, 
         "transparency": true,
         "documents": true,
         "financials": true
-    },
+    }
 }
 ```
 
@@ -1642,7 +1650,7 @@ The following test cases are organized by country. Each shows a search request, 
 ```json
 {
     "status": true,
-    "data": {
+    "data":[ {
         "company": {
             "legalName": "WIND TELECOM S.P.A.",
             "tradingNames": [],
@@ -1694,6 +1702,7 @@ The following test cases are organized by country. Each shows a search request, 
             }
         }
     }
+    ]
 }
 ```
 
@@ -1824,7 +1833,7 @@ The following test cases are organized by country. Each shows a search request, 
         "transparency": true,
         "documents": true,
         "financials": true
-    },
+    }
 }
 ```
 
@@ -1835,7 +1844,7 @@ The following test cases are organized by country. Each shows a search request, 
 ```json
 {
     "status": true,
-    "data": {
+    "data":[{
         "company": {
             "legalName": "LAVAZZA",
             "tradingNames": [],
@@ -1887,6 +1896,7 @@ The following test cases are organized by country. Each shows a search request, 
             }
         }
     }
+    ]
 }
 ```
 
@@ -1951,7 +1961,7 @@ The following test cases are organized by country. Each shows a search request, 
         "transparency": true,
         "documents": true,
         "financials": true
-    },
+    }
 }
 ```
 
@@ -1962,7 +1972,7 @@ The following test cases are organized by country. Each shows a search request, 
 ```json
 {
     "status": true,
-    "data": {
+    "data":[ {
         "company": {
             "legalName": "Bosch GmbH",
             "tradingNames": [],
@@ -2078,6 +2088,7 @@ The following test cases are organized by country. Each shows a search request, 
             }
         }
     }
+    ]
 }
 ```
 
@@ -2177,7 +2188,7 @@ The following test cases are organized by country. Each shows a search request, 
 ```json
 {
   "status": true,
-  "data": {
+  "data":[ {
     "company": {
       "legalName": "Mueller.legal Müller Rechtsanwälte Partnerschaft PartG",
       "tradingNames": [],
@@ -2379,6 +2390,7 @@ The following test cases are organized by country. Each shows a search request, 
       }
     }
   }
+  ]
 }
 ```
 </Accordion>
@@ -2475,7 +2487,7 @@ The following test cases are organized by country. Each shows a search request, 
 ```json
 {
   "status": true,
-  "data": {
+  "data":[{
     "company": {
       "legalName": "Porsche GmbH",
       "tradingNames": [],
@@ -2816,6 +2828,7 @@ The following test cases are organized by country. Each shows a search request, 
       }
     }
   }
+  ]
 }
 ```
 </Accordion>
