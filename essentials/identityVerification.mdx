@@ -44,7 +44,7 @@ This endpoint verifies identity information by matching it against external and 
 | `identity.firstName` | string | Yes | First name of the individual. |
 | `identity.lastName` | string | Yes | Last name of the individual. |
 | `identity.nationalId` | string | No | National identification number. |
-| `identity.birthDate` | string | Yes | Birthdate of the individual (format: `YYYY/MM/DD`). |
+| `identity.birthDate` | string | Yes | Birthdate of the individual (format: `MM/DD/YYYY`). |
 | `address` | object | Yes | Contains address details. |
 | `address.street` | string | Yes | Street name of the address. |
 | `address.houseNumber` | string | No | House or building number. |
@@ -96,7 +96,7 @@ This endpoint verifies identity information by matching it against external and 
   "firstName": "John", // Required: First name of the individual.
   "lastName": "Doe",   // Required: Last name of the individual.
   "nationalId": "123456789", // Optional: National identification number.
-  "birthDate": "1985/05/15"  // Required: Birthdate of the individual (format: yyyy/mm/dd).
+  "birthDate": "05/15/1985"  // Required: Birthdate of the individual (format: yyyy/mm/dd).
 },
 "address": {
   "street": "Main Street", // Required: Street name of the address.
@@ -111,5 +111,109 @@ This endpoint verifies identity information by matching it against external and 
 "phone": {
   "phoneNumber": "+1234567890" // Optional: Phone number including international dialing code.
 }
+}
+```
+
+### Example Response
+```json
+{
+    "requestTrackingId": "ffefb592-aad5-43e5-b1bf-a66d1cfff1b8",
+    "globalResult": {
+        "totalScore": "100: VERIFICATION SUCCESSFUL"
+    },
+    "resultDetails": [
+        {
+            "datasource": "1: CREDIT",
+            "country": "US",
+            "matches": [
+                {
+                    "record": "CRD2-COMPLETENAME",
+                    "match": "Full match made on Complete Name"
+                },
+                {
+                    "record": "CRD2-FIRSTNAME",
+                    "match": "Full match made on First Name/Given Name"
+                },
+                {
+                    "record": "CRD2-LASTNAME",
+                    "match": "Full match made on Last Name/Surname"
+                },
+                {
+                    "record": "CRD2-DATEOFBIRTH",
+                    "match": "Full match made on Date of Birth"
+                },
+                {
+                    "record": "CRD2-DAYOFBIRTH",
+                    "match": "Full match made on Day of Birth"
+                },
+                {
+                    "record": "CRD2-MONTHOFBIRTH",
+                    "match": "Full match made on Month of Birth"
+                },
+                {
+                    "record": "CRD2-YEAROFBIRTH",
+                    "match": "Full match made on Year of Birth"
+                }
+            ]
+        },
+        {
+            "datasource": "2: CREDIT",
+            "country": "US",
+            "matches": [
+                {
+                    "record": "CRD4-COMPLETENAME",
+                    "match": "Full match made on Complete Name"
+                },
+                {
+                    "record": "CRD4-FIRSTINITIAL",
+                    "match": "Full match made on First Initial"
+                },
+                {
+                    "record": "CRD4-FIRSTNAME",
+                    "match": "Full match made on First Name/Given Name"
+                },
+                {
+                    "record": "CRD4-LASTNAME",
+                    "match": "Full match made on Last Name/Surname"
+                },
+                {
+                    "record": "CRD4-ADDRESS",
+                    "match": "Full match made on Address Elements provided in Address Lines"
+                },
+                {
+                    "record": "CRD4-HOUSENUMBER",
+                    "match": "Full match made on House Number/Street Number"
+                },
+                {
+                    "record": "CRD4-THOROUGHFARE",
+                    "match": "Full match made on Street/Thoroughfare"
+                },
+                {
+                    "record": "CRD4-LOCALITY",
+                    "match": "Full match made on City/Locality"
+                },
+                {
+                    "record": "CRD4-POSTALCODE",
+                    "match": "Full match made on Postal Code/Zip Code"
+                },
+                {
+                    "record": "CRD4-DATEOFBIRTH",
+                    "match": "Full match made on Date of Birth"
+                },
+                {
+                    "record": "CRD4-DAYOFBIRTH",
+                    "match": "Full match made on Day of Birth"
+                },
+                {
+                    "record": "CRD4-MONTHOFBIRTH",
+                    "match": "Full match made on Month of Birth"
+                },
+                {
+                    "record": "CRD4-YEAROFBIRTH",
+                    "match": "Full match made on Year of Birth"
+                }
+            ]
+        }
+    ]
 }
 ```
