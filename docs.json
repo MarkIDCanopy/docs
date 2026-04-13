@@ -78,6 +78,12 @@
             "group": "Endpoints",
             "pages": [
               {
+                "group": "Authentication",
+                "pages": [
+                  "api-reference/endpoint/authentication_auth"
+                ]
+              },
+              {
                 "group": "Address Verification",
                 "pages": [
                   "api-reference/endpoint/addressVerification_address_verify"

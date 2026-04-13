@@ -2235,9 +2235,9 @@
               "lastname": { "type": "string", "description": "Last name of the person." },
               "dob": {
                 "type": "string",
-                "description": "Date of birth in the format YYYY/MM/DD.",
-                "pattern": "^\\d{4}\\/\\d{2}\\/\\d{2}$",
-                "example": "2001/10/25"
+                "description": "Date of birth in the format YYYY-MM-DD.",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+                "example": "1970-12-01"
               }
             }
           }

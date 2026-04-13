@@ -54,7 +54,7 @@ Verifies if an individual can be matched to a given address, including validatio
 | address.province   | string | No       | District, province, or state.                               |
 | identity.firstname | string | Yes      | First name of the person.                                   |
 | identity.lastname  | string | Yes      | Last name of the person.                                    |
-| identity.dob       | string | Yes      | Date of birth in the format `YYYY/MM/DD`.                   |
+| identity.dob       | string | Yes      | Date of birth in the format `YYYY-MM-DD`.                   |
 
 ### Response Structure
 
@@ -122,18 +122,18 @@ Verifies if an individual can be matched to a given address, including validatio
 
 ```json
 {
-"country": "PL",
+"country": "AT",
 "address": {
-  "street": "Doktora Jana Piltza",
-  "number": "41",
-  "zip": "30-392",
-  "city": "Kraków",
+  "street": "Kampgasse",
+  "number": "9",
+  "zip": "3492",
+  "city": "Etsdorf",
   "province": ""
 },
 "identity": {
-  "firstname": "Pawel",
-  "lastname": "Ramski",
-  "dob": "2001/10/25"
+  "firstname": "Joe",
+  "lastname": "Cardholder",
+  "dob": "1970-12-01"
 }
 }
 ```
@@ -142,21 +142,28 @@ Verifies if an individual can be matched to a given address, including validatio
 
 ```json
 {
-  "inputAddress": "Doktora Jana Piltza 41 30-392 Kraków",
-  "correctedAddress": "Piltza 41, 30-392 Kraków, Polska",
-  "finalAddress": "Doktora Jana Piltza 41 30-392 Kraków",
-  "addressStatus": "corrected",
-  "matchQuality": "CITY_MATCH",
-  "score": 50,
-  "globalResult": {
-    "overall": "REVIEW",
-    "totalScore": 50
-  },
-  "identity": {
-    "fullName": "Pawel Ramski",
-    "dob": "2001/10/25"
-  },
-  "extendedMessage": "cityMatch"
+    "inputAddress": "Kampgasse 9, 3492, Etsdorf, AT",
+    "correctedAddress": "Kampgasse 9, 3492 Etsdorf, AT",
+    "finalAddress": "Kampgasse 9, 3492 Etsdorf, AT",
+    "addressStatus": "unchanged",
+    "addressComponents": {
+        "street": "Kampgasse",
+        "number": "9",
+        "zip": "3492",
+        "city": "Etsdorf",
+        "country": "AT"
+    },
+    "matchQuality": "EXACT",
+    "score": 100,
+    "globalResult": {
+        "overall": "OK",
+        "totalScore": 100
+    },
+    "identity": {
+        "fullName": "Joe Cardholder",
+        "dob": "1970-12-01"
+    },
+    "extendedMessage": "Full match"
 }
 ```
 
