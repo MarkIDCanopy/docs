@@ -55,6 +55,7 @@ Verifies if an individual can be matched to a given address, including validatio
 | identity.firstname | string | Yes      | First name of the person.                                   |
 | identity.lastname  | string | Yes      | Last name of the person.                                    |
 | identity.dob       | string | Yes      | Date of birth in the format `YYYY-MM-DD`.                   |
+| phone.phonenumber  | string | No       | Phone number in international format without special characters like "+"|
 
 ### Response Structure
 
@@ -134,6 +135,9 @@ Verifies if an individual can be matched to a given address, including validatio
   "firstname": "Joe",
   "lastname": "Cardholder",
   "dob": "1970-12-01"
+},
+"phone": {
+  "phonenumber": "+43123456789"
 }
 }
 ```
