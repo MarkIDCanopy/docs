@@ -25,7 +25,7 @@ The service accepts identity documents, payslips, bank statements, and supportin
 - Recommended next actions
 - Cross-document and cross-applicant anomaly signals
 
-T---
+---
 <Auth/>
 ---
 
@@ -63,7 +63,9 @@ multipart/form-data
 |---|---|---|---|
 | applicantId | string | No | External applicant or case reference. Auto-generated if omitted. |
 | caseMeta | stringified JSON | No | Additional metadata associated with the case. |
-| files | file[] | Yes | One or more uploaded files for forensic analysis. |
+| files1 | file[] | Yes | One or more uploaded files for forensic analysis. |
+| files2 | file[] | No | Additional files for forensic analysis. |
+| files3 | file[] | No | Additional files for forensic analysis. |
 
 ---
 
@@ -98,9 +100,9 @@ curl -X POST "https://umbrella-api.io/api/services/forensic/cases/analyze" \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -F "applicantId=loan-app-001" \
   -F 'caseMeta={"source":"bankXZY_onboarding","customerReference":"B99-12345"}' \
-  -F "files=@id_front.pdf" \
-  -F "files=@payslip.pdf" \
-  -F "files=@bank_statement.pdf"
+  -F "files1=@id_front.pdf" \
+  -F "files2=@payslip.pdf" \
+  -F "files3=@bank_statement.pdf"
 ```
 
 ---
@@ -120,9 +122,9 @@ formData.append(
   })
 );
 
-formData.append("files", idFrontFile);
-formData.append("files", payslipFile);
-formData.append("files", bankStatementFile);
+formData.append("files1", idFrontFile);
+formData.append("files2", payslipFile);
+formData.append("files3", bankStatementFile);
 
 const response = await fetch(
   "https://umbrella-api.io/api/services/forensic/cases/analyze",
