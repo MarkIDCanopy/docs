@@ -46,19 +46,19 @@
               "key": "files1",
               "type": "file",
               "uuid": "07686d4e-bd93-4b28-a88e-ecf9632a019c",
-              "src": "/C:/Users/User/OneDrive/Desktop/Termination Consulting Agreement.pdf"
+              "src": "something.pdf"
             },
             {
               "key": "files2",
               "type": "file",
               "uuid": "dd4f98c8-206a-4d6a-bb13-b90cf699c972",
-              "src": "/C:/Users/User/OneDrive/Desktop/FinancialStatement.pdf"
+              "src": "statement.pdf"
             },
             {
               "key": "files3",
               "type": "file",
               "uuid": "4759260f-ca8a-46de-92c3-adcb000df67f",
-              "src": "/C:/Users/User/OneDrive/Desktop/IDCanopy Arbeitsvertrag_UruthraKumar.pdf"
+              "src": "payslip.pdf"
             }
           ]
         },
