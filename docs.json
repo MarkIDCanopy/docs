@@ -37,6 +37,7 @@
               "essentials/documentVerification",
               "essentials/identityVerification",
               "essentials/faceMatch",
+              "essentials/forensicScoring",
               "essentials/kyb",
               "essentials/phoneServices",
               "essentials/qesOnboarding",

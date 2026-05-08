@@ -1,0 +1,114 @@
+{
+  "info": {
+    "_postman_id": "9fa21aaa-63c4-4968-9dd5-e6d703fb24c2",
+    "name": "Forensic Analysis Service",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "32998055"
+  },
+  "item": [
+    {
+      "name": "Forensics",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{access_Token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "multipart/form-data",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "applicantId",
+              "value": "test-app-001",
+              "type": "text",
+              "uuid": "901b88a9-c438-493a-886c-26b3ce4a49a1"
+            },
+            {
+              "key": "caseMeta",
+              "value": "{\"source\":\"postman_test\"}",
+              "type": "text",
+              "uuid": "360160f1-9232-473c-bad2-42b974792d10"
+            },
+            {
+              "key": "files1",
+              "type": "file",
+              "uuid": "07686d4e-bd93-4b28-a88e-ecf9632a019c",
+              "src": "/C:/Users/User/OneDrive/Desktop/Termination Consulting Agreement.pdf"
+            },
+            {
+              "key": "files2",
+              "type": "file",
+              "uuid": "dd4f98c8-206a-4d6a-bb13-b90cf699c972",
+              "src": "/C:/Users/User/OneDrive/Desktop/FinancialStatement.pdf"
+            },
+            {
+              "key": "files3",
+              "type": "file",
+              "uuid": "4759260f-ca8a-46de-92c3-adcb000df67f",
+              "src": "/C:/Users/User/OneDrive/Desktop/IDCanopy Arbeitsvertrag_UruthraKumar.pdf"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{apiURL}}/forensic/cases/analyze",
+          "host": [
+            "{{apiURL}}"
+          ],
+          "path": [
+            "forensic",
+            "cases",
+            "analyze"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "apiURL",
+      "value": ""
+    },
+    {
+      "key": "access_Token",
+      "value": ""
+    }
+  ]
+}
